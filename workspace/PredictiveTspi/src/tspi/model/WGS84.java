@@ -2,7 +2,9 @@ package tspi.model;
 
 
 import rotation.Angle;
+import rotation.Operator;
 import rotation.Principle;
+import rotation.QuaternionMath;
 import rotation.Vector3;
 
 public class WGS84 {
@@ -38,8 +40,25 @@ public class WGS84 {
 	/**	 * WGS 84 ellipsoid height	 */
 	protected double _height;
 	
+	protected Principle _theta;
+
+// Constructors avoided to encourage light-weight classes in programming...
 	
-	
+//	public WGS84(Principle latitude84, Principle longitude84, double ellipsoidHeight84){
+//		_latitude.put(latitude84);
+//		_longitude.put(longitude84);
+//		_height = ellipsoidHeight84;
+//		// coded principle theta is function of latitude only: reciprocal!
+//		_theta = Principle.arcTanHalfAngle(_latitude.cotHalf());
+//	}
+//	
+//	public WGS84(Angle latitude84, Angle longitude84, double ellipsoidHeight84){
+//		_latitude.put(latitude84);
+//		_longitude.put(longitude84);
+//		_height = ellipsoidHeight84;
+//		// coded principle theta is function of latitude only: reciprocal!
+//		_theta = Principle.arcTanHalfAngle(_latitude.cotHalf());
+//	}
 	
 	/**
 	 * Generate geocentric Cartesian coordinate: earth-centered earth-fixed 
@@ -55,6 +74,18 @@ public class WGS84 {
 		return new Vector3(x * _longitude.cos(), x * _longitude.sin(), (rTmp * FUNSQ + _height) * sin_lat);
 	}
 	
+	/**
+	 * Generate a quaternion Operator that rotates 'map' 
+	 * navigation coordinates {N,E,D} to 
+	 * {X,Y,Z} of geocentric oriented frame. 
+	 * @param _theta principle angle
+	 * @return Vector3 {X,Y,Z}
+	 */
+	public Operator getFromNEDtoEFG(){
+		//return (Operator) QuaternionMath.exp_k(_longitude).exp_j(_theta);
+		return QuaternionMath.eulerRotate_kj(_longitude,_theta);
+	}
+	
 	/**	 * @return Angle of the WGS84 North latitude	 */
 	public Angle getAngleLatitude() {
 		return _latitude.signedAngle();
@@ -62,6 +93,10 @@ public class WGS84 {
 	/**	 * @return the WGS84 North latitude	 */
 	public Principle getLatitude() {
 		return _latitude;
+	}
+	
+	public Principle getTheta(){
+		return _theta; 
 	}
 	
 	/**	 * @return Angle of the WGS84 East longitude	 */
@@ -143,6 +178,7 @@ public class WGS84 {
 	 */
 	public void setLatitude(Principle latitude) {
 		this._latitude = latitude;
+		this._theta = Principle.arcTanHalfAngle(_latitude.cotHalf());
 	}
 	/**
 	 * @param latitude the WGS84 North latitude to set
