@@ -291,9 +291,23 @@ public class Quaternion {
 	}
 
 	@Override
+//	public String toString() {
+//		return "< " + _w + "  + " + _x + "i  + " + _y + "j  + " + _z + "k >";
+//	}
 	public String toString() {
-		return "< " + _w + "  + " + _x + "i  + " + _y + "j  + " + _z + "k >";
+		int decimalDigits = 4;
+		return toString(decimalDigits);
 	}
+	public String toString(int decimals) {
+		String fmt = "< %."+decimals+"f + %."+decimals+"fi + %."+decimals+"fj + %."+decimals + "fk >";
+		//System.out.println("FORMAT STRING = "+fmt);
+		return String.format(fmt, _w, _x, _y, _z).replace("+ -", "- ");
+	}
+	
+	public String toTuple() {
+		return "{ " + _w + ",  " + _x + ",  " + _y + ",  " + _z + " }";
+	}
+
 
 	// Setters:
 

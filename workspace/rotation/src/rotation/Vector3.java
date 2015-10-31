@@ -134,9 +134,24 @@ public class Vector3 {
 		return true;
 	}
 	@Override
+//	public String toString() {
+//		return "< " + _x + "i  + " + _y + "j  + " + _z + "k >";
+//	}	
 	public String toString() {
-		return "< " + _x + "i  + " + _y + "j  + " + _z + "k >";
+		int decimals=4;
+		return toString(decimals);
 	}	
+	public String toString(int decimals) {
+		String fmt = "< %."+decimals+"fi + %."+decimals+"fj + %."+decimals + "fk >";
+		//System.out.println("FORMAT STRING = "+fmt);
+		return String.format(fmt, _x, _y, _z).replace("+ -", "- ");
+	}
+
+	public String toTuple() {
+		return "{ " + _x + ",  " + _y + ",  " + _z + " }";
+	}
+
+
 	
 	/** Negate mutator. */
 	public Vector3 negate() {
