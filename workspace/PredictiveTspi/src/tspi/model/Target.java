@@ -13,10 +13,10 @@ public class Target {
 
 	public Target(long time, double lat, double lon, double h) {
 		this.time = time;
-		this.wgs84 = new WGS84();
-		this.wgs84.setLatitude( new Principle( Angle.inDegrees(lat) ) );
-		this.wgs84.setLongitude( new Principle( Angle.inDegrees(lon) ) );
-		this.wgs84.setHeight( h );
+		this.wgs84 = new WGS84(Angle.inDegrees(lat),Angle.inDegrees(lon),h);
+//		this.wgs84.setLatitude( new Principle( Angle.inDegrees(lat) ) );
+//		this.wgs84.setLongitude( new Principle( Angle.inDegrees(lon) ) );
+//		this.wgs84.setHeight( h );
 		this.geo = wgs84.getXYZ();
 		this.error = null;
 	}
@@ -36,33 +36,51 @@ public class Target {
 	public void setTime(long time) { this.time = time; }
 
 	public void setLatitude(double lat) {
-		this.wgs84.setAngleLatitude( Angle.inDegrees(lat) );
+		if(wgs84.equals(null)){
+			wgs84 = new WGS84(Principle.ZERO,Principle.ZERO,0);
+		}
+		this.wgs84.putLatitude( Angle.inDegrees(lat) );
 		this.geo = wgs84.getXYZ();
 	}
 
 	public void setLongitude(double lon) {
-		this.wgs84.setAngleLongitude( Angle.inDegrees(lon));
+		if(wgs84.equals(null)){
+			wgs84 = new WGS84(Principle.ZERO,Principle.ZERO,0);
+		}
+		this.wgs84.putLongitude( Angle.inDegrees(lon));
 		this.geo = wgs84.getXYZ();
 	}
 
 	public void setHeight(double h) {
-		this.wgs84.setHeight(h);
+		if(wgs84.equals(null)){
+			wgs84 = new WGS84(Principle.ZERO,Principle.ZERO,0);
+		}
+		this.wgs84.putHeight(h);
 		this.geo = wgs84.getXYZ();
 	}
 
 	public void setE(double E) {
 		this.geo.put(E, geo.getY(), geo.getZ());
-		this.wgs84.setXYZ( geo );
+		if(wgs84.equals(null)){
+			wgs84 = new WGS84(Principle.ZERO,Principle.ZERO,0);
+		}
+		this.wgs84.putXYZ( geo );
 	}
 
 	public void setF(double F) {
 		this.geo.put(geo.getX(), F, geo.getZ());
-		this.wgs84.setXYZ( geo );
+		if(wgs84.equals(null)){
+			wgs84 = new WGS84(Principle.ZERO,Principle.ZERO,0);
+		}
+		this.wgs84.putXYZ( geo );
 	}
 
 	public void setG(double G) {
 		this.geo.put(geo.getX(), geo.getY(), G);
-		this.wgs84.setXYZ( geo );
+		if(wgs84.equals(null)){
+			wgs84 = new WGS84(Principle.ZERO,Principle.ZERO,0);
+		}
+		this.wgs84.putXYZ( geo );
 	}
 
 	public void setError(double error) {

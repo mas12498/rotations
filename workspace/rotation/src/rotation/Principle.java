@@ -56,7 +56,7 @@ public class Principle {
 	protected Principle(double encoded) {   ta = encoded; }	
 	
 	/** Principle Angle Constructor */
-	public Principle(Angle a){ ta = a.getCodedPrinciple(); }
+	public Principle(Angle a){ ta = (double) a.getCodedPrinciple(); }
 
 	/** Principle Copy Constructor */
 	public Principle(Principle copy) { ta = copy.ta; }

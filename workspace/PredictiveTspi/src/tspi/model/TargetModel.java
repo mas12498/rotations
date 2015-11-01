@@ -156,7 +156,10 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 				n++;
 			}
 		} catch(Exception exception) {
-			throw new Exception( "Error, line "+n+" : First 4 columns should be time, lat, lon, h\n\""+line+"\"\nStopped loading." );
+			
+			exception.printStackTrace();
+			throw new Exception( "Error, line "+n
+					+" : First 4 columns should be time, lat, lon, h\n\""+line+"\"\nStopped loading." );
 		} finally {
 			reader.close();
 			this.fireTableDataChanged();

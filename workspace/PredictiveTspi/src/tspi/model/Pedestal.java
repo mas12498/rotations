@@ -10,6 +10,7 @@ public class Pedestal {
 	protected String systemId; // system identifier
 	protected WGS84 wgs84; // lat, lon angles, h meters
 	protected Vector3 geo; // E,F,G vector
+	protected Operator q_NG;
 	protected Principle az, el;
 	protected Vector3 direction; // n, e, d vector
 	protected Double range; // meters?
@@ -18,11 +19,13 @@ public class Pedestal {
 	
 	public Pedestal( String id, double lat, double lon, double h) {//, double az, double el ) {
 		this.systemId = id;
-		this.wgs84 = new WGS84();
-		this.wgs84.setLatitude( new Principle( Angle.inDegrees(lat) ) );
-		this.wgs84.setLongitude( new Principle( Angle.inDegrees(lon) ) );
-		this.wgs84.setHeight( h );
-		this.geo = wgs84.getXYZ();
+		this.wgs84 = new WGS84(Angle.inDegrees(lat),Angle.inDegrees(lon), h );
+//		this.wgs84.setLatitude( new Principle( Angle.inDegrees(lat) ) );
+//		this.wgs84.setLongitude( new Principle( Angle.inDegrees(lon) ) );
+//		this.wgs84.setHeight( h );
+		this.geo = wgs84.getXYZ();//Geocentric location.
+		this.q_NG = wgs84.getFromNEDtoEFG();//local Nav to Geo axial rotation.
+		
 		this.az = null;//new Principle( Angle.inDegrees(az) );
 		this.el = null;//new Principle( Angle.inDegrees(el) );
 //		this.direction = new Vector3(0.0,0.0,0.0);
@@ -65,48 +68,54 @@ public class Pedestal {
 	public void setSystemId(String id) { this.systemId = id; }
 	
 	public void setLatitude(double lat) {
-		this.wgs84.setAngleLatitude( Angle.inDegrees(lat) );//put(lat, wgs84.getY(), wgs84.getZ());
+		this.wgs84.putLatitude( Angle.inDegrees(lat) );//put(lat, wgs84.getY(), wgs84.getZ());
 		this.geo = wgs84.getXYZ();
+		this.q_NG = wgs84.getFromNEDtoEFG();//local Nav to Geo axial rotation.
 	}
 	
 	public void setLongitude(double lon) {
-		this.wgs84.setAngleLongitude( Angle.inDegrees(lon) );//.put(wgs84.getX(), lon, wgs84.getZ());
+		this.wgs84.putLongitude( Angle.inDegrees(lon) );//.put(wgs84.getX(), lon, wgs84.getZ());
 		this.geo = wgs84.getXYZ();
+		this.q_NG = wgs84.getFromNEDtoEFG();//local Nav to Geo axial rotation.
 	}
 	
 	public void setHeight(double meters) {
-		this.wgs84.setHeight( meters );//.put(wgs84.getX(), wgs84.getY(), meters);
+		this.wgs84.putHeight( meters );//.put(wgs84.getX(), wgs84.getY(), meters);
 		this.geo = wgs84.getXYZ();
+		this.q_NG = wgs84.getFromNEDtoEFG();//local Nav to Geo axial rotation.
 	}
 	
 	public void setE(double E) {
 		this.geo.put(E, geo.getY(), geo.getZ());
-		this.wgs84.setXYZ(this.geo);
+		this.wgs84.putXYZ(this.geo);
+		this.q_NG = wgs84.getFromNEDtoEFG();//local Nav to Geo axial rotation.
 	}
 	
 	public void setF(double F) {
 		this.geo.put(geo.getX(), F, geo.getZ());
-		this.wgs84.setXYZ(this.geo);
+		this.wgs84.putXYZ(this.geo);
+		this.q_NG = wgs84.getFromNEDtoEFG();//local Nav to Geo axial rotation.
 	}
 	
 	public void setG(double G) {
 		this.geo.put(geo.getX(), geo.getY(), G);
-		this.wgs84.setXYZ(this.geo);
+		this.wgs84.putXYZ(this.geo);
+		this.q_NG = wgs84.getFromNEDtoEFG();//local Nav to Geo axial rotation.
 	}
 	
 	public void setAzimuth(double degrees) {
-		this.az.put( Angle.inDegrees(degrees));
+		this.az = Angle.inDegrees(degrees).getPrinciple();
 		this.direction = direction(this.az, this.el); // update direction
 	}
 	
 	public void setElevation(double degrees) {
-		this.el.put( Angle.inDegrees(degrees) );
+		this.el = Angle.inDegrees(degrees).getPrinciple();
 		this.direction = direction(this.az, this.el); // update direction
 	}
 	
 	public void setOrientation(double az, double el) {
-		this.az.put( Angle.inDegrees(az));
-		this.el.put( Angle.inDegrees(el) );
+		this.az = Angle.inDegrees(az).getPrinciple();
+		this.el = Angle.inDegrees(el).getPrinciple();
 		this.direction = direction(this.az, this.el); // update direction
 	}
 	

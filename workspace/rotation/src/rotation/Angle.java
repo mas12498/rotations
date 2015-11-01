@@ -123,15 +123,26 @@ public class Angle //adapter class -- Angle
 //	{ return (long) StrictMath.rint(StrictMath.scalb(angle/QUARTER_PI_RADIANS,number_bits-3)); }
 
 	/** 
+	 * Get <b><i>Principle</b> Angle</i>. 
+	 */
+	public Principle getPrinciple() {
+		// TODO Auto-generated method stub
+		return Principle.arcTanHalfAngle(this.getCodedPrinciple());
+	}
+	
+	/** 
 	 * Get <i>double</i>: <i>coded</i> <b><i>Principle</b> Angle</i>. 
 	 */
 	protected double getCodedPrinciple()
 	{ 
-		double r = StrictMath.scalb(angle ,-1) % StrictMath.PI;
+
+		double r = StrictMath.IEEEremainder(StrictMath.scalb(angle,-1),StrictMath.PI);
+		//double r = StrictMath.scalb(angle ,-1) % StrictMath.PI;
 		if (StrictMath.abs(r)>HALF_PI_RADIANS) 
 			r -= StrictMath.copySign(StrictMath.PI, r); 
 		return StrictMath.tan(r); 
 	}
+
 
 	
 }
