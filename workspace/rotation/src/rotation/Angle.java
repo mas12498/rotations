@@ -136,8 +136,8 @@ public class Angle //adapter class -- Angle
 	protected double getCodedPrinciple()
 	{ 
 
-		double r = StrictMath.IEEEremainder(StrictMath.scalb(angle,-1),StrictMath.PI);
-		//double r = StrictMath.scalb(angle ,-1) % StrictMath.PI;
+		//double r = StrictMath.IEEEremainder(StrictMath.scalb(angle,-1),StrictMath.PI);
+		double r = StrictMath.scalb(angle ,-1) % StrictMath.PI;
 		if (StrictMath.abs(r)>HALF_PI_RADIANS) 
 			r -= StrictMath.copySign(StrictMath.PI, r); 
 		return StrictMath.tan(r); 

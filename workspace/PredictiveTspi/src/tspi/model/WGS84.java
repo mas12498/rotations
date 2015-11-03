@@ -54,41 +54,69 @@ public class WGS84 {
 	/**	 * WGS 84 local latitude rotation to vertical	 */
 	protected final Principle _theta;
 	
+	
+	//Constructors...
+	
+	//Copy...
+	public WGS84(WGS84 ellipsoid84){
+		_latitude = ellipsoid84.getLatitude(); //copy constructor
+		_longitude = ellipsoid84.getLongitude(); //copy constructor
+		_height = ellipsoid84.getHeight();
+		_theta = ellipsoid84.getTheta(); //factory
+	}
+	
+	//By coordinate elements with coded principle angles	
 	public WGS84(Principle latitude84, Principle longitude84, double ellipsoidHeight84){
 		_latitude = new Principle(latitude84); //copy constructor
 		_longitude = new Principle(longitude84); //copy constructor
 		_height = ellipsoidHeight84;
-		// coded principle theta is function of latitude only: reciprocal!
-		_theta = Principle.arcTanHalfAngle(_latitude.cotHalf()); //factory
-	}
+		// coded principle angle theta is function of latitude only:
+		//      _theta = Angle.inRadians(new Principle(_latitude).negate().getRadians()-StrictMath.PI/2).getPrinciple();
+        //      _theta = Principle.arcTanHalfAngle(1).add(_latitude).negate();
+		//_theta = new Principle(_latitude).addRight().negate();
+		_theta = new Principle(_latitude).addRight().negate();
+		}
 	
+	//By coordinate elements with angles
 	public WGS84(Angle latitude84, Angle longitude84, double ellipsoidHeight84){
 		_latitude = latitude84.getPrinciple();	//factory
 		_longitude = longitude84.getPrinciple(); //factory
 		_height = ellipsoidHeight84;
 		// coded principle theta is function of latitude only: reciprocal!
-		_theta = Principle.arcTanHalfAngle(_latitude.cotHalf()); //factory
+        //		_theta = Angle.inRadians(new Principle(_latitude).negate().getRadians()-StrictMath.PI/2).getPrinciple();
+        //		_theta = Principle.arcTanHalfAngle(1).add(_latitude).negate();
+		_theta = new Principle(_latitude).addRight().negate();
 	}
 	
+	// By Cartesian equivalence
 	public WGS84(Vector3 locationXYZ){
-		_latitude = new Principle(Principle.ZERO);	//factory dummy load
-		_longitude = new Principle(Principle.ZERO); //factory dummy load
-		_theta = new Principle(Principle.ZERO); //factory dummy load
-		_height = 0; // factory dummy load
-		putXYZ(locationXYZ); //adapt load
+		_latitude = new Principle(Principle.ZERO);	//dummy init object
+		_longitude = new Principle(Principle.ZERO); //dummy init object
+		_theta = new Principle(Principle.ZERO); 	//dummy init object
+		putXYZ(locationXYZ); //Overwites dummy init values, _height
 	}
 	
-
+    // By Quaternion axial operator definition and normal height above ellipsoid
 	public WGS84(Operator q_NG, double ellipsoidHeight){
 		_longitude = q_NG.getEuler_k_kji();
 		_theta = q_NG.getEuler_j_kji();
 		_latitude = Principle.arcTanHalfAngle(_theta.cotHalf());
 		_height = ellipsoidHeight; // factory dummy load
-	}
+	}	
 	
-
+    // By Quaternion axial operator definition and normal height above ellipsoid
+	public WGS84(Operator q_NG, Vector3 locationXYZ){
+		_longitude = q_NG.getEuler_k_kji();
+		_theta = q_NG.getEuler_j_kji();
+		_latitude = Principle.arcTanHalfAngle(_theta.cotHalf());
+		double sin_lat = _latitude.sin();
+		double rTmp = _a / StrictMath.sqrt(ONE - FLATFN * sin_lat * sin_lat);
+		double x = rTmp * _latitude.cos();
+		Vector3 pXYZ = new Vector3(x * _longitude.cos(), x * _longitude.sin(), rTmp * FUNSQ * sin_lat);
+		_height = pXYZ.subtract(locationXYZ).getDot(q_NG.getImage_k());
+	}	
 	
-	
+	//Getters
 	
 	/**
 	 * Generate geocentric Cartesian coordinate: earth-centered earth-fixed 
@@ -112,8 +140,9 @@ public class WGS84 {
 	 * @return Operator {W,X,Y,Z}
 	 */
 	public Operator getFromNEDtoEFG(){
-		return (Operator) QuaternionMath.exp_k(_longitude).exp_j(_theta);
-		//return QuaternionMath.eulerRotate_kj(_longitude,_theta);
+		//return (Operator) QuaternionMath.exp_k(_longitude).rightMultExpJ(_theta);
+		//Operator q_AN = (Operator) QuaternionMath.exp_k(paz.put(az)).rightMultExpJ(pel.put(el));
+		return QuaternionMath.eulerRotate_kj(new Principle(_longitude),new Principle(_theta));
 	}
 	
 	/**	 * @return Angle of the WGS84 North latitude	 */
@@ -126,6 +155,7 @@ public class WGS84 {
 	}
 	
 	public Principle getTheta(){
+		_theta.put(_latitude).addRight().negate();
 		return _theta; 
 	}
 	
@@ -148,7 +178,7 @@ public class WGS84 {
 	/**
 	 * Mutator.
 	 * @param EFG
-	 * @return
+	 * @return WGS84 ellipssoidal coordinates
 	 */
 	public WGS84 putXYZ(Vector3 EFG){	
 
@@ -196,19 +226,38 @@ public class WGS84 {
         double B = (z<0)?-_b:_b;
                 
         _longitude.put(Angle.inRadians(StrictMath.atan2( y, x )));
+        
         _latitude.put(Angle.inRadians(StrictMath.atan( (_a*(ONE - t*t)) / (TWO*B*t) )));
-        _theta.put(Principle.arcTanHalfAngle(_latitude.cotHalf()));
+        
+		_theta.put(_latitude).addRight().negate();
+        
         _height = (r - _a*t)*_latitude.cos() + (z - B)*_latitude.sin();
 
  		return this;		
 	}
 
 	/** Mutator
-	 * @param latitude the WGS84 North latitude to setmeasure
+	 * @param Operator and height put to set measure
+	 */
+	public WGS84 put(Operator q_NG, double ellipsoidHeight) {
+		_longitude.put(q_NG.getEuler_k_kji());
+		_theta.put(q_NG.getEuler_j_kji());
+		_latitude.put(Principle.arcTanHalfAngle(_theta.cotHalf()));
+		_height = ellipsoidHeight; // factory dummy load
+		return this;
+	}	
+	
+	
+	
+	/** Mutator
+	 * @param latitude the WGS84 North latitude to set measure
 	 */
 	public WGS84 putLatitude(Principle latitude) {
 		this._latitude.put(latitude);
-		this._theta.put( Principle.arcTanHalfAngle(_latitude.cotHalf()));
+		
+//		this._theta.put( Principle.arcTanHalfAngle(_latitude.cotHalf()));
+		_theta.put(_latitude).addRight().negate();
+		
 		return this;
 	}
 	/** Mutator
@@ -216,7 +265,10 @@ public class WGS84 {
 	 */
 	public WGS84 putLatitude(Angle latitude) {
 		this._latitude.put(latitude);
-		this._theta.put( Principle.arcTanHalfAngle(_latitude.cotHalf()));
+		
+//		this._theta.put( Principle.arcTanHalfAngle(_latitude.cotHalf()));
+		_theta.put(_latitude).addRight().negate();
+		
 		return this;
 	}
 

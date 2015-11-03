@@ -187,6 +187,13 @@ public class Principle {
 		return  ma/( 0.5d - StrictMath.scalb(ma,-1)*ma );		 
 	}
 
+	/** CoTangent of Principle Angle.
+	 * @return double  */
+	public double cot()
+	{ 		
+		return 1.0d/tan();
+	}
+
 	/** Sine of Principle Angle.
 	 * @return double  */
 	public double sin()
@@ -236,6 +243,17 @@ public class Principle {
 		return this; 
 		
 	}
+	
+	/** Mutator -- sum right angle.
+	 */
+	public Principle addRight() //addend == RightAngle [90 degrees]: addend.ta = 1
+	{ 				
+		ta = (isAcute())
+		? (ta + 1d)/(1d - ta)	
+		: (1d + 1d/ta)/(1d/ta - 1d); 				
+		return this; 
+	}
+	
 
 	/** Mutator -- difference.
 	 * @param subtrahend Principle */

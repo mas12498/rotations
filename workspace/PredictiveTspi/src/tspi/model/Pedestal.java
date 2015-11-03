@@ -19,19 +19,30 @@ public class Pedestal {
 	
 	public Pedestal( String id, double lat, double lon, double h) {//, double az, double el ) {
 		this.systemId = id;
+		
+		//Pedestal location ellipsoid coordinates:
 		this.wgs84 = new WGS84(Angle.inDegrees(lat),Angle.inDegrees(lon), h );
-//		this.wgs84.setLatitude( new Principle( Angle.inDegrees(lat) ) );
-//		this.wgs84.setLongitude( new Principle( Angle.inDegrees(lon) ) );
-//		this.wgs84.setHeight( h );
-		this.geo = wgs84.getXYZ();//Geocentric location.
+		
+		//Geocentric location f(WGS84)
+		this.geo = wgs84.getXYZ();
+		
+		//axial operator from local Navigation to Geocentric framework: {NED}-->{XYZ}  
 		this.q_NG = wgs84.getFromNEDtoEFG();//local Nav to Geo axial rotation.
 		
+		//Pedestal aperture line-of-sight + fov [axial] coordinate framework: {LHV} 
+		//{Line-of-sight [Twist], Horizontal-right [Elevation trunnion], Vertical-down [Azimuth bearing]}
+		this.range = null;
 		this.az = null;//new Principle( Angle.inDegrees(az) );
 		this.el = null;//new Principle( Angle.inDegrees(el) );
+//		this.aer = null; //new AER(az,el,rg);
+//		this.q_PN = null; //aer.getFromRHVtoNED;
+
 //		this.direction = new Vector3(0.0,0.0,0.0);
 //		this.direction(this.az, this.el);
 		this.direction = null;
-		this.range = null;
+//		this.Hnormal=null; //delta elevation
+//		this.Vnormal=null; //delta azimuthal
+		
 	}
 	
 	public WGS84 getEllipsoidalCoordinates() { return this.wgs84; }
