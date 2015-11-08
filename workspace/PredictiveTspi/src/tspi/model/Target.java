@@ -1,6 +1,6 @@
 package tspi.model;
 import rotation.Angle;
-import rotation.Principle;
+//import rotation.Principle;
 import rotation.Vector3;
 
 public class Target {
@@ -37,7 +37,7 @@ public class Target {
 
 	public void setLatitude(double lat) {
 		if(wgs84.equals(null)){
-			wgs84 = new WGS84(Principle.ZERO,Principle.ZERO,0);
+			wgs84 = new WGS84(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
 		this.wgs84.putLatitude( Angle.inDegrees(lat) );
 		this.geo = wgs84.getXYZ();
@@ -45,7 +45,7 @@ public class Target {
 
 	public void setLongitude(double lon) {
 		if(wgs84.equals(null)){
-			wgs84 = new WGS84(Principle.ZERO,Principle.ZERO,0);
+			wgs84 = new WGS84(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
 		this.wgs84.putLongitude( Angle.inDegrees(lon));
 		this.geo = wgs84.getXYZ();
@@ -53,7 +53,7 @@ public class Target {
 
 	public void setHeight(double h) {
 		if(wgs84.equals(null)){
-			wgs84 = new WGS84(Principle.ZERO,Principle.ZERO,0);
+			wgs84 = new WGS84(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
 		this.wgs84.putHeight(h);
 		this.geo = wgs84.getXYZ();
@@ -62,7 +62,7 @@ public class Target {
 	public void setE(double E) {
 		this.geo.put(E, geo.getY(), geo.getZ());
 		if(wgs84.equals(null)){
-			wgs84 = new WGS84(Principle.ZERO,Principle.ZERO,0);
+			wgs84 = new WGS84(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
 		this.wgs84.putXYZ( geo );
 	}
@@ -70,7 +70,7 @@ public class Target {
 	public void setF(double F) {
 		this.geo.put(geo.getX(), F, geo.getZ());
 		if(wgs84.equals(null)){
-			wgs84 = new WGS84(Principle.ZERO,Principle.ZERO,0);
+			wgs84 = new WGS84(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
 		this.wgs84.putXYZ( geo );
 	}
@@ -78,7 +78,7 @@ public class Target {
 	public void setG(double G) {
 		this.geo.put(geo.getX(), geo.getY(), G);
 		if(wgs84.equals(null)){
-			wgs84 = new WGS84(Principle.ZERO,Principle.ZERO,0);
+			wgs84 = new WGS84(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
 		this.wgs84.putXYZ( geo );
 	}

@@ -65,35 +65,34 @@ public class WGS84 {
 		_theta = ellipsoid84.getTheta(); //factory
 	}
 	
-	//By coordinate elements with coded principle angles	
-	public WGS84(Principle latitude84, Principle longitude84, double ellipsoidHeight84){
-		_latitude = new Principle(latitude84); //copy constructor
-		_longitude = new Principle(longitude84); //copy constructor
-		_height = ellipsoidHeight84;
-		// coded principle angle theta is function of latitude only:
-		//      _theta = Angle.inRadians(new Principle(_latitude).negate().getRadians()-StrictMath.PI/2).getPrinciple();
-        //      _theta = Principle.arcTanHalfAngle(1).add(_latitude).negate();
-		//_theta = new Principle(_latitude).addRight().negate();
-		_theta = new Principle(_latitude).addRight().negate();
-		}
+//	//By coordinate elements with coded principle angles	
+//	public WGS84(Principle latitude84, Principle longitude84, double ellipsoidHeight84){
+//		_latitude = new Principle(latitude84); //copy constructor
+//		_longitude = new Principle(longitude84); //copy constructor
+//		_height = ellipsoidHeight84;
+//		// coded principle angle theta is function of latitude only:
+//		//      _theta = Angle.inRadians(new Principle(_latitude).negate().getRadians()-StrictMath.PI/2).getPrinciple();
+//        //      _theta = Principle.arcTanHalfAngle(1).add(_latitude).negate();
+//		//_theta = new Principle(_latitude).addRight().negate();
+//		_theta = new Principle(_latitude).addRight().negate();
+//		}
 	
-	//By coordinate elements with angles
+	//Construct by component geodetic Angle coordinates and geodetic height
 	public WGS84(Angle latitude84, Angle longitude84, double ellipsoidHeight84){
 		_latitude = latitude84.getPrinciple();	//factory
 		_longitude = longitude84.getPrinciple(); //factory
 		_height = ellipsoidHeight84;
-		// coded principle theta is function of latitude only: reciprocal!
-        //		_theta = Angle.inRadians(new Principle(_latitude).negate().getRadians()-StrictMath.PI/2).getPrinciple();
-        //		_theta = Principle.arcTanHalfAngle(1).add(_latitude).negate();
-		_theta = new Principle(_latitude).addRight().negate();
+		_theta = latitude84.getPrincipleComplement().negate(); //factory
 	}
 	
-	// By Cartesian equivalence
+	//Construct by Cartesian Geocentric equivalence
 	public WGS84(Vector3 locationXYZ){
+		//Construct component Principle objects with dummy placeholders
 		_latitude = new Principle(Principle.ZERO);	//dummy init object
 		_longitude = new Principle(Principle.ZERO); //dummy init object
 		_theta = new Principle(Principle.ZERO); 	//dummy init object
-		putXYZ(locationXYZ); //Overwites dummy init values, _height
+		//put to Principle dummy objects and primitive _height
+		putXYZ(locationXYZ); 
 	}
 	
     // By Quaternion axial operator definition and normal height above ellipsoid
@@ -142,7 +141,11 @@ public class WGS84 {
 	public Operator getFromNEDtoEFG(){
 		//return (Operator) QuaternionMath.exp_k(_longitude).rightMultExpJ(_theta);
 		//Operator q_AN = (Operator) QuaternionMath.exp_k(paz.put(az)).rightMultExpJ(pel.put(el));
+//		Principle theta = getTheta();
+//		Operator tmp = QuaternionMath.exp_k(_longitude).exp_j(theta);
+		
 		return QuaternionMath.eulerRotate_kj(new Principle(_longitude),new Principle(_theta));
+		
 	}
 	
 	/**	 * @return Angle of the WGS84 North latitude	 */
@@ -165,6 +168,7 @@ public class WGS84 {
 	}
 	/**	 * @return the WGS84 East longitude	 */
 	public Principle getLongitude() {
+		
 		return _longitude;
 	}
 	

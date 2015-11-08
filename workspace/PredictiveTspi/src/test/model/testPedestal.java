@@ -1,7 +1,7 @@
 /**
  * 
  */
-package tspi.model;
+package test.model;
 
 import junit.framework.TestCase;
 import rotation.Angle;
@@ -10,6 +10,7 @@ import rotation.Principle;
 import rotation.Quaternion;
 import rotation.QuaternionMath;
 import rotation.Vector3;
+import tspi.model.WGS84;
 
 /**
  * @author mike
@@ -17,7 +18,7 @@ import rotation.Vector3;
  */
 public class testPedestal extends TestCase {
 	public void testSetWGS84() {
-		WGS84 temp = new WGS84(Angle.inDegrees(-30),Angle.inDegrees(270),3000);
+		WGS84 temp = new WGS84(Angle.inDegrees(-30),Angle.inDegrees(-90),3000);
 //		Principle latitude = new Principle(Angle.inDegrees(-30));
 //		Principle longitude = new Principle(Angle.inDegrees(270));
 //		double height = 3000;
@@ -34,6 +35,7 @@ public class testPedestal extends TestCase {
 		System.out.println(temp.getAngleLatitude().getDegrees());
 		System.out.println(temp.getAngleLongitude().getDegrees());
 		System.out.println(temp.getHeight());
+		
 		Principle theta = Principle.arcTanHalfAngle(temp.getLatitude().cotHalf());
 		
 		Operator q =QuaternionMath.eulerRotate_kj(temp.getLongitude(), temp.getTheta());

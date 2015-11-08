@@ -29,13 +29,13 @@ public class Principle {
 	static final public Principle RIGHT = new Principle(1.0d);
 	static final public Principle STRAIGHT = new Principle(Double.POSITIVE_INFINITY);
 	
-	private double ta;
+	private double _ta;
 	
 	/** 
 	 * return double representing signed Principle angle in radians: 
 	 *   (Reserved for rotation package internal use)
 	 * */
-	public double getRadians() { return StrictMath.scalb(StrictMath.atan(ta),1); }
+	public double getRadians() { return StrictMath.scalb(StrictMath.atan(_ta),1); }
 
 	/** 
 	 * return double representing unsigned Principle angle in radians: 
@@ -43,8 +43,8 @@ public class Principle {
 	 * */
 	public double getUnsignedRadians()   {   
 		return StrictMath.scalb( (isPositive() 
-				                  ? StrictMath.atan(ta) 
-				                  : StrictMath.atan(ta)+ StrictMath.PI), 1 ); 
+				                  ? StrictMath.atan(_ta) 
+				                  : StrictMath.atan(_ta)+ StrictMath.PI), 1 ); 
 	}
 	
 	public static Principle arcTanHalfAngle(double tanHalfAngle) { return new Principle(tanHalfAngle); }
@@ -53,13 +53,13 @@ public class Principle {
 	 * Construct Principle from externally encoded double: 
 	 *   (Reserved for rotation package internal use)
 	 * */
-	protected Principle(double encoded) {   ta = encoded; }	
+	protected Principle(double encoded) {   _ta = encoded; }	
 	
 	/** Principle Angle Constructor */
-	public Principle(Angle a){ ta = (double) a.getCodedPrinciple(); }
+	public Principle(Angle a){ _ta = (double) a.getCodedPrinciple(); }
 
 	/** Principle Copy Constructor */
-	public Principle(Principle copy) { ta = copy.ta; }
+	public Principle(Principle copy) { _ta = copy._ta; }
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -69,7 +69,7 @@ public class Principle {
 		final int prime = 31;
 		int result = 1;
 		long temp;
-		temp = Double.doubleToLongBits(ta);
+		temp = Double.doubleToLongBits(_ta);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		return result;
 	}
@@ -89,7 +89,7 @@ public class Principle {
 			return false;
 		}
 		Principle other = (Principle) obj;
-		if (Double.doubleToLongBits(ta) != Double.doubleToLongBits(other.ta)) {
+		if (Double.doubleToLongBits(_ta) != Double.doubleToLongBits(other._ta)) {
 			return false;
 		}
 		return true;
@@ -105,10 +105,10 @@ public class Principle {
 //    public Principle setZero() { return this.put(Principle.ZERO); }
 	
     /** Mutator -- Set to Principle angle of Angle measure. */
-	public Principle put(Angle measure) { ta = measure.getCodedPrinciple(); return this; }
+	public Principle put(Angle measure) { _ta = measure.getCodedPrinciple(); return this; }
 
     /** Set equal to another Principle angle measure. */
-	public Principle put(Principle measure){ ta = measure.ta; return this;}
+	public Principle put(Principle measure){ _ta = measure._ta; return this;}
 
 	/** Get <i>signed</i> Angle.
 	 *  @return Angle */
@@ -120,16 +120,25 @@ public class Principle {
 
 	/** Tangent of half of Principle Angle.
 	 * @return double 	 */
-	public double tanHalf(){ return ta; }
+	public double tanHalf(){ return _ta; }
 	
 	/** Cotangent of half of Principle Angle.
 	 * @return double 	 */
-	public double cotHalf(){ return 1/ta; }
+	public double cotHalf(){ 
+		if(_ta==0){
+			return StrictMath.copySign(Double.POSITIVE_INFINITY,_ta);
+		}
+		if(Double.isInfinite(_ta)){
+			return StrictMath.copySign(0d,_ta);			
+		}
+		return 1/_ta; 
+		
+	}
 	
 	/** Magnification of fast rotation operation.
 	 * @return double 	 */
 	public double fastRotMagnification(){ 
-		double t = (ta < 1d) ? ta : 1d/ta;
+		double t = (_ta < 1d) ? _ta : 1d/_ta;
 	    return 1d+t*t;
 	}
 	
@@ -180,17 +189,31 @@ public class Principle {
 	 * @return double  */
 	public double tan()
 	{ 		
-     //	return 2d/( 1/ta - ta ); 		
-		if (isZero()) { return 0d; } //fast zero return...	
-		//if (isStraight()) { return 0d ) //fast straight return...
-		double ma = (StrictMath.abs(ta) < 1d) ? ta : -1d/ta; 
+     //	return 2/( 1/ta - ta ); 		
+		if (isZero()) { StrictMath.copySign(0,_ta); } //fast zero return...	
+		if(isRight()){ //handle right angles!
+			return StrictMath.copySign(Double.POSITIVE_INFINITY,_ta);
+		}
+		if (isStraight()){
+			return StrictMath.copySign(0,_ta);			
+		}
+		double ma = (StrictMath.abs(_ta) < 1d) ? _ta : -1d/_ta; 
 		return  ma/( 0.5d - StrictMath.scalb(ma,-1)*ma );		 
 	}
 
 	/** CoTangent of Principle Angle.
 	 * @return double  */
 	public double cot()
-	{ 		
+	{ 	
+		if(isZero()){
+			return StrictMath.copySign(Double.POSITIVE_INFINITY,_ta);
+		}
+		if(isRight()){
+			return StrictMath.copySign(1d,_ta);
+		}
+		if(isStraight()){
+			return StrictMath.copySign(0d,_ta);			
+		}
 		return 1.0d/tan();
 	}
 
@@ -200,7 +223,7 @@ public class Principle {
 	{
      //	return 2d/( 1/ta + ta ); 		
 		if (isZero()) {	return 0d; } //fast zero return...	
-		double ma = (StrictMath.abs(ta) < 1d) ? ta : 1d/ta; 
+		double ma = (StrictMath.abs(_ta) < 1d) ? _ta : 1d/_ta; 
 		return ma/(StrictMath.scalb(ma,-1)*ma + 0.5d);
 	}
 	
@@ -210,7 +233,7 @@ public class Principle {
 	public double cos()
 	{ 		
 		if (isZero()) {	return 1d; } //fast zero return...					
-		double m2 = ta*ta;			
+		double m2 = _ta*_ta;			
 		return ( m2 < 1d ) 
 			? (1d - m2)/(1d + m2)
 			: (1d/m2 - 1) /(1d/m2 + 1d);		
@@ -222,23 +245,23 @@ public class Principle {
 	
 	/** Mutator -- negate: 
 	 * Changes <i>sign</i>.  */
-	public Principle negate(){ ta = -ta; return this;}
+	public Principle negate(){ _ta = -_ta; return this;}
 
 	/** Mutator -- abs: 
 	 * Makes <i>positive</i>. */
-	public Principle abs(){ ta = StrictMath.abs(ta); return this;}
+	public Principle abs(){ _ta = StrictMath.abs(_ta); return this;}
 
 	/** Mutator -- sum.
 	 * @param addend Principle */
 	public Principle add(Principle addend)
 	{ 				
-		ta = (isAcute())
+		_ta = (isAcute())
 		? (addend.isAcute()) 
-				? (ta + addend.ta)/(1d - ta*addend.ta)		     // (tx   + ty)/(1  - txty)			
-				: (ta/addend.ta + 1d)/(1d/addend.ta - ta)		 // (txcy +  1)/(cy - tx   )
+				? (_ta + addend._ta)/(1d - _ta*addend._ta)		     // (tx   + ty)/(1  - txty)			
+				: (_ta/addend._ta + 1d)/(1d/addend._ta - _ta)		 // (txcy +  1)/(cy - tx   )
 		: (addend.isAcute()) 
-				? (1d + addend.ta/ta)/(1d/ta - addend.ta)		 // (1  + tycx)/(cx    - ty)
-				: (1d/addend.ta + 1d/ta)/(1d/ta/addend.ta - 1d); // (cy +   cx)/(cxcy - 1 )					
+				? (1d + addend._ta/_ta)/(1d/_ta - addend._ta)		 // (1  + tycx)/(cx    - ty)
+				: (1d/addend._ta + 1d/_ta)/(1d/_ta/addend._ta - 1d); // (cy +   cx)/(cxcy - 1 )					
 //		ta = (ta + addend.ta)/(1 - ta*addend.ta); 		
 		return this; 
 		
@@ -247,10 +270,11 @@ public class Principle {
 	/** Mutator -- sum right angle.
 	 */
 	public Principle addRight() //addend == RightAngle [90 degrees]: addend.ta = 1
-	{ 				
-		ta = (isAcute())
-		? (ta + 1d)/(1d - ta)	
-		: (1d + 1d/ta)/(1d/ta - 1d); 				
+	{ 	//problem when dealing with 45 degrees...denominators goto zero!		
+		_ta = (isAcute())
+		? (_ta + 1d)/(1d - _ta)	
+		: (1d + 1d/_ta)/(1d/_ta - 1d); 
+		this.cot();
 		return this; 
 	}
 	
@@ -260,13 +284,13 @@ public class Principle {
 	public Principle subtract(Principle subtrahend)
 	{  
 
-		ta = (isAcute())
+		_ta = (isAcute())
 		? (subtrahend.isAcute()) 
-				? (ta - subtrahend.ta)/(1d + ta*subtrahend.ta)		     // (tx   + ty)/(1  - txty)			
-				: (ta/subtrahend.ta - 1d)/(1d/subtrahend.ta + ta)		 // (txcy +  1)/(cy - tx   )
+				? (_ta - subtrahend._ta)/(1d + _ta*subtrahend._ta)		     // (tx   + ty)/(1  - txty)			
+				: (_ta/subtrahend._ta - 1d)/(1d/subtrahend._ta + _ta)		 // (txcy +  1)/(cy - tx   )
 		: (subtrahend.isAcute()) 
-				? (1d - subtrahend.ta/ta)/(1d/ta + subtrahend.ta)		 // (1  + tycx)/(cx    - ty)
-				: (1d/subtrahend.ta - 1d/ta)/(1d/ta/subtrahend.ta + 1d); // (cy +   cx)/(cxcy - 1 )	
+				? (1d - subtrahend._ta/_ta)/(1d/_ta + subtrahend._ta)		 // (1  + tycx)/(cx    - ty)
+				: (1d/subtrahend._ta - 1d/_ta)/(1d/_ta/subtrahend._ta + 1d); // (cy +   cx)/(cxcy - 1 )	
 		//	ta = (ta - subtrahend.ta)/(1 + ta*subtrahend.ta); 		
 		return this; 
 	}
@@ -275,28 +299,28 @@ public class Principle {
 	 * @param scalarFactor double */
 	public Principle multiply(double scalarFactor)
 	{   //this is not clear...need to check this out.
-		ta = StrictMath.tan( scalarFactor * StrictMath.atan(ta) );
+		_ta = StrictMath.tan( scalarFactor * StrictMath.atan(_ta) );
 		return this;
 	}
 
 	/** True if Principle exactly equals zero angle. */
-	public boolean isZero() { return (ta==0.0); } //Math.abs(t)<2*Epsilon;
+	public boolean isZero() { return (_ta==0.0); } //Math.abs(t)<2*Epsilon;
 
 	/** True if Principle angle is positive. */
-	public boolean isPositive() { return (ta>=0.0d); } //t>= Epsilon;
+	public boolean isPositive() { return (_ta>=0.0d); } //t>= Epsilon;
 
 	/** True if <i>absolute</i> Principle angle is acute. */
-	public boolean isAcute() {	return (StrictMath.abs(ta)<1.0d); } //t>= Epsilon;
+	public boolean isAcute() {	return (StrictMath.abs(_ta)<1.0d); } //t>= Epsilon;
 
 	/** True if Principle is right angle. */
-	public boolean isRight() { return (StrictMath.abs(ta)==1.0d); } //Math.abs(t)<2*Epsilon;
+	public boolean isRight() { return (StrictMath.abs(_ta)==1.0d); } //Math.abs(t)<2*Epsilon;
 
 	/** True if <i>absolute</i> Principle angle is obtuse. */
-	public boolean isObtuse() {	return (StrictMath.abs(ta)>1.0d); } //t>= Epsilon;
+	public boolean isObtuse() {	return (StrictMath.abs(_ta)>1.0d); } //t>= Epsilon;
 
 	/** True if Principle is straight angle. */
 	public boolean isStraight() { 
-		return (StrictMath.abs(ta)==Double.POSITIVE_INFINITY);
+		return (StrictMath.abs(_ta)==Double.POSITIVE_INFINITY);
 //		return (ta==Double.NEGATIVE_INFINITY)||(ta==Double.POSITIVE_INFINITY);
 		} //Math.abs(t)<2*Epsilon;
 
@@ -305,17 +329,17 @@ public class Principle {
 	 * @param byTolerance Principle */
 	public boolean isEqualTo(Principle measure, Principle byTolerance) 
 	{ 
-		return (new Principle(this).subtract(measure).abs().ta <= StrictMath.abs(byTolerance.ta));
+		return (new Principle(this).subtract(measure).abs()._ta <= StrictMath.abs(byTolerance._ta));
 	} 
 
 	public boolean isLesserAbs(Principle measure) 
 	{ 
-		return (StrictMath.abs(this.ta)<StrictMath.abs(measure.ta));
+		return (StrictMath.abs(this._ta)<StrictMath.abs(measure._ta));
 	} 
 	
 	public boolean isGreaterAbs(Principle measure) 
 	{ 
-		return (StrictMath.abs(this.ta)>StrictMath.abs(measure.ta));
+		return (StrictMath.abs(this._ta)>StrictMath.abs(measure._ta));
 	} 
 
 

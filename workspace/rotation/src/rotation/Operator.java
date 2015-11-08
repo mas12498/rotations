@@ -66,10 +66,25 @@ public class Operator extends Quaternion {
 	 * @return Principle
 	 */
 	public Principle getEuler_k_kji() {
+		if(getZ() == 0){ //On prime meridian
+			if(getW()>0){
+				return new Principle(Principle.ZERO);				
+			}
+			//not necessary... but faster return.
+			return new Principle(Principle.STRAIGHT);							
+		}
 		double sk = getW() * getZ() + getX() * getY();
-		double ck = StrictMath.scalb(getW() * getW() + getX() * getX() - getY() * getY()
-				- getZ() * getZ(), -1);
-		return new Principle(sk / (StrictMath.hypot(sk, ck) + ck));
+		if (sk == 0) { //On the equator...
+			return new Principle(getW() / -getZ());
+		}
+		double ck = StrictMath.scalb(
+				getW() * getW() 
+				+ getX() * getX() 
+				- getY() * getY() 
+				- getZ() * getZ()
+				, -1);
+		double r = StrictMath.hypot(sk, ck);
+		return new Principle(sk / (r + ck));
 	}
 
 	/**
@@ -78,8 +93,11 @@ public class Operator extends Quaternion {
 	 * @return Principle
 	 */
 	public Principle getEuler_j_kji() {
-		double sj = (getW() * getY() - getZ() * getX())
+		double sj = (getW() * getY() - getZ() * getX()) 
 				/ StrictMath.scalb(getDeterminant(), -1);
+//		if(sj==1){
+//			return new Principle(1); //90 degrees...
+//		}
 		return new Principle(sj / (1 + StrictMath.sqrt(1 - sj * sj)));
 	}
 
@@ -88,11 +106,28 @@ public class Operator extends Quaternion {
 	 * 
 	 * @return Principle
 	 */
-	public Principle getEuler_i_kji() {
+	public boolean getDump_kj() {
+		double si = getW() * getX() + getY() * getZ();
+		if (si == 0) {
+			double ci = StrictMath.scalb(getW() * getW() - getX() * getX() - getY() * getY() + getZ() * getZ(), -1);
+			if (ci < 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Tait-Bryan Roll | Centerline twist :
+	 * 
+	 * @return Principle
+	 */
+	public Principle getEuler_i_kji() {		
 		double si = getW() * getX() + getY() * getZ();
 		double ci = StrictMath.scalb(getW() * getW() - getX() * getX() - getY() * getY()
-				+ getZ() * getZ(), -1);
-		return new Principle(si / (StrictMath.hypot(si, ci) + ci));
+				+ getZ() * getZ(), -1);			
+		double r = StrictMath.hypot(si, ci);
+		return new Principle(si / (r + ci));
 	}
 
 	// @Note: need array of Principle.

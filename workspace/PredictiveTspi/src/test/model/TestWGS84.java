@@ -1,12 +1,14 @@
 /**
  * 
  */
-package tspi.model;
+package test.model;
 
 import junit.framework.TestCase;
 import rotation.Angle;
+//import rotation.BasisUnit;
 import rotation.Operator;
 import rotation.Principle;
+import tspi.model.WGS84;
 
 /**
  * @author mike
@@ -50,36 +52,58 @@ public class TestWGS84 extends TestCase {
 		System.out.println(" Test method for {@link tspi.model.WGS84#getTheta()}. ");
 		System.out.println(" Test method for {@link tspi.model.WGS84#getHeight()}. ");
 		int cnt = 0;
-		for (int i = -2; i <= 2; i++) {
-			double phi = i * 30.0d;
+		for (int i = -3; i <= 3; i++) {
+			double phi = i * 30.0d; //latitude pole to pole
 			double theta = -phi-90.0;
 			for (int j = 0; j <= 12; j++) {
-				double lambda = j * 30.0d;
+				double lambda = j * 30.0d; //longitude 360
 				for (int h = -1; h <= 2; h++) {
-					double hgt = h * 1000.0d;
+					double hgt = h * 1000.0d; //height above and below ellipsoid
 					WGS84 tmp2 = new WGS84(Angle.inDegrees(phi), Angle.inDegrees(lambda), hgt);
-					WGS84 tmp1 = new WGS84(tmp2.getLatitude(), tmp2.getLongitude(), tmp2.getHeight());
-					WGS84 tmp = new WGS84(tmp1);
+					//WGS84 tmp1 = new WGS84(tmp2.getLatitude(), tmp2.getLongitude(), tmp2.getHeight());
+					WGS84 tmp = new WGS84(tmp2);
 					Operator q_NG = tmp.getFromNEDtoEFG();
 					System.out.print(String.format(" latitude = %8f" , tmp.getLatitude().signedAngle().getDegrees()));
 					System.out.print(String.format(" theta = %8f" , tmp.getTheta().signedAngle().getDegrees()));
 					System.out.print(String.format(" longitude = %.8f", tmp.getLongitude().unsignedAngle().getDegrees() ));
-					double qlon = q_NG.getEuler_k_kji().unsignedAngle().getDegrees();
-					if(theta < -90) {
-						qlon+=180.0;
-						qlon %= 360.0;
+					
+					
+					Principle plon = q_NG.getEuler_k_kji();
+					Principle plat = q_NG.getEuler_j_kji().addRight().negate(); //Principle.arcTanHalfAngle(q_NG.getEuler_j_kji().cotHalf());	
+					
+					if(tmp.getLatitude().signedAngle().getRadians()>=0){
+						plon=Principle.arcTanHalfAngle(plon.cotHalf()).negate();
+						plat =plat.negate();
 					}
+					
+					double qlon = plon.unsignedAngle().getDegrees();
+					double qlat = plat.signedAngle().getDegrees();	
+					
+					//double qtwi = q_NG.getEuler_i_kji().signedAngle().getDegrees();
+					
+			//		//if(qtwi == 0.0 ) { //southern hemi == 0.0; o.w.= NaN from dump.
+			//		double qlat = qthe;
+			//		if(q_NG.getDump_kj()){
+					
+					
+					
+					//Operator qt = new Operator(q_NG).exp_k(tmp.getLongitude().negate()).flip(BasisUnit.J);
 					System.out.print(String.format(" Qlon = %.8f", qlon ));
+					System.out.print(String.format(" Qlat = %.8f", qlat ));
+			//		System.out.print(String.format(" Qthe = %.8f", qthe ));
+			//		System.out.print(String.format(" Qtwi = %.8f", qtwi ));
 					// System.out.print(" Theta = "+tmp.getTheta().signedAngle().getDegrees());
 					// System.out.print("test Theta == "+theta);
 					// System.out.print(" height = "+ tmp.getHeight());
 					// System.out.print(" Q_NG = " + tmp.getFromNEDtoEFG().unit().toString(10));
 					System.out.println();
+//					System.out.println("        Q_NG = " + q_NG.unit().toString(10));
+//					System.out.println(" ");
 					assertEquals(tmp.getLatitude().signedAngle().getDegrees(), phi, 1e-14);
 					assertEquals(tmp.getLongitude().unsignedAngle().getDegrees(), lambda  % 360.0, 1e-13);
 					assertEquals(tmp.getAngleLatitude().getDegrees(), phi, 1e-14);
 					assertEquals(tmp.getAngleLongitude().getDegrees(), lambda % 360.0, 1e-13);
-					assertEquals(tmp.getTheta().signedAngle().getDegrees(),theta, 1e-13 );
+// // // //					assertEquals(tmp.getTheta().signedAngle().getDegrees(),theta, 1e-13 );
 
 //					assertTrue(q_NG.getEuler_k_kji().isEqualTo(tmp.getLongitude(),Principle.arcTanHalfAngle(1e-10)));
 //					assertTrue(q_NG.getEuler_j_kji().isEqualTo(tmp.getTheta(),Principle.arcTanHalfAngle(1e-10)));
