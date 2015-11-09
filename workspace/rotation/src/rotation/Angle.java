@@ -138,6 +138,7 @@ public class Angle //adapter class -- Angle
 		
 		if(_angle==0){
 			//trap zero...fast return...
+			//System.out.print("trapZZZZZ");
 			return StrictMath.copySign(0,_angle);
 		}
 
@@ -150,9 +151,11 @@ public class Angle //adapter class -- Angle
 		}
 
 		if (StrictMath.abs(r)==HALF_PI_RADIANS) { //trap residual right angle...fast return
-			return StrictMath.copySign(Double.POSITIVE_INFINITY, r);									
+			//System.out.print("trapInfiny");
+			return StrictMath.copySign(Double.POSITIVE_INFINITY, -r);									
 		}
 		
+		//System.out.print("default");
 		return StrictMath.tan(r);
 		
 	}
@@ -170,12 +173,13 @@ public class Angle //adapter class -- Angle
 	public double getCodedPrincipleComplement() {
 		
 		if(_angle==0){//trap zero...
+			//System.out.print("trapZZZZZ");
 			return StrictMath.copySign(Double.POSITIVE_INFINITY,_angle);
 		}
 		
-		double t = getCodedPrinciple();	
-		
-		if(Double.isInfinite(t)){ //trap infinite...
+		double t = getCodedPrinciple();			
+		if(Double.isInfinite(t)){ //trap infinite...not observed.
+			System.out.print("trapInfiny");
 			return StrictMath.copySign(0, t);
 		}
 		

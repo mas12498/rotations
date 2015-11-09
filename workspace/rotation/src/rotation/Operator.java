@@ -68,13 +68,17 @@ public class Operator extends Quaternion {
 	public Principle getEuler_k_kji() {
 		if(getZ() == 0){ //On prime meridian
 			if(getW()>0){
+//				System.out.print("trap00000");
 				return new Principle(Principle.ZERO);				
 			}
 			//not necessary... but faster return.
-			return new Principle(Principle.STRAIGHT);							
+//			System.out.print("trap11111");
+			return new Principle(Principle.STRAIGHT).negate();							
 		}
 		double sk = getW() * getZ() + getX() * getY();
 		if (sk == 0) { //On the equator...
+//			System.out.print("trapEquatorialZZ");
+
 			return new Principle(getW() / -getZ());
 		}
 		double ck = StrictMath.scalb(

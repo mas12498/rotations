@@ -128,6 +128,9 @@ public class Principle {
 		if(_ta==0){
 			return StrictMath.copySign(Double.POSITIVE_INFINITY,_ta);
 		}
+		if(isRight()){
+			return _ta;
+		}
 		if(Double.isInfinite(_ta)){
 			return StrictMath.copySign(0d,_ta);			
 		}
@@ -189,14 +192,21 @@ public class Principle {
 	 * @return double  */
 	public double tan()
 	{ 		
-     //	return 2/( 1/ta - ta ); 		
-		if (isZero()) { StrictMath.copySign(0,_ta); } //fast zero return...	
+     //	return 2/( 1/ta - ta ); 
+		
+		if (isZero()) { //not observed
+			//System.out.print("Woweeeeee");
+			return StrictMath.copySign(0,_ta); 
+		} 	
 		if(isRight()){ //handle right angles!
 			return StrictMath.copySign(Double.POSITIVE_INFINITY,_ta);
 		}
-		if (isStraight()){
+		if (isStraight()){//Not observed
+		//	System.out.print("Woweeeeee");
 			return StrictMath.copySign(0,_ta);			
 		}
+		//Everywhere...
+		//System.out.print("Woweeeeee");		
 		double ma = (StrictMath.abs(_ta) < 1d) ? _ta : -1d/_ta; 
 		return  ma/( 0.5d - StrictMath.scalb(ma,-1)*ma );		 
 	}
@@ -205,15 +215,19 @@ public class Principle {
 	 * @return double  */
 	public double cot()
 	{ 	
-		if(isZero()){
+		if(isZero()){//not observed
+		//	System.out.print("Woweeeeee");
 			return StrictMath.copySign(Double.POSITIVE_INFINITY,_ta);
 		}
-		if(isRight()){
-			return StrictMath.copySign(1d,_ta);
+		if(isRight()){//at poles
+		//	System.out.print("WoweeeeeePole");
+			return StrictMath.copySign(0d,_ta);
 		}
-		if(isStraight()){
+		if(isStraight()){//
+		//	System.out.print("WoweeeeeePole");
 			return StrictMath.copySign(0d,_ta);			
-		}
+		}//everywhere... seems to work ?
+		//	System.out.print("WoweeeeeePole:");
 		return 1.0d/tan();
 	}
 
@@ -245,11 +259,15 @@ public class Principle {
 	
 	/** Mutator -- negate: 
 	 * Changes <i>sign</i>.  */
-	public Principle negate(){ _ta = -_ta; return this;}
+	public Principle negate(){ 
+		_ta = -_ta; return this;
+	}
 
 	/** Mutator -- abs: 
 	 * Makes <i>positive</i>. */
-	public Principle abs(){ _ta = StrictMath.abs(_ta); return this;}
+	public Principle abs(){ 
+		_ta = StrictMath.abs(_ta); return this;
+	}
 
 	/** Mutator -- sum.
 	 * @param addend Principle */
@@ -270,11 +288,34 @@ public class Principle {
 	/** Mutator -- sum right angle.
 	 */
 	public Principle addRight() //addend == RightAngle [90 degrees]: addend.ta = 1
-	{ 	//problem when dealing with 45 degrees...denominators goto zero!		
+	{ 	//problem when dealing with 45 degrees...denominators goto zero!
+		
+		if(isRight()){//needed for sign of zero...
+			if(_ta>0){//not observed
+				System.out.print("Wahhhhoooo111");
+				_ta=Double.POSITIVE_INFINITY;
+				return this;
+			}
+			//needed for equator...Something odd.
+			//System.out.print("Wahhhhoooo22222");
+			_ta = 0;
+			return this;
+		}		
+		if (isStraight()) { //not observed
+		//	System.out.print("WahhhhooooSSSSSINFINY");
+			_ta = -1d;
+			return this;
+		}	
+		if (isZero()) { //On all of zero latitudes...become rightangled!!!
+			//System.out.print("Wahhhh000");
+			_ta = StrictMath.copySign(1d, _ta);
+			return this;
+		}	
+		//assigns to ta...blows up as approach 1.
+		//System.out.print("Wahhhhoooo");		
 		_ta = (isAcute())
 		? (_ta + 1d)/(1d - _ta)	
 		: (1d + 1d/_ta)/(1d/_ta - 1d); 
-		this.cot();
 		return this; 
 	}
 	
@@ -313,7 +354,9 @@ public class Principle {
 	public boolean isAcute() {	return (StrictMath.abs(_ta)<1.0d); } //t>= Epsilon;
 
 	/** True if Principle is right angle. */
-	public boolean isRight() { return (StrictMath.abs(_ta)==1.0d); } //Math.abs(t)<2*Epsilon;
+	public boolean isRight() {// TODO: put in tolerance...
+		return ( StrictMath.abs(_ta)==1.0d ); 
+	} //Math.abs(t)<2*Epsilon;
 
 	/** True if <i>absolute</i> Principle angle is obtuse. */
 	public boolean isObtuse() {	return (StrictMath.abs(_ta)>1.0d); } //t>= Epsilon;
