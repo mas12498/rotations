@@ -92,7 +92,7 @@ public class Operator extends Quaternion {
 	}
 
 	/**
-	 * Tait-Bryan Pitch | Centerline elevation :
+	 * Tait-Bryan Pitch | Centerline elevation : [-90..90]
 	 * 
 	 * @return Principle
 	 */

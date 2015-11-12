@@ -197,7 +197,7 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 			writer.append(Double.toString(pedestal.getLongitude()));
 			writer.append(",");
 			writer.append(Double.toString(pedestal.getHeight()));
-			if(pedestal.az!=null && pedestal.el!=null) {
+			if(pedestal.aperture.getAzimuth()!=null && pedestal.aperture.getElevation()!=null) {
 				writer.append(",");
 				writer.append(Double.toString(pedestal.getAzimuth()));
 				writer.append(",");

@@ -5,7 +5,7 @@ import rotation.Vector3;
 
 public class Target {
 	long time;
-	WGS84 wgs84;
+	Location wgs84;
 	Vector3 geo;
 
 	Double error; // magnitude of error when deriving the target from sensor 
@@ -13,21 +13,21 @@ public class Target {
 
 	public Target(long time, double lat, double lon, double h) {
 		this.time = time;
-		this.wgs84 = new WGS84(Angle.inDegrees(lat),Angle.inDegrees(lon),h);
+		this.wgs84 = new Location(Angle.inDegrees(lat),Angle.inDegrees(lon),h);
 //		this.wgs84.setLatitude( new Principle( Angle.inDegrees(lat) ) );
 //		this.wgs84.setLongitude( new Principle( Angle.inDegrees(lon) ) );
 //		this.wgs84.setHeight( h );
-		this.geo = wgs84.getXYZ();
+		this.geo = wgs84.getGeocentric();
 		this.error = null;
 	}
 
-	public WGS84 getEllipsoidalCoordinates() { return this.wgs84; }
+	public Location getEllipsoidalCoordinates() { return this.wgs84; }
 	public Vector3 getGeocentricCoordinates() { return this.geo; }
 
 	public long getTime() { return this.time; } 
-	public double getLatitude() { return wgs84.getAngleLatitude().getDegrees(); }
-	public double getLongitude() { return wgs84.getAngleLongitude().getDegrees(); }
-	public double getHeight() { return this.wgs84.getHeight(); }
+	public double getLatitude() { return wgs84.getNorthLatitude().getDegrees(); }
+	public double getLongitude() { return wgs84.getEastLongitude().getDegrees(); }
+	public double getHeight() { return this.wgs84.getEllipsoidHeight(); }
 	public double getE() { return this.geo.getX(); }
 	public double getF() { return this.geo.getY(); }
 	public double getG() { return this.geo.getZ(); }
@@ -37,50 +37,50 @@ public class Target {
 
 	public void setLatitude(double lat) {
 		if(wgs84.equals(null)){
-			wgs84 = new WGS84(Angle.inDegrees(0),Angle.inDegrees(0),0);
+			wgs84 = new Location(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
-		this.wgs84.putLatitude( Angle.inDegrees(lat) );
-		this.geo = wgs84.getXYZ();
+		this.wgs84.setNorthLatitude( Angle.inDegrees(lat) );
+		this.geo = wgs84.getGeocentric();
 	}
 
 	public void setLongitude(double lon) {
 		if(wgs84.equals(null)){
-			wgs84 = new WGS84(Angle.inDegrees(0),Angle.inDegrees(0),0);
+			wgs84 = new Location(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
-		this.wgs84.putLongitude( Angle.inDegrees(lon));
-		this.geo = wgs84.getXYZ();
+		this.wgs84.setEastLongitude( Angle.inDegrees(lon));
+		this.geo = wgs84.getGeocentric();
 	}
 
 	public void setHeight(double h) {
 		if(wgs84.equals(null)){
-			wgs84 = new WGS84(Angle.inDegrees(0),Angle.inDegrees(0),0);
+			wgs84 = new Location(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
-		this.wgs84.putHeight(h);
-		this.geo = wgs84.getXYZ();
+		this.wgs84.setEllipsoidHeight(h);
+		this.geo = wgs84.getGeocentric();
 	}
 
 	public void setE(double E) {
 		this.geo.put(E, geo.getY(), geo.getZ());
 		if(wgs84.equals(null)){
-			wgs84 = new WGS84(Angle.inDegrees(0),Angle.inDegrees(0),0);
+			wgs84 = new Location(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
-		this.wgs84.putXYZ( geo );
+		this.wgs84.set( geo );
 	}
 
 	public void setF(double F) {
 		this.geo.put(geo.getX(), F, geo.getZ());
 		if(wgs84.equals(null)){
-			wgs84 = new WGS84(Angle.inDegrees(0),Angle.inDegrees(0),0);
+			wgs84 = new Location(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
-		this.wgs84.putXYZ( geo );
+		this.wgs84.set( geo );
 	}
 
 	public void setG(double G) {
 		this.geo.put(geo.getX(), geo.getY(), G);
 		if(wgs84.equals(null)){
-			wgs84 = new WGS84(Angle.inDegrees(0),Angle.inDegrees(0),0);
+			wgs84 = new Location(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
-		this.wgs84.putXYZ( geo );
+		this.wgs84.set( geo );
 	}
 
 	public void setError(double error) {

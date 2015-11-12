@@ -1,7 +1,7 @@
 /**
  * 
  */
-package test.model;
+package tspi.model;
 
 import junit.framework.TestCase;
 import rotation.Angle;
@@ -10,7 +10,6 @@ import rotation.Principle;
 import rotation.Quaternion;
 import rotation.QuaternionMath;
 import rotation.Vector3;
-import tspi.model.WGS84;
 
 /**
  * @author mike
@@ -18,27 +17,28 @@ import tspi.model.WGS84;
  */
 public class testPedestal extends TestCase {
 	public void testSetWGS84() {
-		WGS84 temp = new WGS84(Angle.inDegrees(-30),Angle.inDegrees(-90),3000);
+		Location temp = new Location(Angle.inDegrees(-30),Angle.inDegrees(-90),3000);
 //		Principle latitude = new Principle(Angle.inDegrees(-30));
 //		Principle longitude = new Principle(Angle.inDegrees(270));
 //		double height = 3000;
 		System.out.println(temp.getLatitude().signedAngle().getDegrees());
 		System.out.println(temp.getLongitude().unsignedAngle().getDegrees());
-		System.out.println(temp.getHeight());
+		System.out.println(temp.getEllipsoidHeight());
 		
-		temp.putLatitude(Angle.inDegrees(-30).getPrinciple());
-		temp.putLongitude(Angle.inDegrees(270).getPrinciple());
-		temp.putHeight(3000);
-		Vector3 result = temp.getXYZ();
+		temp.getLongitude().put(Angle.inDegrees(-30));
+		temp.getLongitude().put(Angle.inDegrees(270));
+		temp.setEllipsoidHeight(3000);
+		Vector3 result = temp.getGeocentric();
 		System.out.println(result.toString());
-		temp.putXYZ(result);
-		System.out.println(temp.getAngleLatitude().getDegrees());
-		System.out.println(temp.getAngleLongitude().getDegrees());
-		System.out.println(temp.getHeight());
+		temp.set(result);
+		System.out.println(temp.getNorthLatitude().getDegrees());
+		System.out.println(temp.getEastLongitude().getDegrees());
+		System.out.println(temp.getEllipsoidHeight());
 		
-		Principle theta = Principle.arcTanHalfAngle(temp.getLatitude().cotHalf());
+		//Principle theta = Principle.arcTanHalfAngle(temp.getLatitude().cotHalf());
+		Principle theta = temp.getLatitude().addRight().negate();
 		
-		Operator q =QuaternionMath.eulerRotate_kj(temp.getLongitude(), temp.getTheta());
+		Operator q =QuaternionMath.eulerRotate_kj(temp.getLongitude(), theta);
 		
 		System.out.println(q.unit().toString());
 		

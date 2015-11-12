@@ -164,26 +164,27 @@ public class Angle //adapter class -- Angle
 	/** 
 	 * Get <b><i>Principle</b> Angle</i>. 
 	 */
-	public Principle getPrincipleComplement() {
-		return Principle.arcTanHalfAngle(this.getCodedPrincipleComplement());
+	public Principle getPrincipleSumRight() {
+		return Principle.arcTanHalfAngle(this.getSumRightCodedPrinciple());
 	}
 	
 	
 	
-	public double getCodedPrincipleComplement() {
+	public double getSumRightCodedPrinciple() {
 		
 		if(_angle==0){//trap zero...
 			//System.out.print("trapZZZZZ");
-			return StrictMath.copySign(Double.POSITIVE_INFINITY,_angle);
+			return StrictMath.copySign(Double.POSITIVE_INFINITY,-_angle);
 		}
 		
-		double t = getCodedPrinciple();			
+		double t = this.getCodedPrinciple();	
+		
 		if(Double.isInfinite(t)){ //trap infinite...not observed.
-			System.out.print("trapInfiny");
-			return StrictMath.copySign(0, t);
+			System.out.print("trapInfiny+:"+Double.POSITIVE_INFINITY + "  trapInfiny+:"+ Double.NEGATIVE_INFINITY);
+			return StrictMath.copySign(0, -t); //zero from signed approach...
 		}
 		
-		return 1.d/t;
+		return -1.d/t; //-cot(half (Angle sum right angle)) == tangent((half Angle sum right angle))
 		
 	}
 	
