@@ -42,6 +42,11 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 		this.fireTableRowsInserted(index, index);
 	}
 	
+	public void remove(int index) {
+		this.pedestals.remove(index);
+		this.fireTableRowsDeleted(index, index);
+	}
+	
 	public void clearOrientations() {
 		for(Pedestal pedestal : pedestals)
 			pedestal.clearOrientaion();

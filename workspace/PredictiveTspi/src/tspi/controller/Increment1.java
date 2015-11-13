@@ -39,6 +39,8 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 	protected JTable targetTable;
 	protected JMenuItem addPedestal;
 	protected JMenuItem addTarget;
+	protected JMenuItem removePedestal;
+	protected JMenuItem removeTarget;
 	protected JMenuItem loadPedestals;
 	protected JMenuItem loadTargets;
 	protected JMenuItem savePedestals;
@@ -94,29 +96,33 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 		split.setResizeWeight(0.5);
 		split.setDividerLocation(0.5);
 		
-		addPedestal = new JMenuItem("Pedestal");
-		addTarget = new JMenuItem("Target");
+		addPedestal = new JMenuItem("Add Pedestal");
+		addTarget = new JMenuItem("Add Target");
+		removePedestal = new JMenuItem("Remove Pedestal");
+		removeTarget = new JMenuItem("Remove Target");
 		addPedestal.addActionListener(this);
 		addTarget.addActionListener(this);
-		JMenu add = new JMenu("Add");
-		add.add(addPedestal);
-		add.add(addTarget);
+		removePedestal.addActionListener(this);
+		removeTarget.addActionListener(this);
+		JMenu edit = new JMenu("Edit");
+		edit.add(addPedestal);
+		edit.add(addTarget);
+		edit.add(removePedestal);
+		edit.add(removeTarget);
 		
-		loadPedestals = new JMenuItem( "Pedestals" );
-		loadTargets = new JMenuItem( "Targets" );
+		loadPedestals = new JMenuItem( "Load Pedestals" );
+		loadTargets = new JMenuItem( "Load Targets" );
 		loadPedestals.addActionListener(this);
 		loadTargets.addActionListener(this);
-		JMenu load = new JMenu("Load");
-		load.add(loadPedestals);
-		load.add(loadTargets);
-		
-		savePedestals = new JMenuItem( "Pedestals" );
-		saveTargets = new JMenuItem( "Targets" );
+		savePedestals = new JMenuItem( "Save Pedestals" );
+		saveTargets = new JMenuItem( "Save Targets" );
 		savePedestals.addActionListener(this);
 		saveTargets.addActionListener(this);
-		JMenu save = new JMenu("Save");
-		save.add(savePedestals);
-		save.add(saveTargets);
+		JMenu file = new JMenu("File");
+		file.add(loadPedestals);
+		file.add(loadTargets);
+		file.add(savePedestals);
+		file.add(saveTargets);
 		
 		coordEllipsoidal = new JMenuItem("Ellipsoidal");
 		coordEllipsoidal.addActionListener(this);
@@ -130,9 +136,8 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 		//JMenu edit = new JMenu("Edit");
 		
 		JMenuBar bar = new JMenuBar();
-		bar.add(add);
-		bar.add(load);
-		bar.add(save);
+		bar.add(file);
+		bar.add(edit);
 		bar.add(coordinates);
 		
 		this.setLayout( new BorderLayout() );
@@ -268,9 +273,25 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 				if(index==-1)
 					index = this.targets.getRowCount();
 				Target target = new Target(0L,0.0,0.0,0.0);
-				this.targets.addTarget(index, target);
+				this.targets.add(index, target);
 				this.targetTable.setRowSelectionInterval(index, index);
-				
+			
+			} else if( event.getSource() == this.removePedestal ) {
+				int index = this.pedestalTable.getSelectedRow();
+				if(index!=-1) {
+					this.pedestals.remove(index);
+					this.pedestalTable.clearSelection();
+				} else
+					JOptionPane.showMessageDialog(this, "Please select a pedestal.", "Selection needed", JOptionPane.INFORMATION_MESSAGE);
+
+			} else if( event.getSource() == this.removeTarget ) {
+				int index = this.targetTable.getSelectedRow();
+				if(index!=-1) {
+					this.targets.remove(index);
+					this.targetTable.clearSelection();
+				} else
+					JOptionPane.showMessageDialog(this, "Please select a target.", "Selection needed", JOptionPane.INFORMATION_MESSAGE);
+
 			} else if( event.getSource() == this.loadPedestals ) {
 				JFileChooser chooser = new JFileChooser();
 				if(JFileChooser.APPROVE_OPTION == chooser.showOpenDialog(this)) {
