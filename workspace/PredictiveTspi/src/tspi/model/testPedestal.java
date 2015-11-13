@@ -5,6 +5,7 @@ package tspi.model;
 
 import junit.framework.TestCase;
 import rotation.Angle;
+import rotation.BasisUnit;
 import rotation.Operator;
 import rotation.Principle;
 import rotation.Quaternion;
@@ -36,13 +37,13 @@ public class testPedestal extends TestCase {
 		System.out.println(temp.getEllipsoidHeight());
 		
 		//Principle theta = Principle.arcTanHalfAngle(temp.getLatitude().cotHalf());
-		Principle theta = temp.getLatitude().addRight().negate();
+		Principle ptheta = temp.getLatitude().addRight().negate();
 		
-		Operator q =QuaternionMath.eulerRotate_kj(temp.getLongitude(), theta);
+		Operator q =QuaternionMath.eulerRotate_kj(temp.getLongitude(), ptheta);
 		
 		System.out.println(q.unit().toString());
 		
-		q = new Operator(1,0,0,0).exp_k(temp.getLongitude()).exp_j(theta);
+		q = new Operator(1,0,0,0).exp_k(temp.getLongitude()).exp_j(ptheta);
 		System.out.println(q.unit().toString());
 		System.out.println(q.getEuler_j_kji().signedAngle().getDegrees());
 		System.out.println(q.getEuler_k_kji().unsignedAngle().getDegrees());
@@ -93,10 +94,51 @@ public class testPedestal extends TestCase {
 //			System.out.println("elevation q_AN = "+q_AN.getEuler_j_kji().signedAngle().getDegrees());
 //			System.out.println("azimuth   q_AN = "+q_AN.getEuler_k_kji().signedAngle().getDegrees());
 			
+			paz = new Principle(Angle.inDegrees(30));
+			pel = new Principle(Angle.inDegrees(30));
+			q_AN = QuaternionMath.eulerRotate_kj(paz, pel);
 			
-		
+			Vector3 direction = new Vector3(pel.cos() * paz.cos(), pel.cos() * paz.sin(),-pel.sin());
+			
+			Vector3 rgNormal = q_AN.getImage_i();
+			Vector3 azNormal = q_AN.getImage_j();
+			Vector3 elNormal = q_AN.getImage_k();
+			System.out.println("**************************************");
+			System.out.println("Az:"+paz.unsignedAngle().getDegrees());
+			System.out.println("El:"+pel.signedAngle().getDegrees());
+			System.out.println("Direction: "+direction.toString(5));
+			System.out.println("**************************************");
+			System.out.println("rgNormal: "+rgNormal.toString(5));
+			System.out.println("azNormal: "+azNormal.toString(5));
+			System.out.println("elNormal: "+elNormal.toString(5));
+			System.out.println("**************************************");
+			System.out.println("rgNormal: "+rgNormal.unit().toString(5)); //unit is a mutator!!!
+			System.out.println("azNormal: "+azNormal.toString(5));
+			System.out.println("elNormal: "+elNormal.toString(5));
+			System.out.println("**************************************");
+			
+			Operator q_NG = new Operator(Quaternion.NAN); 	
+			Angle lat = Angle.inDegrees(30);
+			Angle lon = Angle.inDegrees(0);
+			Angle theta = Angle.inRadians(Angle.QUARTER_REVOLUTION).copySign(lat).subtract(lat);
+			Principle plon = new Principle(lon);
+			Principle plat = new Principle(lat);
+			ptheta = new Principle(theta);
+			q_NG.putRightJ(QuaternionMath.eulerRotate_kj(plon, ptheta)).unit();
+			Vector3 north = q_NG.getImage_i();
+			Vector3 east = q_NG.getImage_j();
+			Vector3 down = q_NG.getImage_k();
 
-		
+			System.out.println("**************************************");
+			System.out.println("**************************************");
+			System.out.println("latitude : "+lat.getDegrees()); //unit is a mutator!!!
+			System.out.println("longitude: "+lon.getDegrees());
+			System.out.println("theta    : "+theta.getDegrees());
+			System.out.println("q_NG : "+q_NG.toString(5)); //unit is a mutator!!!
+			System.out.println("north: "+north.toString(5)); //unit is a mutator!!!
+			System.out.println("east : "+east.toString(5));
+			System.out.println("down : "+down.toString(5));
+			System.out.println("**************************************");
 		
 		
 	}

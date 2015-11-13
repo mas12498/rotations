@@ -858,7 +858,7 @@ public class Quaternion {
 	 * @param p 
 	 * @return this.put(new Quaternion(p).rightMultiply(Quaternion.UNIT_I));
 	 * */
-	protected final Quaternion putRightI(final Quaternion p) {
+	public final Quaternion putRightI(final Quaternion p) {
 		_w = -p._x;
 		_x = p._w;
 		_y = p._z;
@@ -871,7 +871,7 @@ public class Quaternion {
 	 * @param p 
 	 * @return this.put(new Quaternion(p).rightMultiply(Quaternion.UNIT_J));
 	 * */
-	protected final Quaternion putRightJ(final  Quaternion p) {
+	public final Quaternion putRightJ(final  Quaternion p) {
 		_w = -p._y;
 		_x = -p._z;
 		_y = p._w;
@@ -884,7 +884,7 @@ public class Quaternion {
 	 * @param p 
 	 * @return this.put(new Quaternion(p).rightMultiply(Quaternion.UNIT_K));
 	 * */
-	protected final Quaternion putRightK(final Quaternion p) {
+	public final Quaternion putRightK(final Quaternion p) {
 		_w = -p._z;
 		_x = p._y;
 		_y = -p._x;
@@ -897,7 +897,7 @@ public class Quaternion {
 	 * @param q 
 	 * @return this.put(new Quaternion(q).leftMultiply(Quaternion.UNIT_I));
 	 * */
-	protected final Quaternion putLeftI(final Quaternion q) {
+	public final Quaternion putLeftI(final Quaternion q) {
 		_w = -q._x;
 		_x = q._w;
 		_y = -q._z;
@@ -910,7 +910,7 @@ public class Quaternion {
 	 * @param q 
 	 * @return this.put(new Quaternion(q).leftMultiply(Quaternion.UNIT_J));
 	 * */
-	protected final Quaternion putLeftJ(final Quaternion q) {
+	public final Quaternion putLeftJ(final Quaternion q) {
 		_w = -q._y;
 		_x = q._z;
 		_y = q._w;
@@ -923,7 +923,7 @@ public class Quaternion {
 	 * @param q 
 	 * @return this.put(new Quaternion(q).leftMultiply(Quaternion.UNIT_K));
 	 * */
-	protected final Quaternion putLeftK(final Quaternion q) {
+	public final Quaternion putLeftK(final Quaternion q) {
 		// if(this==q) raise exception...
 		_w = -q._z;
 		_x = -q._y;

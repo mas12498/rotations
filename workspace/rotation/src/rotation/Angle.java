@@ -15,11 +15,14 @@ public class Angle //adapter class -- Angle
 	public final static double REVOLUTION_RADIANS      = StrictMath.PI*2;
 	public final static double REVOLUTION_MILLIRADIANS = StrictMath.PI*2000;
 	public final static double REVOLUTION_MILS         = 6000;	
-
-	protected final static double QUARTER_PI_RADIANS   = StrictMath.scalb(StrictMath.PI,-2);//=StrictMath.atan(1);
-	protected final static double HALF_PI_RADIANS      = StrictMath.scalb(StrictMath.PI,-1);
+	//45 degrees
+	public final static double EIGHTH_REVOLUTION   = StrictMath.scalb(StrictMath.PI,-2);//=StrictMath.atan(1);
+	//90 degrees
+	public final static double QUARTER_REVOLUTION      = StrictMath.scalb(StrictMath.PI,-1);
+	//180 degrees
+	public final static double HALF_REVOLUTION   	= StrictMath.PI;
 	
-	private double _angle; //internally stores radians...
+	private double _angle; //internally stores radian measure...
 
 	/** Protected constructor: Internals assume radians Angle measure... */
 	protected Angle(double a) { _angle = a; }
@@ -35,18 +38,39 @@ public class Angle //adapter class -- Angle
 		
 	/** Angle Static Factory -- Produce <b><i>Angle</i></b> measured. */
 	public static Angle inMeasure(double unitsInAngle, double unitsInRevolution)
-	{ return new Angle(QUARTER_PI_RADIANS*( unitsInAngle/StrictMath.scalb(unitsInRevolution,-3) )); }
+	{ return new Angle(EIGHTH_REVOLUTION*( unitsInAngle/StrictMath.scalb(unitsInRevolution,-3) )); }
 	
 	/** Angle Static Factory -- Produce <b><i>Angle</i></b> from binary representation of <b>numBits</b>. */
 	public static Angle inBinary(int binaryAngle, byte numBits){
 	  int signed=-(numBits-3); double cast = binaryAngle;
-	  return new Angle(QUARTER_PI_RADIANS*( StrictMath.scalb(cast,signed) ));  }
+	  return new Angle(EIGHTH_REVOLUTION*( StrictMath.scalb(cast,signed) ));  }
 
 	/** Angle Static Factory -- Produce <b><i>Angle</i></b> from binary representation of <b>numBits</b>. */
 	public static Angle inBinary(long binaryAngle, byte numBits){
 	  int signed=-(numBits-3); double cast = binaryAngle;
-	  return new Angle(QUARTER_PI_RADIANS*( StrictMath.scalb(cast,signed) ));  }
+	  return new Angle(EIGHTH_REVOLUTION*( StrictMath.scalb(cast,signed) ));  }
 
+
+	public Angle add(Angle rotation){
+		this._angle += rotation._angle;
+		return this;
+	}
+	
+	public Angle subtract(Angle rotation){
+		this._angle -= rotation._angle;
+		return this;
+	}
+	
+	public Angle abs(){
+		_angle = StrictMath.abs(_angle);
+		return this;
+	}
+	
+	public Angle copySign(Angle signed){
+		_angle = StrictMath.copySign(_angle, signed._angle);
+		return this;
+	}
+	
 	/** Mutator: Return <b>halved<i>this</i></b> set equal to <b>copy</b>. */
 	public Angle half() { Angle half = new Angle(this); half._angle /= 2; return half; }
 	
@@ -61,14 +85,14 @@ public class Angle //adapter class -- Angle
 
     /** Mutator: Return <b><i>this</i></b> set equal to measured angle of units per revolution specified.*/ 
 	public Angle put(double unitsInAngle, double unitsInRevolution)
-	{ _angle=QUARTER_PI_RADIANS*( unitsInAngle/StrictMath.scalb(unitsInRevolution,-3) ); return this; }
+	{ _angle=EIGHTH_REVOLUTION*( unitsInAngle/StrictMath.scalb(unitsInRevolution,-3) ); return this; }
 
    /** Mutator: Return <b><i>this</i></b> set to <b>binaryAngle</b> of modulus <b>angleBits</b>.*/ 
 	public Angle putBinary(int binaryAngle, byte angleBits) 
 	{
 		int signed=-(angleBits-3); 	
 		double cast = binaryAngle; 
-		_angle=QUARTER_PI_RADIANS*( StrictMath.scalb(cast,signed) ); 
+		_angle=EIGHTH_REVOLUTION*( StrictMath.scalb(cast,signed) ); 
 		return this; 
 	}
 
@@ -77,7 +101,7 @@ public class Angle //adapter class -- Angle
 		int signed=-(angleBits-3); 	
 		// mod in cast prevents impossible binary inputs being accepted.
 		double cast = binaryAngle % StrictMath.scalb(2, (int) (angleBits) - 1); 
-		_angle=QUARTER_PI_RADIANS*( StrictMath.scalb(cast,signed) ); //double cast = binaryAngle;
+		_angle=EIGHTH_REVOLUTION*( StrictMath.scalb(cast,signed) ); //double cast = binaryAngle;
 		return this; 
 	}
 
@@ -91,13 +115,13 @@ public class Angle //adapter class -- Angle
 	 * @param double <b>units_in_revolution</b>.
 	 * */
 	public double getMeasure(double units_in_revolution)
-	{ return _angle*(StrictMath.scalb(units_in_revolution,-3)/QUARTER_PI_RADIANS); }	
+	{ return _angle*(StrictMath.scalb(units_in_revolution,-3)/EIGHTH_REVOLUTION); }	
 
 	/** Get <i>int</i>: <i>binary</i> angle representation of <b><i>Angle</b></i>. 
 	 * @param byte <b>number_bits</b> coded in angle of revolution.
 	 */
 	public int getBinary(byte number_bits)
-	{ return (int) StrictMath.rint(StrictMath.scalb(_angle/QUARTER_PI_RADIANS,number_bits-3)); }
+	{ return (int) StrictMath.rint(StrictMath.scalb(_angle/EIGHTH_REVOLUTION,number_bits-3)); }
 
 //	/**
 //	 * Get <i>int</i>: <i>nearest full revolution count</i> of stored
@@ -146,11 +170,11 @@ public class Angle //adapter class -- Angle
 		//double r = StrictMath.scalb(_angle ,-1) % StrictMath.PI; //alternative development
 		
 		
-		if (StrictMath.abs(r)>=HALF_PI_RADIANS) { //center the residual half angle
+		if (StrictMath.abs(r)>=QUARTER_REVOLUTION) { //center the residual half angle
 			r -= StrictMath.copySign(StrictMath.PI, r); 	
 		}
 
-		if (StrictMath.abs(r)==HALF_PI_RADIANS) { //trap residual right angle...fast return
+		if (StrictMath.abs(r)==QUARTER_REVOLUTION) { //trap residual right angle...fast return
 			//System.out.print("trapInfiny");
 			return StrictMath.copySign(Double.POSITIVE_INFINITY, -r);									
 		}

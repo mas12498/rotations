@@ -154,21 +154,8 @@ public class Operator extends Quaternion {
 	 * Vector3 basis unit-I (image mapped by rotation operator q) static factory
 	 */
 	public Vector3 getImage_i() {
-		// return QuaternionMath.multiplyGetV( //project I-axis unit (Op.Right)
-		// new Quaternion(-p.getI(),p.getS(),p.getK(),-p.getJ()),
-		// new Quaternion(p.getS(),-p.getI(),-p.getJ(),-p.getK())
-		// )//.divide(p.determinant())
-		// ;
-		double a = getW() - getX();
-		double b = getW() + getX();
-		double e = (getY() - getW()) * (getX() + getY());
-		double f = (getW() + getY()) * (getX() - getY());
-		double g = (getZ() - getX()) * (getW() + getZ());
-		double h = (getX() + getZ()) * (getZ() - getW());
-		return new Vector3(a * a - StrictMath.scalb((e - f + g + h), -1), b
-				* (getY() + getZ()) + StrictMath.scalb((e + f + g - h), -1), b
-				* (getZ() - getY()) + StrictMath.scalb((e + f - g + h), -1))
-				.divide(getDeterminant());
+		return new Vector3(getW() * getW() + getX() * getX() - getY() * getY() - getZ() * getZ(),
+				2 * (getX() * getY() + getW() * getZ()), 2 * (getX() * getZ() - getW() * getY()));
 	}
 
 	/**
@@ -176,21 +163,9 @@ public class Operator extends Quaternion {
 	 * static factory
 	 */
 	public Vector3 getImage_j() {
-		// return QuaternionMath.multiplyGetV( //project J-axis unit (Op.Right)
-		// new Quaternion(-p.getJ(),-p.getK(),p.getS(),p.getI()),
-		// new Quaternion(p.getS(),-p.getI(),-p.getJ(),-p.getK())
-		// )//.divide(p.determinant())
-		// ;
-		double a = (getW() + getX());
-		double b = (getY() + getZ());
-		double e = (getZ() - getX()) * (getX() + getY());
-		double f = (getZ() + getX()) * (getY() - getX());
-		double g = (getW() - getY()) * (getW() + getZ());
-		double h = (getY() + getW()) * (getZ() - getW());
-		return new Vector3(b * (getX() - getW())
-				- StrictMath.scalb((e - f + g + h), -1), b * (getY() - getZ())
-				+ StrictMath.scalb((e + f + g - h), -1), a * a
-				+ StrictMath.scalb((e + f - g + h), -1)).divide(getDeterminant());
+		return new Vector3(2 * (getX() * getY() - getW() * getZ()),
+				getW() * getW() - getX() * getX() + getY() * getY() - getZ() * getZ(),
+				2 * (getW() * getX() + getY() * getZ()));
 	}
 
 	/**
@@ -198,43 +173,17 @@ public class Operator extends Quaternion {
 	 * static factory
 	 */
 	public Vector3 getImage_k() {
-		// return QuaternionMath.multiplyGetV( //project K-axis unit (Op.Right)
-		// new Quaternion(-p.getK(),p.getJ(),-p.getI(),p.getS())
-		// new Quaternion(p.getS(),-p.getI(),-p.getJ(),-p.getK())
-		// )//.divide(p.determinant())
-		// ;
-		double a = (getZ() + getY());
-		double b = (getW() - getX());
-		double e = -(getY() + getW()) * (getX() + getY());
-		double f = (getY() - getW()) * (getX() - getY());
-		double g = -(getZ() + getX()) * (getW() + getZ());
-		double h = (getX() - getZ()) * (getW() - getZ());
-		return new Vector3(b * (getY() - getZ())
-				- StrictMath.scalb((e - f + g + h), -1), a * a
-				+ StrictMath.scalb((e + f + g - h), -1), b * (getW() + getX())
-				+ StrictMath.scalb((e + f - g + h), -1)).divide(getDeterminant());
+		return new Vector3(2 * (getW() * getY() + getX() * getZ()), 2 * (getY() * getZ() - getW() * getX()),
+				getW() * getW() - getX() * getX() - getY() * getY() + getZ() * getZ());
 	}
-
+	
 	/**
 	 * Vector3 basis unit-I (pre-image mapped by rotation operator q) static
 	 * factory
 	 */
 	public Vector3 getPreImage_i() {
-		// return QuaternionMath.multiplyGetV( //project I-axis unit (Op.Right)
-		// new Quaternion(p.getS(),-p.getI(),-p.getJ(),-p.getK())
-		// new Quaternion(-p.getI(),p.getS(),-p.getK(),p.getJ()); }
-		// )//.divide(p.determinant())
-		// ;
-		double a = getW() - getX();
-		double b = getW() + getX();
-		double e = (getX() + getZ()) * (-getW() + getZ());
-		double f = (getX() - getZ()) * (getW() + getZ());
-		double g = (getY() - getW()) * (getX() + getY());
-		double h = (getW() + getY()) * (-getX() + getY());
-		return new Vector3(a * a - StrictMath.scalb((e - f + g + h), -1), b
-				* (getY() - getZ()) + StrictMath.scalb((e + f + g - h), -1), b
-				* (getY() + getZ()) + StrictMath.scalb((e + f - g + h), -1))
-				.divide(getDeterminant());
+		return new Vector3(getW() * getW() + getX() * getX() - getY() * getY() - getZ() * getZ(),
+				2 * (getX() * getY() - getW() * getZ()), 2 * (getW() * getY() + getX() * getZ()));
 	}
 
 	/**
@@ -242,21 +191,9 @@ public class Operator extends Quaternion {
 	 * factory
 	 */
 	public Vector3 getPreImage_j() {
-		// return QuaternionMath.multiplyGetV( //project J-axis unit (Op.Right)
-		// new Quaternion(p.real(),-p.getI(),-p.getJ(),-p.getK())
-		// new Quaternion(-p.getJ(),p.getK(),p.getS(),-p.real()); }
-		// )//.divide(p.determinant())
-		// ;
-		double a = getY() + getZ();
-		double b = getW() - getX();
-		double e = -(getX() + getZ()) * (getZ() + getW());
-		double f = (getX() - getZ()) * (getZ() - getW());
-		double g = (getW() - getY()) * (-getY() + getX());
-		double h = (getW() + getY()) * (-getY() - getX());
-		return new Vector3(b * (getZ() - getY())
-				- StrictMath.scalb((e - f + g + h), -1), b * (getW() + getX())
-				+ StrictMath.scalb((e + f + g - h), -1), a * a
-				+ StrictMath.scalb((e + f - g + h), -1)).divide(getDeterminant());
+		return new Vector3(2 * (getX() * getY() + getW() * getZ()),
+				getW() * getW() - getX() * getX() + getY() * getY() - getZ() * getZ(),
+				2 * (getY() * getZ() - getW() * getX()));
 	}
 
 	/**
@@ -264,21 +201,111 @@ public class Operator extends Quaternion {
 	 * factory
 	 */
 	public Vector3 getPreImage_k() {
-		// return QuaternionMath.multiplyGetV( //project K-axis unit (Op.Right)
-		// new Quaternion(real(),-i(),-j(),-k());
-		// new Quaternion(-k(),-j(),i(),real()); }
-
-		double a = (getW() - getX()) * (-getZ() - getY());
-		double c = (getW() + getX()) * (getX() + getW());
-		double d = (-getY() - getZ()) * (-getZ() + getY());
-		double e = (-getX() - getZ()) * (-getY() + getX());
-		double f = (-getX() + getZ()) * (-getY() - getX());
-		double g = (getW() - getY()) * (-getZ() - getW());
-		double h = (getW() + getY()) * (-getZ() + getW());
-		return new Vector3(a - StrictMath.scalb((e + f + g + h), -1), c
-				+ StrictMath.scalb((e - f + g - h), -1), d
-				+ StrictMath.scalb((e - f - g + h), -1)).divide(getDeterminant());
+		return new Vector3(2 * (getX() * getZ() - getW() * getY()), 2 * (getW() * getX() + getY() * getZ()),
+				getW() * getW() - getX() * getX() - getY() * getY() + getZ() * getZ());
 	}
+	
+//	public Vector3 getPreImage_i() {
+//		// return QuaternionMath.multiplyGetV( //project I-axis unit (Op.Right)
+//		// new Quaternion(p.getS(),-p.getI(),-p.getJ(),-p.getK())
+//		// new Quaternion(-p.getI(),p.getS(),-p.getK(),p.getJ()); }
+//		// )//.divide(p.determinant())
+//		// ;
+//		double a = getW() - getX();
+//		double b = getW() + getX();
+//		double e = (getX() + getZ()) * (-getW() + getZ());
+//		double f = (getX() - getZ()) * (getW() + getZ());
+//		double g = (getY() - getW()) * (getX() + getY());
+//		double h = (getW() + getY()) * (-getX() + getY());
+//		return new Vector3(a * a - StrictMath.scalb((e - f + g + h), -1), b
+//				* (getY() - getZ()) + StrictMath.scalb((e + f + g - h), -1), b
+//				* (getY() + getZ()) + StrictMath.scalb((e + f - g + h), -1))
+//				.divide(getDeterminant());
+//	}
+//		public Vector3 getPreImage_j() {
+//		// return QuaternionMath.multiplyGetV( //project J-axis unit (Op.Right)
+//		// new Quaternion(p.real(),-p.getI(),-p.getJ(),-p.getK())
+//		// new Quaternion(-p.getJ(),p.getK(),p.getS(),-p.real()); }
+//		// )//.divide(p.determinant())
+//		// ;
+//		double a = getY() + getZ();
+//		double b = getW() - getX();
+//		double e = -(getX() + getZ()) * (getZ() + getW());
+//		double f = (getX() - getZ()) * (getZ() - getW());
+//		double g = (getW() - getY()) * (-getY() + getX());
+//		double h = (getW() + getY()) * (-getY() - getX());
+//		return new Vector3(b * (getZ() - getY())
+//				- StrictMath.scalb((e - f + g + h), -1), b * (getW() + getX())
+//				+ StrictMath.scalb((e + f + g - h), -1), a * a
+//				+ StrictMath.scalb((e + f - g + h), -1)).divide(getDeterminant());
+//	}
+//	public Vector3 getPreImage_k() {
+//		// return QuaternionMath.multiplyGetV( //project K-axis unit (Op.Right)
+//		// new Quaternion(real(),-i(),-j(),-k());
+//		// new Quaternion(-k(),-j(),i(),real()); }
+//
+//		double a = (getW() - getX()) * (-getZ() - getY());
+//		double c = (getW() + getX()) * (getX() + getW());
+//		double d = (-getY() - getZ()) * (-getZ() + getY());
+//		double e = (-getX() - getZ()) * (-getY() + getX());
+//		double f = (-getX() + getZ()) * (-getY() - getX());
+//		double g = (getW() - getY()) * (-getZ() - getW());
+//		double h = (getW() + getY()) * (-getZ() + getW());
+//		return new Vector3(a - StrictMath.scalb((e + f + g + h), -1), c
+//				+ StrictMath.scalb((e - f + g - h), -1), d
+//				+ StrictMath.scalb((e - f - g + h), -1)).divide(getDeterminant());
+//	}
+//	public Vector3 getImage_k() {
+//	// return QuaternionMath.multiplyGetV( //project K-axis unit (Op.Right)
+//	// new Quaternion(-p.getK(),p.getJ(),-p.getI(),p.getS())
+//	// new Quaternion(p.getS(),-p.getI(),-p.getJ(),-p.getK())
+//	// )//.divide(p.determinant())
+//	// ;
+//	double a = (getZ() + getY());
+//	double b = (getW() - getX());
+//	double e = -(getY() + getW()) * (getX() + getY());
+//	double f = (getY() - getW()) * (getX() - getY());
+//	double g = -(getZ() + getX()) * (getW() + getZ());
+//	double h = (getX() - getZ()) * (getW() - getZ());
+//	return new Vector3(b * (getY() - getZ())
+//			- StrictMath.scalb((e - f + g + h), -1), a * a
+//			+ StrictMath.scalb((e + f + g - h), -1), b * (getW() + getX())
+//			+ StrictMath.scalb((e + f - g + h), -1)).divide(getDeterminant());
+//}
+//public Vector3 getImage_i() {
+//// return QuaternionMath.multiplyGetV( //project I-axis unit (Op.Right)
+//// new Quaternion(-p.getI(),p.getS(),p.getK(),-p.getJ()),
+//// new Quaternion(p.getS(),-p.getI(),-p.getJ(),-p.getK())
+//// )//.divide(p.determinant())
+//// ;
+//double a = getW() - getX();
+//double b = getW() + getX();
+//double e = (getY() - getW()) * (getX() + getY());
+//double f = (getW() + getY()) * (getX() - getY());
+//double g = (getZ() - getX()) * (getW() + getZ());
+//double h = (getX() + getZ()) * (getZ() - getW());
+//return new Vector3(a * a - StrictMath.scalb((e - f + g + h), -1), b
+//		* (getY() + getZ()) + StrictMath.scalb((e + f + g - h), -1), b
+//		* (getZ() - getY()) + StrictMath.scalb((e + f - g + h), -1))
+//		.divide(getDeterminant());
+//}
+//public Vector3 getImage_j() {
+//// return QuaternionMath.multiplyGetV( //project J-axis unit (Op.Right)
+//// new Quaternion(-p.getJ(),-p.getK(),p.getS(),p.getI()),
+//// new Quaternion(p.getS(),-p.getI(),-p.getJ(),-p.getK())
+//// )//.divide(p.determinant())
+//// ;
+//double a = (getW() + getX());
+//double b = (getY() + getZ());
+//double e = (getZ() - getX()) * (getX() + getY());
+//double f = (getZ() + getX()) * (getY() - getX());
+//double g = (getW() - getY()) * (getW() + getZ());
+//double h = (getY() + getW()) * (getZ() - getW());
+//return new Vector3(b * (getX() - getW())
+//		- StrictMath.scalb((e - f + g + h), -1), b * (getY() - getZ())
+//		+ StrictMath.scalb((e + f + g - h), -1), a * a
+//		+ StrictMath.scalb((e + f - g + h), -1)).divide(getDeterminant());
+//}
 
 	public Vector3 getImage(Vector3 object) {
 		return QuaternionMath.multiply(QuaternionMath.multiply(this, object),

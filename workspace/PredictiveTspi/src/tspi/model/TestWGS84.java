@@ -38,8 +38,8 @@ public class TestWGS84 extends TestCase {
 					Location tmp1 = new Location(tmp2.getNorthLatitude(), tmp2.getEastLongitude(), tmp2.getEllipsoidHeight());
 					Location tmp = new Location(tmp1);
 //					System.out.print(String.format(" theta = %8f" , theta)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
-					System.out.print(String.format(" phi = %8f" , phi)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
-					System.out.print(String.format(" lambda = %8f" , lambda)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
+//					System.out.print(String.format(" phi = %8f" , phi)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
+//					System.out.print(String.format(" lambda = %8f" , lambda)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
 					System.out.print(String.format(" latitude = %8f" , tmp.getNorthLatitude().getDegrees()));
 					System.out.print(String.format(" longitude = %.8f", tmp.getEastLongitude().getDegrees() ));
 					
@@ -48,16 +48,18 @@ public class TestWGS84 extends TestCase {
 					ptheta.put(tst.getEuler_j_kji());
 					plon.put( tst.getEuler_k_kji());
 					
+					//first to second quadrant....
 					double qlat = plat.put(ptheta).addRight().negate().signedAngle().getDegrees();
 					double qlon = plon.unsignedAngle().getDegrees();
 					//if (ptheta.getRadians()>=-StrictMath.PI){
-					if (phi >= 0){
+					if (phi >= 0){ //for dumped pedestal... fourth to first quadrant....
 						qlon = (plon.unsignedAngle().getDegrees() + 180)%360;
+						//wrong!!!//qlon = new Principle(Angle.inRadians(-plon.signedAngle().getRadians())).unsignedAngle().getDegrees();
 						qlat = -(plat.signedAngle().getDegrees());
 					}
 					
-					System.out.print(String.format(" theta = %.8f", ptheta.signedAngle().getDegrees() ));
-					System.out.print(tst.unit().toString(3));
+//					System.out.print(String.format(" theta = %.8f", ptheta.signedAngle().getDegrees() ));
+//					System.out.print(tst.unit().toString(3));
 					System.out.print(String.format(" Qlon = %.8f", qlon ));
 					System.out.print(String.format(" Qlat = %.8f", qlat ));
 

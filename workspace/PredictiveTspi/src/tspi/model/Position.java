@@ -9,9 +9,9 @@ import rotation.Vector3;
 	public class Position {
 		protected final Principle _azimuth;
 		protected final Principle _elevation;
-		protected double _range;
+		protected Double _range;
 		
-		public Position(final Angle az, final Angle el, double rg ){
+		public Position(final Angle az, final Angle el, Double rg ){
 			_azimuth = new Principle(az);
 			_elevation = new Principle(el);
 			_range = rg;
@@ -59,11 +59,11 @@ import rotation.Vector3;
 		/**
 		 * @param range the range to set
 		 */
-		public void setRange(double range) {
-			this._range = range;
+		public void setRange(Double range) {
+			_range = range;
 		}
 		
-		public Operator op_A_N(){
+		public Operator op_AN(){
 			return QuaternionMath.eulerRotate_kj(_azimuth, _elevation);
 		}
 		
