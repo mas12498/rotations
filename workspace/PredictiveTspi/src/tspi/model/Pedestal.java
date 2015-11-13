@@ -3,6 +3,7 @@ import rotation.Angle;
 import rotation.Operator;
 import rotation.Principle;
 import rotation.Quaternion;
+import rotation.QuaternionMath;
 import rotation.Vector3;
 
 /**  */
@@ -155,16 +156,18 @@ public class Pedestal {
 	
 	
 	// pedestal.point = f(direct) 
-	/** Updates the pedestal sate to point to the given target coordinates.
+	/** Updates the pedestal state to point to the given target coordinates.
 	 * @param targetEFG Position of the taget in geocentric coordinates.  */
 	public void point(Vector3 targetEFG) {
-		double ca = targetEFG.getX();
-		double sa = targetEFG.getY();
-		aperture.getPrincipleAzimuth().put( Angle.inRadians(
-				StrictMath.atan2(sa, ca)) );
-		aperture.getPrincipleElevation().put( Angle.inRadians(
-				StrictMath.atan2(-targetEFG.getY(), StrictMath.hypot(ca, sa))) );
-		//TODO update range?
+		Vector3 r_PT_G = new Vector3(targetEFG).subtract(geo);
+		q_AN = QuaternionMath.foldoverI(r_PT_G); 
+		q_AN.rightMultiply(QuaternionMath.conjugate(q_NG));
+		Principle gTwist = q_AN.getEuler_i_kji().negate();
+		q_AN.leftMultExpI(gTwist); //get operator for local aperture positioning...		
+		direction = q_AN.getImage_i();
+		aperture.setAzimuth(q_AN.getEuler_k_kji().unsignedAngle());
+		aperture.setElevation( q_AN.getEuler_j_kji().signedAngle());
+		aperture.setRange(r_PT_G.getAbs());
 	}
 
 	// pedestal.point = f(orient) 	
