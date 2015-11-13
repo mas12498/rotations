@@ -37,6 +37,8 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 	protected TargetModel targets;
 	protected JTable pedestalTable;
 	protected JTable targetTable;
+	protected JMenuItem addPedestal;
+	protected JMenuItem addTarget;
 	protected JMenuItem loadPedestals;
 	protected JMenuItem loadTargets;
 	protected JMenuItem savePedestals;
@@ -52,7 +54,7 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 	
 	public Increment1() {
 		File pedestalFile = null;
-		File targetFile = null; // TODO
+		File targetFile = null; // TODO add default load files?
 		
 		pedestals = new PedestalModel();
 		pedestals.addTableModelListener( this );
@@ -92,6 +94,14 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 		split.setResizeWeight(0.5);
 		split.setDividerLocation(0.5);
 		
+		addPedestal = new JMenuItem("Pedestal");
+		addTarget = new JMenuItem("Target");
+		addPedestal.addActionListener(this);
+		addTarget.addActionListener(this);
+		JMenu add = new JMenu("Add");
+		add.add(addPedestal);
+		add.add(addTarget);
+		
 		loadPedestals = new JMenuItem( "Pedestals" );
 		loadTargets = new JMenuItem( "Targets" );
 		loadPedestals.addActionListener(this);
@@ -120,9 +130,9 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 		//JMenu edit = new JMenu("Edit");
 		
 		JMenuBar bar = new JMenuBar();
+		bar.add(add);
 		bar.add(load);
 		bar.add(save);
-		//bar.add(edit);
 		bar.add(coordinates);
 		
 		this.setLayout( new BorderLayout() );
@@ -244,8 +254,24 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 	/** Menu Item listener. */
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		try{ 
-			if( event.getSource() == this.loadPedestals ) {
+		try{
+			if( event.getSource() == this.addPedestal ) {
+				int index = this.pedestalTable.getSelectedRow();
+				if(index==-1)
+					index = this.pedestals.getRowCount();
+				Pedestal pedestal = new Pedestal("",0.0,0.0,0.0);
+				this.pedestals.add(index, pedestal);
+				this.pedestalTable.setRowSelectionInterval(index, index);
+				
+			} else if( event.getSource() == this.addTarget ) {
+				int index = this.targetTable.getSelectedRow();
+				if(index==-1)
+					index = this.targets.getRowCount();
+				Target target = new Target(0L,0.0,0.0,0.0);
+				this.targets.addTarget(index, target);
+				this.targetTable.setRowSelectionInterval(index, index);
+				
+			} else if( event.getSource() == this.loadPedestals ) {
 				JFileChooser chooser = new JFileChooser();
 				if(JFileChooser.APPROVE_OPTION == chooser.showOpenDialog(this)) {
 					File file = chooser.getSelectedFile();

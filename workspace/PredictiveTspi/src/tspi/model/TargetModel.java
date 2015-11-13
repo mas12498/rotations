@@ -29,6 +29,11 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 		return targets.get(row);
 	}
 	
+	public void addTarget(int index, Target target) {
+		this.targets.add(index, target);
+		this.fireTableRowsInserted(index, index);
+	}
+	
 	public void clearDeltas() {
 		for(Target target : targets)
 			target.error = null;
