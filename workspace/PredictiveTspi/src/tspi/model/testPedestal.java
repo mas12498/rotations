@@ -118,16 +118,23 @@ public class testPedestal extends TestCase {
 			System.out.println("**************************************");
 			
 			Operator q_NG = new Operator(Quaternion.NAN); 	
-			Angle lat = Angle.inDegrees(30);
-			Angle lon = Angle.inDegrees(0);
-			Angle theta = Angle.inRadians(Angle.QUARTER_REVOLUTION).copySign(lat).subtract(lat);
-			Principle plon = new Principle(lon);
-			Principle plat = new Principle(lat);
-			ptheta = new Principle(theta);
-			q_NG.putRightJ(QuaternionMath.eulerRotate_kj(plon, ptheta)).unit();
+			Angle lat = Angle.inDegrees(-60);
+			Angle lon = Angle.inDegrees(30);
+			Angle theta = Angle.inRadians(Angle.QUARTER_REVOLUTION).subtract(lat);
+			Principle plon = lon.getPrinciple();
+			//Principle plat = lat.getPrinciple();
+//			ptheta = (Angle.inRadians(Angle.QUARTER_REVOLUTION).add(lat)).negate().getPrinciple();
+			ptheta = Angle.inRadians(Angle.QUARTER_REVOLUTION).subtract(lat).getPrinciple();
+//		    q_NG.putRightJ(QuaternionMath.eulerRotate_kj(plon,
+//				Angle.inRadians(Angle.QUARTER_REVOLUTION).subtract(lat).getPrinciple())).unit();
+		    q_NG.putRightJ(QuaternionMath.eulerRotate_kj(plon,ptheta)).unit();
 			Vector3 north = q_NG.getImage_i();
 			Vector3 east = q_NG.getImage_j();
 			Vector3 down = q_NG.getImage_k();
+			
+			Principle pplon = q_NG.getEuler_k_kji();
+			Principle pptheta = q_NG.getEuler_j_kji();
+			Principle pplat = pptheta.signedAngle().subtract(Angle.inRadians(Angle.QUARTER_REVOLUTION)).getPrinciple();
 
 			System.out.println("**************************************");
 			System.out.println("**************************************");
@@ -139,6 +146,9 @@ public class testPedestal extends TestCase {
 			System.out.println("east : "+east.toString(5));
 			System.out.println("down : "+down.toString(5));
 			System.out.println("**************************************");
+			System.out.println("latitude : "+pplat.signedAngle().getDegrees()); //unit is a mutator!!!
+			System.out.println("longitude: "+pplon.unsignedAngle().getDegrees());
+			System.out.println("theta    : "+pptheta.signedAngle().getDegrees());
 		
 		
 	}

@@ -66,6 +66,11 @@ public class Angle //adapter class -- Angle
 		return this;
 	}
 	
+	public Angle negate(){
+		_angle = -_angle;
+		return this;
+	}
+	
 	public Angle copySign(Angle signed){
 		_angle = StrictMath.copySign(_angle, signed._angle);
 		return this;

@@ -148,7 +148,10 @@ public class Location {
 		double sin_lat = _latitude.sin();
 		double rTmp = _a / StrictMath.sqrt(ONE - FLATFN * sin_lat * sin_lat);
 		double x = (rTmp + _height) * _latitude.cos();
-		return new Vector3(x * _longitude.cos(), x * _longitude.sin(), (rTmp * FUNSQ + _height) * sin_lat);
+		return new Vector3(
+				x * _longitude.cos(), 
+				x * _longitude.sin(),
+				(rTmp * FUNSQ + _height) * sin_lat);
 	}
 	
 	
@@ -161,7 +164,7 @@ public class Location {
 	 * @return Operator {W,X,Y,Z}
 	 */
 	public Operator getOpNavToGeo(){
-		Principle theta = _latitude.addRight().negate();
+		Principle theta = new Principle(_latitude).addRight().negate();
 		return QuaternionMath.eulerRotate_kj(_longitude,theta);
 	}
 	
