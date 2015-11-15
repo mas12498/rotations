@@ -932,7 +932,7 @@ public class Quaternion {
 		return this;
 	}
 
-	protected final Quaternion putRightTiltI(final Vector3 direction) {
+	public final Quaternion putRightTiltI(final Vector3 direction) {
 				//I==0...
 				final double w = direction.getAbs() + direction.getX();
 				final double absY = StrictMath.abs(direction.getY());
@@ -963,7 +963,7 @@ public class Quaternion {
 				return this;
 			}
 
-	protected final Quaternion putRightTiltJ(final Vector3 direction) {
+	public final Quaternion putRightTiltJ(final Vector3 direction) {
 		//J==0...
 	
 		final double w = direction.getAbs() + direction.getY();
@@ -1000,7 +1000,7 @@ public class Quaternion {
 		return this;
 	}
 
-	protected final Quaternion putRightTiltK(final Vector3 direction) {
+	public final Quaternion putRightTiltK(final Vector3 direction) {
 		//K==0...
 		final double w = direction.getAbs() + direction.getZ();
 		final double xAbs = StrictMath.abs(direction.getX());

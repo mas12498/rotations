@@ -47,6 +47,13 @@ public class Principle {
 				                  : StrictMath.atan(_ta)+ StrictMath.PI), 1 ); 
 	}
 	
+	
+	/** 
+	 * Factory. 
+	 * 
+	 * @param tanHalfAngle
+	 * @return Principle Angle as-is encoded.
+	 */
 	public static Principle arcTanHalfAngle(double tanHalfAngle) { return new Principle(tanHalfAngle); }
 	
 	/** 
@@ -107,14 +114,14 @@ public class Principle {
     /** Mutator -- Set to Principle angle of Angle measure. */
 	public Principle put(Angle measure) { _ta = measure.getCodedPrinciple(); return this; }
 
-    /** Set equal to another Principle angle measure. */
+    /** Mutator -- Set equal to another Principle angle measure. */
 	public Principle put(Principle measure){ _ta = measure._ta; return this;}
 
-	/** Get <i>signed</i> Angle.
+	/** Factory. Get <i>signed</i> Angle.
 	 *  @return Angle */
 	public Angle signedAngle(){return Angle.inRadians(this.getRadians());}
 	
-	/** Get <i>unsigned</i> Angle. 
+	/** Factory Get <i>unsigned</i> Angle. 
 	 * @return Angle */
 	public Angle unsignedAngle(){return Angle.inRadians(this.getUnsignedRadians());}
 

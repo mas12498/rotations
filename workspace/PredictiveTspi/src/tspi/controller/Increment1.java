@@ -151,7 +151,7 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 	/** Increment 1, usecase 1: Update all pedestal angles to point to the given target*/
 	public void ComputeDirections(Target target, PedestalModel pedestals) {
 		Vector3 geo = target.getGeocentricCoordinates();
-		if(geo==null) {
+		if(geo==null) { //pedestal location not created[?]
 			//System.out.println("ComputeDirections(): Invalid Target Coordinates( "+target.getTime()+", "+target.getLatitude()+", "+target.getLongitude()+", "+target.getHeight()+")");
 			return;
 		}

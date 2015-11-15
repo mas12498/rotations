@@ -22,11 +22,13 @@ public class TestWGS84 extends TestCase {
 		Location tmp2 = new Location(Angle.inDegrees(Double.NaN), Angle.inDegrees(Double.NaN),Double.NaN);
 		Principle plat = tmp2.getNorthLatitude().getPrinciple();
 		Principle plon =  tmp2.getEastLongitude().getPrinciple();
-		Principle ptheta = tmp2.getNorthLatitude().getPrinciple(); //Principle.arcTanHalfAngle(q_NG.getEuler_j_kji().cotHalf());	
-		
+		Principle ptheta = tmp2.getNorthLatitude().getPrinciple(); //Principle.arcTanHalfAngle(q_NG.getEuler_j_kji().cotHalf());
+		Angle atheta = new Angle(Angle.REVOLUTION);
+		Angle alon = new Angle(Angle.REVOLUTION);
+		double qlat;
+		double qlon;
 		for (int i = -3; i <= 3; i++) {
 			double phi = i * 30.0d; //latitude pole to pole
-//			double theta = -phi-90.0; //theta ref
 			for (int j = 0; j <= 12; j++) {
 				double lambda = j * 30.0d; //longitude 360
 				for (int h = -1; h <= 2; h++) {
@@ -37,28 +39,25 @@ public class TestWGS84 extends TestCase {
 					tmp2.setEllipsoidHeight(hgt);
 					Location tmp1 = new Location(tmp2.getNorthLatitude(), tmp2.getEastLongitude(), tmp2.getEllipsoidHeight());
 					Location tmp = new Location(tmp1);
-//					System.out.print(String.format(" theta = %8f" , theta)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
 //					System.out.print(String.format(" phi = %8f" , phi)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
 //					System.out.print(String.format(" lambda = %8f" , lambda)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
 					System.out.print(String.format(" latitude = %8f" , tmp.getNorthLatitude().getDegrees()));
 					System.out.print(String.format(" longitude = %.8f", tmp.getEastLongitude().getDegrees() ));
 					
-					Operator q_NG = tmp.getOpNavToGeo();
+					Operator q_NG = tmp.getOpNavToGeo();//load operator...
 					Operator tst = new Operator(q_NG);
-					ptheta.put(tst.getEuler_j_kji());
-					plon.put( tst.getEuler_k_kji());
 					
-					//first to second quadrant....
-					double qlat = plat.put(ptheta).addRight().negate().signedAngle().getDegrees();
-					double qlon = plon.unsignedAngle().getDegrees();
-					//if (ptheta.getRadians()>=-StrictMath.PI){
-					if (phi >= 0){ //for dumped pedestal... fourth to first quadrant....
-						qlon = (plon.unsignedAngle().getDegrees() + 180)%360;
-						//wrong!!!//qlon = new Principle(Angle.inRadians(-plon.signedAngle().getRadians())).unsignedAngle().getDegrees();
-						qlat = -(plat.signedAngle().getDegrees());
+					atheta = tst.getEuler_j_kji().signedAngle().add(Angle.QUARTER_REVOLUTION);
+//					//plon.put( tst.getEuler_k_kji());
+					alon = tst.getEuler_k_kji().signedAngle();					
+					if (phi >= 0){ //test northern hemisphere!!!
+						qlat = atheta.getDegrees();
+						qlon = alon.add(Angle.HALF_REVOLUTION).unsignedPrincipleAngle().getDegrees();
+					} else {
+						qlat = atheta.negate().getDegrees();
+						qlon = alon.unsignedPrincipleAngle().getDegrees();						
 					}
 					
-//					System.out.print(String.format(" theta = %.8f", ptheta.signedAngle().getDegrees() ));
 //					System.out.print(tst.unit().toString(3));
 					System.out.print(String.format(" Qlon = %.8f", qlon ));
 					System.out.print(String.format(" Qlat = %.8f", qlat ));

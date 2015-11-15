@@ -72,7 +72,9 @@ public class QuaternionMath {
 		return (Operator) QuaternionMath.exp_k(pK).exp_j(pJ).exp_i(pI);
 	}
 
-	/** Operator quaternion from Tait-Bryan | Centerline Euler Angle static factory.	 
+	/** 
+	 * Factory.
+	 * Operator quaternion from Tait-Bryan | Centerline Euler Angle static factory.	 
 	 * @param pK  (k-axis) Angle #1: yaw | az
 	 * @param pJ  (j-axis) Angle #2: pitch | el
 	 * @return Quaternion body | centerline frame orientation */

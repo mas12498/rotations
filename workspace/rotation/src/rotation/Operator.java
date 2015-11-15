@@ -87,6 +87,7 @@ public class Operator extends Quaternion {
 				- getY() * getY() 
 				- getZ() * getZ()
 				, -1);
+
 		double r = StrictMath.hypot(sk, ck);
 		return new Principle(sk / (r + ck));
 	}

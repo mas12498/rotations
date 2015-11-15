@@ -270,18 +270,18 @@ public class AngleTest {
 	@Test
 	public void testGetSetInMeasure() {
 		
-		Angle a = Angle.inMeasure(45,Angle.REVOLUTION_DEGREES);
+		Angle a = Angle.inMeasure(45,Angle.DEGREES_REVOLUTION);
 		
 		//System.out.println(a.getMeasure(360) + " degrees" + a.getDegrees() );
 		assertEquals(a.getDegrees(),45.0,0);
 		
-		a.put(30,Angle.REVOLUTION_DEGREES);
+		a.put(30,Angle.DEGREES_REVOLUTION);
 		//System.out.println(a.getMeasure(360)+" degrees"+StrictMath.nextUp(a.getDegrees()));
-		assertEquals(a.getMeasure(Angle.REVOLUTION_DEGREES),30.0,1e-14);
+		assertEquals(a.getMeasure(Angle.DEGREES_REVOLUTION),30.0,1e-14);
 		
-		a.put(-30*60, Angle.REVOLUTION_ARCMINUTES);
+		a.put(-30*60, Angle.ARCMINUTES_REVOLUTION);
 		//System.out.println(a.getMeasure(360)+" degrees"+(-StrictMath.nextUp(StrictMath.abs(a.getDegrees()))));
-		assertEquals(a.getMeasure(Angle.REVOLUTION_DEGREES),-30.0,1e-14);
+		assertEquals(a.getMeasure(Angle.DEGREES_REVOLUTION),-30.0,1e-14);
 		
 		a.put(150,360);
 		//System.out.println(a.getMeasure(360)+" degrees"+StrictMath.nextAfter(a.getDegrees(),1));
@@ -345,7 +345,7 @@ public class AngleTest {
 //	public void testInBinary() {
 	public void testGetSetInBinary() {
 		
-		Angle a = Angle.inMeasure(45,Angle.REVOLUTION_DEGREES);		
+		Angle a = Angle.inMeasure(45,Angle.DEGREES_REVOLUTION);		
 
 		byte w=16;
 		int m = 8192; //=2^
