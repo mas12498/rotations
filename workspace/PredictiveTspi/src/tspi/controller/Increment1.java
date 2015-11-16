@@ -51,12 +51,26 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 	
 	public static void main(String args[]) {
 		Increment1 frame = new Increment1();
+		if(args.length==2) {
+			
+			// try to load a default pedestal file using the first argument as a path
+			File pedestalFile = new File( args[0] );
+			try { frame.pedestals.load( pedestalFile ); }
+			catch(Exception exception) {
+				JOptionPane.showMessageDialog(frame, "Failed to load "+args[1]+" as a pedestal csv:\n"+ exception.getMessage());
+			}
+			
+			// try to load a default target file using the second argument as a path
+			File targetFile = new File( args[1] );
+			try { frame.targets.load( targetFile ); }
+			catch(Exception exception) {
+				JOptionPane.showMessageDialog(frame, "Failed to load "+args[1]+" as a taget csv:\n" + exception.getMessage());
+			}
+		}
 		frame.setVisible(true);
 	}
 	
 	public Increment1() {
-		File pedestalFile = null;
-		File targetFile = null; // TODO add default load files?
 		
 		pedestals = new PedestalModel();
 		pedestals.addTableModelListener( this );
