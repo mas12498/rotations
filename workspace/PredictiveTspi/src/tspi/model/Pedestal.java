@@ -142,16 +142,21 @@ public class Pedestal {
 	/** Updates the pedestal state to point to the given target coordinates.
 	 * @param targetEFG Position of the taget in geocentric coordinates.  */
 	public void point(Vector3 targetEFG) {
-		//vector from ped to target...
+		//temporary vector from ped to target...
 		Vector3 r_PT_G = new Vector3(targetEFG).subtract(geo);
 		
 		q_AN.putRightTiltI(r_PT_G); //.put( QuaternionMath.foldoverI(r_PT_G)); 
 		
 		q_AN.rightMultiply(QuaternionMath.conjugate(q_NG));
 		
-		Principle gTwist = q_AN.getEuler_i_kji().negate();
-		q_AN.leftMultExpI(gTwist).conjugate(); //get operator for local aperture positioning...	
+		Principle gTwist = q_AN.getEuler_i_kji();
+
+		System.out.println("q_AN twisted before repair:"+ q_AN.getEuler_i_kji().signedAngle().getDegrees());
+
+		q_AN.rightMultExpI(gTwist.negate()); //.conjugate(); //get operator for local aperture positioning...	
 		
+		System.out.println("q_AN twisted aftr repair:"+ q_AN.getEuler_i_kji().signedAngle().getDegrees());
+
 		direction.put(this.q_AN.getImage_i());
 		
 		aperture.setAzimuth(q_AN.getEuler_k_kji().unsignedAngle());

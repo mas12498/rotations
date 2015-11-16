@@ -5,10 +5,9 @@ package tspi.model;
 
 import junit.framework.TestCase;
 import rotation.Angle;
-import rotation.BasisUnit;
 //import rotation.BasisUnit;
 import rotation.Operator;
-import rotation.Principle;
+//import rotation.Principle;
 
 /**
  * @author mike
@@ -20,9 +19,9 @@ public class TestWGS84 extends TestCase {
 		int cnt = 0;
 
 		Location tmp2 = new Location(Angle.inDegrees(Double.NaN), Angle.inDegrees(Double.NaN),Double.NaN);
-		Principle plat = tmp2.getNorthLatitude().getPrinciple();
-		Principle plon =  tmp2.getEastLongitude().getPrinciple();
-		Principle ptheta = tmp2.getNorthLatitude().getPrinciple(); //Principle.arcTanHalfAngle(q_NG.getEuler_j_kji().cotHalf());
+//		Principle plat = tmp2.getNorthLatitude().getPrinciple();
+//		Principle plon =  tmp2.getEastLongitude().getPrinciple();
+//		Principle ptheta = tmp2.getNorthLatitude().getPrinciple(); //Principle.arcTanHalfAngle(q_NG.getEuler_j_kji().cotHalf());
 		Angle atheta = new Angle(Angle.REVOLUTION);
 		Angle alon = new Angle(Angle.REVOLUTION);
 		double qlat;
@@ -48,7 +47,6 @@ public class TestWGS84 extends TestCase {
 					Operator tst = new Operator(q_NG);
 					
 					atheta = tst.getEuler_j_kji().signedAngle().add(Angle.QUARTER_REVOLUTION);
-//					//plon.put( tst.getEuler_k_kji());
 					alon = tst.getEuler_k_kji().signedAngle();					
 					if (phi >= 0){ //test northern hemisphere!!!
 						qlat = atheta.getDegrees();
@@ -64,7 +62,7 @@ public class TestWGS84 extends TestCase {
 
 					System.out.println();
 ///					assertEquals(tmp.getLatitude().signedAngle().getDegrees(), phi, 1e-14);
-					assertEquals(tmp.getLongitude().unsignedAngle().getDegrees(), lambda  % 360.0, 1e-13);
+					assertEquals(tmp.getEastLongitude().getDegrees(), lambda  % 360.0, 1e-13);
 ///					assertEquals(tmp.getNorthLatitude().getDegrees(), phi, 1e-14);
 ///					assertEquals(tmp.getEastLongitude().getDegrees(), lambda % 360.0, 1e-13);
 // // // //					assertEquals(tmp.getTheta().signedAngle().getDegrees(),theta, 1e-13 );
