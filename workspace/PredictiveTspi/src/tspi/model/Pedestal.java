@@ -139,32 +139,36 @@ public class Pedestal {
 	}
 	
 	// pedestal.point = f(direct) 
-	/** Updates the pedestal state to point to the given target coordinates.
+	/** Updates the pedestal state to point to the given target geocentric coordinates.
+	 * Actually, aligns given geocentric to pedestal's aperture coordinate frame as positioned on line-of-sight to target.
+	 * Assumes no atmosphere and WGS84 earth model in positioing.
 	 * @param targetEFG Position of the taget in geocentric coordinates.  */
 	public void point(Vector3 targetEFG) {
-		//temporary vector from ped to target...
+		//Define geocentric vector from ped to target -- obtain pedestal.aperture range to target.
 		Vector3 r_PT_G = new Vector3(targetEFG).subtract(geo);
-		
-		q_AN.putRightTiltI(r_PT_G); //.put( QuaternionMath.foldoverI(r_PT_G)); 
-		
-		q_AN.rightMultiply(QuaternionMath.conjugate(q_NG));
-		
-		Principle gTwist = q_AN.getEuler_i_kji();
-
-		System.out.println("q_AN twisted before repair:"+ q_AN.getEuler_i_kji().signedAngle().getDegrees());
-
-		q_AN.rightMultExpI(gTwist.negate()); //.conjugate(); //get operator for local aperture positioning...	
-		
-		System.out.println("q_AN twisted aftr repair:"+ q_AN.getEuler_i_kji().signedAngle().getDegrees());
-
-		direction.put(this.q_AN.getImage_i());
-		
-		aperture.setAzimuth(q_AN.getEuler_k_kji().unsignedAngle());
-		
-		aperture.setElevation( q_AN.getEuler_j_kji().signedAngle());
-		
-		
 		aperture.setRange(r_PT_G.getAbs());
+		
+		//Make initial (rank-2) 'put' of q_AN -- returns pedestal.aperture azimuth & elevation direction (line-of-sight) to target.
+		this.q_AN.put(this.q_NG).leftMultiplyTiltI(r_PT_G).conjugate();
+		aperture.setAzimuth(this.q_AN.getEuler_k_kji().unsignedAngle());		
+		aperture.setElevation( this.q_AN.getEuler_j_kji().signedAngle());
+
+		//Refine 'put': Repair third rank of q_AN* (Annihilate Euler i-twist in field-of-view to match pedestal.aperture definition.)
+		//-- makes q_AN rank-3 axial Operator between pedestal.aperture and pedestal.location coordinate frame definitions.
+		Principle gTwist = q_AN.getEuler_i_kji();
+		this.q_AN.rightMultExpI(gTwist.negate()); 
+		
+		//Assign local aperture directions in local navigation frame coordinates -- from Operator q_AN:
+		direction.put(this.q_AN.getImage_i()); //out pedestal.aperture (unit i) 
+//		Vector3 vertical.put(this.q_AN.getImage_j()); //right (across) pedestal.aperture (unit j)
+//		Vector3 horizontal.put(this.q_AN.getImage_k()); //downward (across) pedestal.aperture (unit k)
+		
+		
+		// //OP aligns geocentric to pedestal.aperture axial coordinates if perfectly located, aligned pedestal and no atmosphere:
+		//System.out.println("post-twist annihilation:"+ this.q_AN.getImage_i().toString(5));		
+		//System.out.println("q_AN twisted aftr repair:"+ q_AN.getEuler_i_kji().signedAngle().getDegrees());
+		//System.out.println("Geocentric direction:"+ r_PT_G.divide(this.aperture.getRange()).toString(7));
+		//System.out.println("Op Geocentric direction match:"+ new Operator(new Quaternion(q_NG).rightMultiply(q_AN)).getImage_i().unit().toString(7));				
 	}
 
 	// pedestal.point = f(orient) 	
