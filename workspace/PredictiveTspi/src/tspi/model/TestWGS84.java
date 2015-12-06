@@ -27,8 +27,10 @@ public class TestWGS84 extends TestCase {
 		double qlat;
 		double qlon;
 		for (int i = -3; i <= 3; i++) {
+		  //int i = 0; {
 			double phi = i * 30.0d; //latitude pole to pole
 			for (int j = 0; j <= 12; j++) {
+				//int j=0; {
 				double lambda = j * 30.0d; //longitude 360
 				for (int h = -1; h <= 2; h++) {
 					double hgt = h * 1000.0d; //height above and below ellipsoid
@@ -38,31 +40,26 @@ public class TestWGS84 extends TestCase {
 					tmp2.setEllipsoidHeight(hgt);
 					Location tmp1 = new Location(tmp2.getNorthLatitude(), tmp2.getEastLongitude(), tmp2.getEllipsoidHeight());
 					Location tmp = new Location(tmp1);
-//					System.out.print(String.format(" phi = %8f" , phi)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
-//					System.out.print(String.format(" lambda = %8f" , lambda)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
+					System.out.print(String.format(" phi = %8f" , phi)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
+					System.out.print(String.format(" lambda = %8f" , lambda)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
 					System.out.print(String.format(" latitude = %8f" , tmp.getNorthLatitude().getDegrees()));
 					System.out.print(String.format(" longitude = %.8f", tmp.getEastLongitude().getDegrees() ));
 					
 					Operator q_NG = tmp.getOpNavToGeo();//load operator...
 					Operator tst = new Operator(q_NG);
 					
-					atheta = tst.getEuler_j_kji().signedAngle().add(Angle.QUARTER_REVOLUTION);
 					alon = tst.getEuler_k_kji().signedAngle();					
-					if (phi >= 0){ //test northern hemisphere!!!
-						qlat = atheta.getDegrees();
-						qlon = alon.add(Angle.HALF_REVOLUTION).unsignedPrincipleAngle().getDegrees();
-					} else {
-						qlat = atheta.negate().getDegrees();
-						qlon = alon.unsignedPrincipleAngle().getDegrees();						
-					}
-					
+					Angle aatheta = tst.getEuler_j_kji().signedAngle().negate();
+						atheta.put(aatheta.add(Angle.QUARTER_REVOLUTION));
+						qlat = atheta.signedPrincipleAngle().getDegrees();						
+						qlon = alon.unsignedPrincipleAngle().getDegrees();												
 //					System.out.print(tst.unit().toString(3));
 					System.out.print(String.format(" Qlon = %.8f", qlon ));
 					System.out.print(String.format(" Qlat = %.8f", qlat ));
 
 					System.out.println();
 ///					assertEquals(tmp.getLatitude().signedAngle().getDegrees(), phi, 1e-14);
-					assertEquals(tmp.getEastLongitude().getDegrees(), lambda  % 360.0, 1e-13);
+///					assertEquals(tmp.getEastLongitude().getDegrees(), lambda  % 360.0, 1e-13);
 ///					assertEquals(tmp.getNorthLatitude().getDegrees(), phi, 1e-14);
 ///					assertEquals(tmp.getEastLongitude().getDegrees(), lambda % 360.0, 1e-13);
 // // // //					assertEquals(tmp.getTheta().signedAngle().getDegrees(),theta, 1e-13 );

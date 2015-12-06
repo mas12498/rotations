@@ -18,35 +18,77 @@ import rotation.Vector3;
  */
 public class testPedestal extends TestCase {
 	public void testSetWGS84() {
-		Location temp = new Location(Angle.inDegrees(-30),Angle.inDegrees(-90),3000);
-//		Principle latitude = new Principle(Angle.inDegrees(-30));
-//		Principle longitude = new Principle(Angle.inDegrees(270));
-//		double height = 3000;
-		System.out.println(temp.getLatitude().signedAngle().getDegrees());
-		System.out.println(temp.getLongitude().unsignedAngle().getDegrees());
-		System.out.println(temp.getEllipsoidHeight());
+		//Location temp = new Location(Angle.inDegrees(-30),Angle.inDegrees(-91),3000);		
+		//Vector3 result = temp.getGeocentric();
+		//temp.set(result);
+		Location temp = new Location(Angle.inDegrees(-30),Angle.inDegrees(-89),3000);		
+		  System.out.println("lat: "+temp.getNorthLatitude().getDegrees());
+		  System.out.println("lon: "+temp.getEastLongitude().getDegrees());
+		Angle theta = temp.getNorthLatitude().negate().subtract(Angle.QUARTER_REVOLUTION);
+//		  Principle ptheta =new Principle(theta);
+//		  System.out.println("ptheta: "+ptheta.signedAngle().getDegrees());	
+		  
+		Operator q =QuaternionMath.eulerRotate_kj(temp.getLongitude(), theta.getPrinciple());
+
+//		Principle pDump = q.getEuler_i_kji();
+//		System.out.println("is dump twist: "+pDump.signedAngle().getDegrees());
 		
-		temp.getLongitude().put(Angle.inDegrees(-30));
-		temp.getLongitude().put(Angle.inDegrees(270));
-		temp.setEllipsoidHeight(3000);
-		Vector3 result = temp.getGeocentric();
-		System.out.println(result.toString());
-		temp.set(result);
-		System.out.println(temp.getNorthLatitude().getDegrees());
-		System.out.println(temp.getEastLongitude().getDegrees());
-		System.out.println(temp.getEllipsoidHeight());
+//		Angle aTheta = q.getEuler_j_kji().signedAngle();
+//		Angle aLat = new Angle(aTheta).add(Angle.QUARTER_REVOLUTION).negate();
+//		Angle aLon = q.getEuler_k_kji().unsignedAngle();
+//		if (pDump.signedAngle().getDegrees() == 180.0) { //southern hemisphere
+//			System.out.println("Northern Hemisphere");
+//			aLat.negate();
+//			aLon.add(Angle.HALF_REVOLUTION).unsignedPrincipleAngle();
+//			aTheta.add(Angle.HALF_REVOLUTION).negate();
+//		}
+//		System.out.println("get Op lat: " + aLat.getDegrees());
+//		System.out.println("get Op lon: " + aLon.getDegrees());
+//		System.out.println("get Op theta: " + aTheta.getDegrees());
+//		;		
 		
-		//Principle theta = Principle.arcTanHalfAngle(temp.getLatitude().cotHalf());
-		Principle ptheta = temp.getLatitude().addRight().negate();
+		//Principle pTheta = q.getEuler_j_kji();
+		Principle pLat = q.getEuler_j_kji().addRight().negate();
+		Principle pLon = q.getEuler_k_kji();
+		System.out.println("twistDump: " + q.getEuler_i_kji().tanHalf());
+		double dump = q.getEuler_i_kji().tanHalf();
 		
-		Operator q =QuaternionMath.eulerRotate_kj(temp.getLongitude(), ptheta);
+		boolean northernHemisphere = Double.isNaN(dump);
+		if (northernHemisphere) { //Northern hemisphere 
+			pLat.negate();			
+			pLon.addStraight().negate();
+			//pTheta.addStraight();
+		} 
+		boolean southernHemisphere  = (dump==0d);
+		if(!southernHemisphere&&!northernHemisphere) {System.out.println("get geodetic horizontal position from Op failed: " + dump);}
+		System.out.println("get Op lat: " + pLat.signedAngle().getDegrees());
+		System.out.println("get Op lon: " + pLon.unsignedAngle().getDegrees());
+		//System.out.println("get Op theta: " + pTheta.signedAngle().getDegrees());
+				
 		
-		System.out.println(q.unit().toString());
 		
-		q = new Operator(1,0,0,0).exp_k(temp.getLongitude()).exp_j(ptheta);
-		System.out.println(q.unit().toString());
-		System.out.println(q.getEuler_j_kji().signedAngle().getDegrees());
-		System.out.println(q.getEuler_k_kji().unsignedAngle().getDegrees());
+//		System.out.println(q.unit().toString());	
+//		q = new Operator(1,0,0,0).exp_k(temp.getLongitude()).exp_j(ptheta);
+//		System.out.println(q.unit().toString());
+//		System.out.println("get Op theta: "+q.getEuler_j_kji().signedAngle().getDegrees());
+//		System.out.println("get Op lon: "+q.getEuler_k_kji().unsignedAngle().getDegrees());
+//		Angle pthetaTest =  q.getEuler_j_kji().signedAngle().add(Angle.QUARTER_REVOLUTION).negate();	
+//		System.out.println("get Op lat: "+pthetaTest.getDegrees());
+		
+		//if(pthetaTest.getPiRadians()<-.5d) pthetaTest.add(Angle.HALF_REVOLUTION);
+//		System.out.println("get Op lat: "+pthetaTest.getPiRadians());
+//		System.out.println("get Op lat: "+pthetaTest.getDegrees());
+//		System.out.println("q = "+q.toString(10));
+//		System.out.println("twist     q = "+q.getEuler_i_kji().signedAngle().getDegrees());
+//		System.out.println("elevation q = "+q.getEuler_j_kji().signedAngle().getDegrees());
+//		System.out.println("azimuth   q = "+q.getEuler_k_kji().signedAngle().getDegrees());
+//		System.out.println("A.i to N = "+ q.getImage_i().toString(15));	
+//		System.out.println("A.j to N = "+ q.getImage_j().toString(15));	
+//		System.out.println("A.k to N = "+ q.getImage_k().toString(15));	
+//		
+		
+		
+		
 		
 			//initial Euler angles definition!
 			Angle az = Angle.inDegrees(120);
@@ -80,8 +122,8 @@ public class testPedestal extends TestCase {
 			
 			
 			//do rotation to get direction!
-			System.out.println("tmp = "+new Quaternion(q_AN).rightMultiply(Vector3.UNIT_I).rightMultiply(QuaternionMath.conjugate(q_AN)).unit().toString(15));
-			System.out.println("dir = "+new Vector3( paz.cos()*pel.cos(), paz.sin()*pel.cos(),-pel.sin() ).toString(15));	
+//			System.out.println("tmp = "+new Quaternion(q_AN).rightMultiply(Vector3.UNIT_I).rightMultiply(QuaternionMath.conjugate(q_AN)).unit().toString(15));
+//			System.out.println("dir = "+new Vector3( paz.cos()*pel.cos(), paz.sin()*pel.cos(),-pel.sin() ).toString(15));	
 			
 			
 //			paz.put(az.putDegrees(120.0));
@@ -103,19 +145,19 @@ public class testPedestal extends TestCase {
 			Vector3 rgNormal = q_AN.getImage_i();
 			Vector3 azNormal = q_AN.getImage_j();
 			Vector3 elNormal = q_AN.getImage_k();
-			System.out.println("**************************************");
-			System.out.println("Az:"+paz.unsignedAngle().getDegrees());
-			System.out.println("El:"+pel.signedAngle().getDegrees());
-			System.out.println("Direction: "+direction.toString(5));
-			System.out.println("**************************************");
-			System.out.println("rgNormal: "+rgNormal.toString(5));
-			System.out.println("azNormal: "+azNormal.toString(5));
-			System.out.println("elNormal: "+elNormal.toString(5));
-			System.out.println("**************************************");
-			System.out.println("rgNormal: "+rgNormal.unit().toString(5)); //unit is a mutator!!!
-			System.out.println("azNormal: "+azNormal.toString(5));
-			System.out.println("elNormal: "+elNormal.toString(5));
-			System.out.println("**************************************");
+//			System.out.println("**************************************");
+//			System.out.println("Az:"+paz.unsignedAngle().getDegrees());
+//			System.out.println("El:"+pel.signedAngle().getDegrees());
+//			System.out.println("Direction: "+direction.toString(5));
+//			System.out.println("**************************************");
+//			System.out.println("rgNormal: "+rgNormal.toString(5));
+//			System.out.println("azNormal: "+azNormal.toString(5));
+//			System.out.println("elNormal: "+elNormal.toString(5));
+//			System.out.println("**************************************");
+//			System.out.println("rgNormal: "+rgNormal.unit().toString(5)); //unit is a mutator!!!
+//			System.out.println("azNormal: "+azNormal.toString(5));
+//			System.out.println("elNormal: "+elNormal.toString(5));
+//			System.out.println("**************************************");
 			
 //			Operator q_NG = new Operator(Quaternion.NAN); 	
 //			Angle lat = Angle.inDegrees(60);
@@ -151,8 +193,13 @@ public class testPedestal extends TestCase {
 			//q_NG.putRightJ(QuaternionMath.eulerRotate_kj(plon,	
 			
 			paz = new Principle(Angle.inDegrees(150));
-			pel = new Principle(Angle.inDegrees(-30));
+			pel = new Principle(Angle.inDegrees(30.0));
 			q_AN.put(QuaternionMath.eulerRotate_kj(paz, pel).unit());
+//			System.out.println("**************input*******************");
+//			System.out.println("yaw|bearing: "+paz.unsignedAngle().getDegrees());
+//			System.out.println("pitch|el   : "+pel.signedAngle().getDegrees()); //unit is a mutator!!!
+//			System.out.println("q_AN : "+q_AN.toString(5)); 
+//			System.out.println("**************************************");
 			
 			Vector3 d_AN = q_AN.getImage_i(); 
 
@@ -160,33 +207,28 @@ public class testPedestal extends TestCase {
 			Principle pitch = q_AN.getEuler_j_kji();
 			Principle twi = q_AN.getEuler_i_kji();
 			
-			System.out.println("**************************************");
-			System.out.println("**************************************");
-			System.out.println("yaw|bearing: "+paz.unsignedAngle().getDegrees());
-			System.out.println("pitch|el   : "+pel.signedAngle().getDegrees()); //unit is a mutator!!!
-			System.out.println("q_AN : "+q_AN.toString(5)); 
-			System.out.println("**************************************");
-			System.out.println("az : "+yaw.unsignedAngle().getDegrees()); 
-			System.out.println("el : "+pitch.signedAngle().getDegrees());
-			System.out.println("tw : "+twi.signedAngle().getDegrees());
-			System.out.println("d_AN : "+d_AN.toString(5)); 
+//			System.out.println("*************Rank-3*******************");
+//			System.out.println("az : "+yaw.unsignedAngle().getDegrees()); 
+//			System.out.println("el : "+pitch.signedAngle().getDegrees());
+//			System.out.println("tw : "+twi.signedAngle().getDegrees());
+//			System.out.println("d_AN : "+d_AN.toString(5)); 
+//			System.out.println("**************************************");
+//			System.out.println("*************Rank-2*******************");
 			
-			Operator q_ANw = new Operator(Quaternion.NAN);
-			//q_ANw.put(QuaternionMath.foldoverI(d_AN).conjugate());
-			q_ANw.putRightTiltI(d_AN).conjugate();
+			Operator q_ANx = new Operator(Quaternion.NAN);
+			q_ANx.put(QuaternionMath.foldoverI(d_AN).conjugate());
+//			q_ANw.putRightTiltI(d_AN).conjugate();
 //			q_ANw.put( new Quaternion(Quaternion.IDENTITY).rightMultiplyTiltI(d_AN).conjugate());
 //			q_ANw.put( new Quaternion(Quaternion.IDENTITY).leftMultiplyTiltI(d_AN).conjugate());
-			yaw = q_ANw.getEuler_k_kji();
-			pitch = q_ANw.getEuler_j_kji();
-			twi = q_ANw.getEuler_i_kji();
-			System.out.println("**************************************");
-			System.out.println("az : "+yaw.unsignedAngle().getDegrees()); 
-			System.out.println("el : "+pitch.signedAngle().getDegrees());
-			System.out.println("tw : "+twi.signedAngle().getDegrees());
-			
-			
-			
-		
+			yaw = q_ANx.getEuler_k_kji();
+			pitch = q_ANx.getEuler_j_kji();
+			twi = q_ANx.getEuler_i_kji();
+			q_ANx.exp_i(twi.negate());
+			twi = q_ANx.getEuler_i_kji();
+//			System.out.println("az : "+yaw.unsignedAngle().getDegrees()); 
+//			System.out.println("el : "+pitch.signedAngle().getDegrees());
+//			System.out.println("tw : "+twi.signedAngle().getDegrees());
+//			System.out.println("**************************************");
 		
 	}
 		

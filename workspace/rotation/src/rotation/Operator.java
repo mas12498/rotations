@@ -155,8 +155,10 @@ public class Operator extends Quaternion {
 	 * Vector3 basis unit-I (image mapped by rotation operator q) static factory
 	 */
 	public Vector3 getImage_i() {
-		return new Vector3(getW() * getW() + getX() * getX() - getY() * getY() - getZ() * getZ(),
-				2 * (getX() * getY() + getW() * getZ()), 2 * (getX() * getZ() - getW() * getY()));
+		return new Vector3(
+				getW() * getW() + getX() * getX() - getY() * getY() - getZ() * getZ(),
+				2 * (getX() * getY() + getW() * getZ()), 
+				2 * (getX() * getZ() - getW() * getY()));
 	}
 
 	/**
@@ -174,7 +176,8 @@ public class Operator extends Quaternion {
 	 * static factory
 	 */
 	public Vector3 getImage_k() {
-		return new Vector3(2 * (getW() * getY() + getX() * getZ()), 2 * (getY() * getZ() - getW() * getX()),
+		return new Vector3(2 * (getW() * getY() + getX() * getZ()), 
+				2 * (getY() * getZ() - getW() * getX()),
 				getW() * getW() - getX() * getX() - getY() * getY() + getZ() * getZ());
 	}
 	

@@ -299,7 +299,7 @@ public class OperatorTest {
 	public void testExp() {
 //		System.out.println("=============== TEST EXP =================");
 
-		Operator z = new Operator(0,(Angle.inDegrees(30).half().getRadians()),0,0);
+		Operator z = new Operator(0,(Angle.inDegrees(30).halfSignedPrincipleAngle().getRadians()),0,0);
 		Vector3 v = new Vector3(1,0,0);
 		Principle theta = new Principle(Angle.inDegrees(30));
 		
@@ -434,7 +434,7 @@ public class OperatorTest {
 		
 		theta.put(Principle.ZERO);
 		z.put(1,0,0,0);
-		v.put(1,0,0).multiply(theta.getRadians());
+		v.put(1,0,0).multiply(theta.getPiRadians());
 		z.exp( theta ,v).multiply(z.getInverseAbs());
 //		System.out.println("vector i(0): "+z.toString());
 		assertTrue(z
@@ -443,7 +443,7 @@ public class OperatorTest {
 		
 		theta.put(Angle.inDegrees(30));
 		z.put(1,0,0,0);
-		v.put(1,0,0).multiply(theta.getRadians());
+		v.put(1,0,0).multiply(theta.getPiRadians());
 		z.exp( theta ,v).multiply(z.getInverseAbs());
 //		System.out.println("vector i(30): "+z.toString());
 		assertTrue(z
@@ -452,7 +452,7 @@ public class OperatorTest {
 						.getRadians()),0,0), 1e-13));
 		
 		z.put(1,0,0,0);
-		v.put(0,1,0).multiply(theta.getRadians());
+		v.put(0,1,0).multiply(theta.getPiRadians());
 		z.exp( theta ,v).multiply(z.getInverseAbs());
 //		System.out.println("vector j(30): "+z.toString());		
 		assertTrue(z
@@ -462,7 +462,7 @@ public class OperatorTest {
 		
 		
 		z.put(1,0,0,0);
-		v.put(0,0,1).multiply(theta.getRadians());
+		v.put(0,0,1).multiply(theta.getPiRadians());
 		z.exp( theta ,v).multiply(z.getInverseAbs());
 //		System.out.println("vector k(30): "+z.toString());
 		assertTrue(z
@@ -471,13 +471,13 @@ public class OperatorTest {
 						.getRadians())), 1e-13));
 		
 		theta.put(Angle.inDegrees(120));
-		z.put(1,0,0,0).multiply(theta.getRadians());
-		v.put(1,0,0).multiply(theta.getRadians());
+		z.put(1,0,0,0).multiply(theta.getPiRadians());
+		v.put(1,0,0).multiply(theta.getPiRadians());
 		z.exp( theta ,v).multiply(z.getInverseAbs());
 //		System.out.println("vector i(120): "+z.toString());
 		
 		z.put(1,0,0,0);
-		v.put(0,1,0).multiply(theta.getRadians());
+		v.put(0,1,0).multiply(theta.getPiRadians());
 		z.exp( theta ,v).multiply(z.getInverseAbs());
 //		System.out.println("vector j(120): "+z.toString());		
 		assertTrue(z
@@ -486,7 +486,7 @@ public class OperatorTest {
 						.getRadians()), 0), 1e-13));
 		
 		z.put(1,0,0,0);
-		v.put(0,0,1).multiply(theta.getRadians());
+		v.put(0,0,1).multiply(theta.getPiRadians());
 		z.exp( theta ,v).multiply(z.getInverseAbs());
 //		System.out.println("vector k(120): "+z.toString());
 		assertTrue(z
@@ -497,7 +497,7 @@ public class OperatorTest {
 
 		theta.put(Principle.ZERO);
 		z.put(1,0,0,0);
-		v.put(1,0,0).multiply(theta.getRadians());
+		v.put(1,0,0).multiply(theta.getPiRadians());
 		z.exp( v ).multiply(z.getInverseAbs());
 //		System.out.println("vector i(0): "+z.toString());
 		assertTrue(z
@@ -507,7 +507,7 @@ public class OperatorTest {
 		
 		theta.put(Angle.inDegrees(30));
 		z.put(1,0,0,0);
-		v.put(1,0,0).multiply(theta.getRadians());
+		v.put(1,0,0).multiply(theta.getPiRadians());
 		z.exp( v ).multiply(z.getInverseAbs());
 //		System.out.println("vector i(30): "+z.toString());
 		assertTrue(z
@@ -517,7 +517,7 @@ public class OperatorTest {
 		
 		
 		z.put(1,0,0,0);
-		v.put(0,1,0).multiply(theta.getRadians());
+		v.put(0,1,0).multiply(theta.getPiRadians());
 		z.exp( v ).multiply(z.getInverseAbs());
 //		System.out.println("vector j(30): "+z.toString());		
 		assertTrue(z
@@ -526,7 +526,7 @@ public class OperatorTest {
 						.getRadians()),0), 1e-13));
 		
 		z.put(1,0,0,0);
-		v.put(0,0,1).multiply(theta.getRadians());
+		v.put(0,0,1).multiply(theta.getPiRadians());
 		z.exp( v ).multiply(z.getInverseAbs());
 //		System.out.println("vector k(30): "+z.toString());
 		assertTrue(z
@@ -535,8 +535,8 @@ public class OperatorTest {
 						.getRadians())), 1e-13));
 		
 		theta.put(Angle.inDegrees(120));
-		z.put(1,0,0,0).multiply(theta.getRadians());
-		v.put(1,0,0).multiply(theta.getRadians());
+		z.put(1,0,0,0).multiply(theta.getPiRadians());
+		v.put(1,0,0).multiply(theta.getPiRadians());
 		z.exp( v ).multiply(z.getInverseAbs());
 //		System.out.println("vector i(120): "+z.toString());
 		assertTrue(z
@@ -546,7 +546,7 @@ public class OperatorTest {
 		
 		
 		z.put(1,0,0,0);
-		v.put(0,1,0).multiply(theta.getRadians());
+		v.put(0,1,0).multiply(theta.getPiRadians());
 		z.exp( v ).multiply(z.getInverseAbs());
 //		System.out.println("vector j(120): "+z.toString());		
 		assertTrue(z
@@ -556,7 +556,7 @@ public class OperatorTest {
 		
 		
 		z.put(1,0,0,0);
-		v.put(0,0,1).multiply(theta.getRadians());
+		v.put(0,0,1).multiply(theta.getPiRadians());
 		z.exp( v ).multiply(z.getInverseAbs());
 //		System.out.println("vector k(120): "+z.toString());
 		assertTrue(z

@@ -32,19 +32,29 @@ public class Principle {
 	private double _ta;
 	
 	/** 
-	 * return double representing signed Principle angle in radians: 
+	 * return double representing signed Principle angle in PI radians: 
 	 *   (Reserved for rotation package internal use)
 	 * */
-	public double getRadians() { return StrictMath.scalb(StrictMath.atan(_ta),1); }
+	public double getPiRadians() { 
+		if(_ta==0){
+			return StrictMath.copySign(0,_ta);
+		}
+		
+		if(Double.isInfinite(_ta)){ //tan 90 degrees... makes straight angle
+			return StrictMath.copySign(1d,_ta);			
+		}
+		if(Double.isNaN(_ta)){
+			return 1d;
+		}
+		return StrictMath.atan(_ta)/Angle.PI_2; }
 
 	/** 
-	 * return double representing unsigned Principle angle in radians: 
+	 * return double representing unsigned Principle angle in pi radians: 
 	 *   (Reserved for rotation package internal use)
 	 * */
-	public double getUnsignedRadians()   {   
-		return StrictMath.scalb( (isPositive() 
-				                  ? StrictMath.atan(_ta) 
-				                  : StrictMath.atan(_ta)+ StrictMath.PI), 1 ); 
+	public double getUnsignedPiRadians()   {   
+		return isPositive() ? StrictMath.atan(_ta)/Angle.PI_2
+				            : StrictMath.atan(_ta)/Angle.PI_2 + 2d; 
 	}
 	
 	
@@ -119,11 +129,16 @@ public class Principle {
 
 	/** Factory. Get <i>signed</i> Angle.
 	 *  @return Angle */
-	public Angle signedAngle(){return Angle.inRadians(this.getRadians());}
+	public Angle signedAngle(){return Angle.inPiRadians(this.getPiRadians());}
+	
+	
 	
 	/** Factory Get <i>unsigned</i> Angle. 
 	 * @return Angle */
-	public Angle unsignedAngle(){return Angle.inRadians(this.getUnsignedRadians());}
+	public Angle unsignedAngle(){return Angle.inPiRadians(this.getUnsignedPiRadians());}
+	
+	
+	
 
 	/** Tangent of half of Principle Angle.
 	 * @return double 	 */
@@ -292,6 +307,25 @@ public class Principle {
 		
 	}
 	
+	public Principle addStraight(){
+		if(_ta==0){
+			_ta=Double.POSITIVE_INFINITY;
+			return this;
+		}
+		if(_ta==Double.POSITIVE_INFINITY){
+			_ta=0;
+			return this;
+		}
+		if(_ta==Double.NEGATIVE_INFINITY){
+			_ta=-0;
+			return this;
+		}
+		_ta=1/_ta;
+		return this;
+	}
+	
+	
+	
 	/** Mutator -- sum right angle.
 	 */
 	public Principle addRight() //addend == RightAngle [90 degrees]: addend.ta = 1
@@ -305,7 +339,7 @@ public class Principle {
 			}
 			//needed for equator...Something odd.
 			//System.out.print("Wahhhhoooo22222");
-			_ta = 0;
+			_ta = -0;
 			return this;
 		}		
 		if (isStraight()) { //not observed
@@ -315,7 +349,7 @@ public class Principle {
 		}	
 		if (isZero()) { //On all of zero latitudes...become rightangled!!!
 			//System.out.print("Wahhhh000");
-			_ta = StrictMath.copySign(1d, _ta);
+			_ta = 1d;
 			return this;
 		}	
 		//assigns to ta...blows up as approach 1.
@@ -323,6 +357,40 @@ public class Principle {
 		_ta = (isAcute())
 		? (_ta + 1d)/(1d - _ta)	
 		: (1d + 1d/_ta)/(1d/_ta - 1d); 
+		return this; 
+	}
+	
+	/** Mutator -- sum right angle.
+	 */
+	public Principle subtractRight() //addend == RightAngle [90 degrees]: addend.ta = 1
+	{ 	//problem when dealing with 45 degrees...denominators goto zero!
+		
+		if(isRight()){//needed for sign of zero...
+			if(_ta>0){//not observed
+				System.out.print("Wahhhhoooo111");
+				_ta=0; //
+				return this;
+			}
+			//needed for equator...Something odd.
+			//System.out.print("Wahhhhoooo22222");
+			_ta=Double.NEGATIVE_INFINITY;
+			return this;
+		}		
+		if (isStraight()) { //not observed
+		//	System.out.print("WahhhhooooSSSSSINFINY");
+			_ta = 1d;
+			return this;
+		}	
+		if (isZero()) { //On all of zero latitudes...become rightangled!!!
+			//System.out.print("Wahhhh000");
+			_ta = -1d;
+			return this;
+		}	
+		//assigns to ta...blows up as approach 1.
+		//System.out.print("Wahhhhoooo");		
+		_ta = (isAcute())
+		? (_ta - 1d)/(1d + _ta)	
+		: (1d - 1d/_ta)/(1d/_ta + 1d); 
 		return this; 
 	}
 	
