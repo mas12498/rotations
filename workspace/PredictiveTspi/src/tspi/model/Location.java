@@ -72,6 +72,26 @@ public class Location {
 		_height = new Double(height84);
 	}
 	
+	/**
+	 * Factory Location.
+	 * @param
+	 * @Note Projects to the WGS84 ellipsoid when:  ellipsoidHeight ==0.0
+	 */
+	public static Location createLocation(Operator q_NG, double ellipsoidHeight) { // Operator q_NG84,double height84){
+		double dump = q_NG.getEuler_i_kji().tanHalf();
+		Principle pLat = q_NG.getEuler_j_kji().addRight().negate();
+		Principle pLon = q_NG.getEuler_k_kji();
+		if (Double.isNaN(dump)) { // Northern hemisphere
+			return new Location(pLat.negate().signedAngle(), pLon.addStraight().negate().unsignedAngle(),
+					ellipsoidHeight);
+		} else if (dump == 0d) { // Southern hemisphere
+			return new Location(pLat.signedAngle(), pLon.unsignedAngle(), ellipsoidHeight);
+		}
+		System.out.println("ERROR: Not wgs84 geolocation Location! -- NOT VALID q_NG ROTATION OP.");
+		return new Location(Angle.inPiRadians(Double.NaN), Angle.inPiRadians(Double.NaN), Double.NaN);
+	}
+	
+
 	
 	//Getters
 	

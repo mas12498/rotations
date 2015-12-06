@@ -16,7 +16,7 @@ import rotation.Vector3;
  * @author mike
  *
  */
-public class testPedestal extends TestCase {
+public class TestPedestal extends TestCase {
 	public void testSetWGS84() {
 		//Location temp = new Location(Angle.inDegrees(-30),Angle.inDegrees(-91),3000);		
 		//Vector3 result = temp.getGeocentric();
