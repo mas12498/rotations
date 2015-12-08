@@ -216,7 +216,7 @@ public class Pedestal {
 	//TODO or this way?
 //	public static What fusePair(Pedestal p1, Pedestal p2) {}
 	
-	static class Solution {
+	public static class Solution {
 		public Vector3 position_EFG;
 		public double condition;
 	}
@@ -252,8 +252,8 @@ public class Pedestal {
 		Solution solution = new Solution();
 		
 		RealMatrix a = new Array2DRowRealMatrix(matrixData);
-		System.out.println("Sensors in solution: "+a.getRowDimension());
-		System.out.println(a.getColumnDimension()); // 3
+	System.out.println("Sensors in solution: "+a.getRowDimension());
+	System.out.println(a.getColumnDimension()); // 3
 		
 		SingularValueDecomposition svd = new SingularValueDecomposition(a);
 		RealVector b = new ArrayRealVector(rhs);
@@ -261,6 +261,8 @@ public class Pedestal {
 		
 		solution.condition = svd.getConditionNumber();
 		solution.position_EFG = new Vector3(y.getEntry(0), y.getEntry(1), y.getEntry(2)).add(origin);
+	System.out.println("Sensors in solution: "+a.getRowDimension());
+	System.out.println(a.getColumnDimension()); // 3
 		
 		return solution;
 	}
