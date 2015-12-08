@@ -225,14 +225,16 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value,
 				boolean isSelected, boolean hasFocus, int row, int col) {
+			// get a default label for the cell
+			Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+			// this is from back when we were only fusing two sensors
 			// turn off the selection if it is not the first selected or last selected
 			// this communicates to the user only two rows can be selected
-			Component cell;
-			ListSelectionModel selections = table.getSelectionModel();
-			if( row == selections.getMaxSelectionIndex()
-					|| row == selections.getMinSelectionIndex() )
-				cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
-			else cell = super.getTableCellRendererComponent(table, value, false, hasFocus, row, col);
+//			ListSelectionModel selections = table.getSelectionModel();
+//			if( row == selections.getMaxSelectionIndex()
+//					|| row == selections.getMinSelectionIndex() )
+//				cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+//			else cell = super.getTableCellRendererComponent(table, value, false, hasFocus, row, col);
 			
 			if(col==AZ || col==EL || col== R )
 				cell.setEnabled(false);

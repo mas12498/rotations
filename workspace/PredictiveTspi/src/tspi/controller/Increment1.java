@@ -3,7 +3,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -77,7 +77,7 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 		pedestals.addTableModelListener( this );
 		
 		pedestalTable = new JTable(pedestals);
-		pedestalTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		pedestalTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		pedestalTable.setRowSelectionAllowed(true);
 		pedestalTable.setColumnSelectionAllowed(false);
 		pedestalTable.createDefaultColumnsFromModel();
@@ -182,9 +182,9 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 	}
 	
 	/** Increment 1, usecase 2: Updates the error of all targets using the two pedestals. */
-	public void ComputeError(Pedestal p1, Pedestal p2, TargetModel reference) {
+	public void ComputeError(ArrayList<Pedestal> selected, TargetModel targets) {
 		// for each target
-		for(Target target : reference) {
+		for(Target target : targets) {
 			Vector3 geo = target.getGeocentricCoordinates();
 			if(geo==null) {
 				//System.out.println("ComputeError(): Invalid Target Coordinates( "+target.getTime()+", "+target.getLatitude()+", "+target.getLongitude()+", "+target.getHeight()+")");
@@ -192,16 +192,23 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 			}
 			
 			// point pedestals to target
-			p1.point(geo);
-			p2.point(geo);
+			for(Pedestal pedestal : selected)
+				pedestal.point(geo);
 			
 			// compute new target and measure error
-			Vector3 targetPrime = p1.fusePair(p2); // p2.fusePair(p1); // order?
-			if(targetPrime==null)
-				targetPrime = new Vector3(0.0,0.0,0.0);//continue; // TODO remove once fuse pair starts returning data!
+			Pedestal.Solution solution = Pedestal.computeTarget(
+					selected.get(0).getGeocentricCoordinates(), // TODO obtain the origin from somewhere instead of just using the first pedestal!
+					selected);
+			
+			// set error in the corresponding target 
+			Vector3 targetPrime;
+			if( solution==null || solution.position_EFG==null )
+				targetPrime = new Vector3(0.0,0.0,0.0);
+			else targetPrime = solution.position_EFG;
 			targetPrime.subtract( target.getGeocentricCoordinates() );
 			double error = targetPrime.getAbs();
 			target.setError(error);
+			// TODO display more conditioning and error ellipse info, maybe even the calculated target location.
 		}
 		
 		// clear pedestal heading data
@@ -224,25 +231,22 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 		// The bounds of the selected interval are used as the input pedestals to compute error
 		if( event.getSource() == this.pedestalTable.getSelectionModel() ) {
 			
-			// deselect the target table, and clear the error deltas
-			//targetTable.getSelectionModel().clearSelection();
-			targets.clearDeltas();
-
-			// ensure selected interval bounds are valid
-			int r1 = pedestalTable.getSelectionModel().getMinSelectionIndex();
-			int r2 = pedestalTable.getSelectionModel().getMaxSelectionIndex();
-			//r1 = pedestalTable.getRowSorter().convertRowIndexToModel(row);
-			//r2 = pedestalTable.getRowSorter().convertRowIndexToModel(row);
-			if(r1==-1 || r2==-1 || r1==r2)
-				return;
-
-			// determine the error using pedestal measurements
-			Pedestal p1 = pedestals.getPedestal(r1);
-			Pedestal p2 = pedestals.getPedestal(r2);
+			int rows[] = pedestalTable.getSelectedRows();
+			ArrayList<Pedestal> list = new ArrayList<Pedestal>();
+			for(int row : rows) {
+				if(row==-1) continue;
+				Pedestal pedestal = pedestals.getPedestal(row); //pedestalTable.getRowSorter().convertRowIndexToModel(row) );
+				list.add(pedestal);
+			}
 			
-			//System.out.println("FindError:\n"+p1+"\n"+p2+"\n\n");
-			
-			ComputeError(p1, p2, targets);
+			// make sure enough pedestals are selected for a solution
+			if(list.size() >= 2) {
+				// deselect the target table, and clear the error deltas
+				//targetTable.getSelectionModel().clearSelection();
+				targets.clearDeltas();
+
+				ComputeError(list, targets);
+			}
 
 		// a target was selected
 		} else if( event.getSource() == this.targetTable.getSelectionModel() ) {

@@ -1,6 +1,5 @@
 package tspi.model;
 
-import java.util.Iterator;
 import java.util.List;
 
 import rotation.Angle;
@@ -200,21 +199,15 @@ public class Pedestal {
 		ped_AER.getPrincipleElevation().put( ped_q_AN.getEuler_j_kji());		
 	}
 	
-	/** Combine two pedestals' location and orientation to find an estimate of he location of a single target. 
-	 * a. Simplest solution of two pedestals: 3 sensors of best geometry
-	 * c. Use all sensors available
-	 * @returns synthesized target in geocentric coordinates */
-	public Vector3 fusePair(Pedestal pedestal) {
-		return null; //TODO
-		//TODO update range?
+	public static class Solution {
+		public Vector3 position_EFG;
+		public double condition;
 	}
-	//TODO or this way?
-//	public static What fusePair(Pedestal p1, Pedestal p2) {}
-	
-	public Vector3 computeTarget(List<Pedestal> pedestals) {
+	static public Solution computeTarget(Vector3 origin, List<Pedestal> pedestals) {
 		//TODO
 		for(Pedestal pedestal : pedestals)
 			;
+		
 		return null;
 	}
 	
