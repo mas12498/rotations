@@ -1,5 +1,8 @@
 package tspi.model;
 
+import java.util.Iterator;
+import java.util.List;
+
 import rotation.Angle;
 import rotation.Operator;
 import rotation.Principle;
@@ -207,6 +210,13 @@ public class Pedestal {
 	}
 	//TODO or this way?
 //	public static What fusePair(Pedestal p1, Pedestal p2) {}
+	
+	public Vector3 computeTarget(List<Pedestal> pedestals) {
+		//TODO
+		for(Pedestal pedestal : pedestals)
+			;
+		return null;
+	}
 	
 	public String toString() { 
 		return this.systemId 

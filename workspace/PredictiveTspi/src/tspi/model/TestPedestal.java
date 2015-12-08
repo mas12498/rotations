@@ -3,14 +3,20 @@
  */
 package tspi.model;
 
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.LUDecomposition;
+import org.apache.commons.math3.linear.MatrixUtils;
+import org.apache.commons.math3.linear.RealMatrix;
+
 import junit.framework.TestCase;
 import rotation.Angle;
-import rotation.BasisUnit;
 import rotation.Operator;
 import rotation.Principle;
 import rotation.Quaternion;
 import rotation.QuaternionMath;
 import rotation.Vector3;
+
+
 
 /**
  * @author mike
@@ -230,6 +236,58 @@ public class TestPedestal extends TestCase {
 //			System.out.println("tw : "+twi.signedAngle().getDegrees());
 //			System.out.println("**************************************");
 		
+			double [][] matrixData = {{1d,2d,3d},{2d,5d,3d}};
+			RealMatrix m = MatrixUtils.createRealMatrix(matrixData);
+			double[][] matrixData2 = {{1d,2d}, {2d,5d}, {1d, 7d}};
+			RealMatrix n = new Array2DRowRealMatrix(matrixData2);
+			
+			RealMatrix p = m.multiply(n);
+			System.out.println(p.getRowDimension());
+			System.out.println(p.getColumnDimension()); // 2
+			
+			double pD[][] = p.getData();			
+			System.out.println("{");
+			for (int i = 0; i < p.getRowDimension(); i++) {
+				System.out.print(" { ");
+				for (int j = 0; j < p.getRowDimension(); j++) {
+					System.out.print(pD[i][j]+"  ");
+				}
+				System.out.print(" } ");
+				System.out.println();				
+			}
+			System.out.print("}");
+			System.out.println();
+			
+			
+			RealMatrix pInverse = new LUDecomposition(p).getSolver().getInverse();
+			
+			pD = pInverse.getData();			
+			System.out.println("{");
+			for (int i = 0; i < p.getRowDimension(); i++) {
+				System.out.print(" { ");
+				for (int j = 0; j < p.getRowDimension(); j++) {
+					System.out.print(pD[i][j]+"  ");
+				}
+				System.out.print(" } ");
+				System.out.println();				
+			}
+			System.out.print("}");
+			System.out.println();
+			
+			RealMatrix ans =p.multiply(pInverse);
+			pD = ans.getData();			
+			System.out.println("{");
+			for (int i = 0; i < p.getRowDimension(); i++) {
+				System.out.print(" { ");
+				for (int j = 0; j < p.getRowDimension(); j++) {
+					System.out.print(pD[i][j]+"  ");
+				}
+				System.out.print(" } ");
+				System.out.println();				
+			}
+			System.out.print("}");
+			System.out.println();
+			
 	}
 		
 	}	
