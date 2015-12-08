@@ -1,7 +1,12 @@
 package tspi.model;
 
-import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealVector;
+import org.apache.commons.math3.linear.SingularValueDecomposition;
 
 import rotation.Angle;
 import rotation.Operator;
@@ -211,11 +216,52 @@ public class Pedestal {
 	//TODO or this way?
 //	public static What fusePair(Pedestal p1, Pedestal p2) {}
 	
-	public Vector3 computeTarget(List<Pedestal> pedestals) {
-		//TODO
-		for(Pedestal pedestal : pedestals)
-			;
-		return null;
+	static class Solution {
+		public Vector3 position_EFG;
+		public double condition;
+	}
+	
+	static public Solution computeTarget(Vector3 origin, List<Pedestal> pedestals) {		
+		//count pedestal sensors active in fuzed solution
+		int pedSensorCnt =0;
+		for(Pedestal pedestal : pedestals) {
+			// begin with case (by 2) for az,el of pedestal... need not always be 2...
+			pedSensorCnt += 2;
+		}		
+		Vector3 row = new Vector3(Double.NaN,Double.NaN,Double.NaN);
+		double [] rhs = new double [pedSensorCnt];
+		double [][] matrixData = new double [pedSensorCnt][3];
+		int i = 0; 
+		for(Pedestal pedestal : pedestals) {			
+			//Assuming two axial sensors per pedestal...			
+			row.put(pedestal.q_AG.getImage_k());//axial AZ
+			matrixData[i][0] = row.getX();
+			matrixData[i][1]= row.getY();
+			matrixData[i][2] = row.getZ();
+			rhs[i] = pedestal.geo_EFG.subtract(origin).getDot(row);
+			i+=1;
+			
+			row.put(pedestal.q_AG.getImage_j());//axial EL
+			matrixData[i][0] = row.getX();
+			matrixData[i][1]= row.getY();
+			matrixData[i][2] = row.getZ();
+			rhs[i] = pedestal.geo_EFG.subtract(origin).getDot(row);
+			i+=1;	
+		}
+				
+		Solution solution = new Solution();
+		RealMatrix a = new Array2DRowRealMatrix(matrixData);
+		System.out.println("Sensors in solution: "+a.getRowDimension());
+		System.out.println(a.getColumnDimension()); // 3
+		
+		SingularValueDecomposition svd = new SingularValueDecomposition(a);
+		RealVector b = new ArrayRealVector(rhs);
+		RealVector y = svd.getSolver().solve(b);
+		
+		solution.condition = svd.getConditionNumber();
+		solution.position_EFG = new Vector3(y.getEntry(0), y.getEntry(1), y.getEntry(2)).add(origin);
+		
+		return solution;
 	}
 	
 	public String toString() { 
