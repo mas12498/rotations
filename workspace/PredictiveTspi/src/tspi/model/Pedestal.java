@@ -250,6 +250,7 @@ public class Pedestal {
 		}
 				
 		Solution solution = new Solution();
+		
 		RealMatrix a = new Array2DRowRealMatrix(matrixData);
 		System.out.println("Sensors in solution: "+a.getRowDimension());
 		System.out.println(a.getColumnDimension()); // 3
