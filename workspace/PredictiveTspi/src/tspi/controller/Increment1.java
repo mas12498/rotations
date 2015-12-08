@@ -191,14 +191,21 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 				continue;
 			}
 			
+			//Debug
+			System.out.println( "\nTarget "+target.getTime()+" : " 
+					+ " lon="+target.getEllipsoidalCoordinates().getEastLongitude().getDegrees()
+					+ " lat="+target.getEllipsoidalCoordinates().getNorthLatitude().getDegrees()
+					+ " h="+target.getHeight());
+			
 			// point pedestals to target
 			for(Pedestal pedestal : selected)
 				pedestal.point(geo);
 			
+			// TODO obtain the origin from somewhere instead of just using the first pedestal!
+			Vector3 origin = new Vector3( selected.get(0).getGeocentricCoordinates() );
+			
 			// compute new target and measure error
-			Pedestal.Solution solution = Pedestal.computeTarget(
-					selected.get(0).getGeocentricCoordinates(), // TODO obtain the origin from somewhere instead of just using the first pedestal!
-					selected);
+			Pedestal.Solution solution = Pedestal.computeTarget( origin, selected );
 			
 			// set error in the corresponding target 
 			Vector3 targetPrime;
