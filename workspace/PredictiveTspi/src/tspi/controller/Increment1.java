@@ -24,6 +24,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import rotation.Vector3;
 import tspi.model.Pedestal;
 import tspi.model.PedestalModel;
+import tspi.model.Solution;
 import tspi.model.Target;
 import tspi.model.TargetModel;
 
@@ -174,7 +175,7 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 			pedestal.point( geo );
 		
 		// clear error info
-		this.targets.clearDeltas();
+		this.targets.clearSolutions();
 		
 		// notify all listeners
 		this.targets.fireTableRowsUpdated(0, targets.getRowCount()-1);
@@ -205,17 +206,19 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 			Vector3 origin = new Vector3( selected.get(0).getGeocentricCoordinates() );
 			
 			// compute new target and measure error
-			Pedestal.Solution solution = Pedestal.computeTarget( origin, selected );
+			Solution solution = new Solution( origin, selected );
+			solution.measureError( target.getGeocentricCoordinates() );
+			target.setSolution(solution);
 			
-			// set error in the corresponding target 
-			Vector3 targetPrime;
-			if( solution==null || solution.position_EFG==null )
-				targetPrime = new Vector3(0.0,0.0,0.0);
-			else targetPrime = solution.position_EFG;
-			targetPrime.subtract( target.getGeocentricCoordinates() );
-			double error = targetPrime.getAbs();
-			target.setError(error);
-			// TODO display more conditioning and error ellipse info, maybe even the calculated target location.
+//			// set error in the corresponding target 
+//			Vector3 targetPrime;
+//			if( solution==null || solution.position_EFG==null )
+//				targetPrime = new Vector3(0.0,0.0,0.0);
+//			else targetPrime = solution.position_EFG;
+//			targetPrime.subtract( target.getGeocentricCoordinates() );
+//			double error = targetPrime.getAbs();
+//			target.setError(error);
+//			// TODO display more conditioning and error ellipse info, maybe even the calculated target location.
 		}
 		
 		// clear pedestal heading data
@@ -250,7 +253,7 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 			if(list.size() >= 2) {
 				// deselect the target table, and clear the error deltas
 				//targetTable.getSelectionModel().clearSelection();
-				targets.clearDeltas();
+				targets.clearSolutions();
 
 				ComputeError(list, targets);
 			}

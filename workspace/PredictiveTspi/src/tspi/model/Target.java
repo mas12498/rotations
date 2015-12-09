@@ -7,10 +7,8 @@ public class Target {
 	long time;
 	Location wgs84;
 	Vector3 geo;
-
-	Double error; // magnitude of error when deriving the target from sensor 
-	// TODO will eventually be multiple values, from multiple startegies, so this will need to be revisited.
-
+	Solution solution;
+	
 	public Target(long time, double lat, double lon, double h) {
 		this.time = time;
 		this.wgs84 = new Location(Angle.inDegrees(lat),Angle.inDegrees(lon),h);
@@ -18,7 +16,7 @@ public class Target {
 //		this.wgs84.setLongitude( new Principle( Angle.inDegrees(lon) ) );
 //		this.wgs84.setHeight( h );
 		this.geo = wgs84.getGeocentric();
-		this.error = null;
+		this.solution = null;
 	}
 
 	public Location getEllipsoidalCoordinates() { return this.wgs84; }
@@ -31,7 +29,15 @@ public class Target {
 	public double getE() { return this.geo.getX(); }
 	public double getF() { return this.geo.getY(); }
 	public double getG() { return this.geo.getZ(); }
-	public Double getError() { return this.error; }
+	
+	public Double getError() {
+		if(solution==null) return null;
+		else return solution.error;
+	}
+	public Double getConditionNumber() {
+		if(solution==null) return null;
+		else return solution.condition;
+	}
 
 	public void setTime(long time) { this.time = time; }
 
@@ -83,8 +89,8 @@ public class Target {
 		this.wgs84.set( geo );
 	}
 
-	public void setError(double error) {
-		this.error = new Double(error);
+	public void setSolution(Solution solution) {
+		this.solution = solution;
 	}
 
 	public String toString() { 

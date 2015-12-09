@@ -190,7 +190,6 @@ public class Pedestal {
 //		Vector3 vertical.put(this.q_AN.getImage_j()); //right (across) pedestal.aperture (unit j)
 //		Vector3 horizontal.put(this.q_AN.getImage_k()); //downward (across) pedestal.aperture (unit k)
 		
-		
 		// //OP aligns geocentric to pedestal.aperture axial coordinates if perfectly located, aligned pedestal and no atmosphere:
 		//System.out.println("post-twist annihilation:"+ this.q_AN.getImage_i().toString(5));		
 		//System.out.println("q_AN twisted aftr repair:"+ q_AN.getEuler_i_kji().signedAngle().getDegrees());
@@ -205,92 +204,10 @@ public class Pedestal {
 		ped_AER.getPrincipleElevation().put( ped_q_AN.getEuler_j_kji());		
 	}
 	
-	public static class Solution {
-		public Vector3 position_EFG;
-		public double condition;
-	}
-	
-	static public Solution computeTarget(Vector3 origin, List<Pedestal> pedestals) {		
-		//count pedestal sensors active in fuzed solution
-		int pedSensorCnt =0;
-		for(Pedestal pedestal : pedestals) {
-			// begin with case (by 2) for az,el of pedestal... need not always be 2...
-			pedSensorCnt += 2;
-
-			//Debug
-			System.out.println( "Pedestal "+pedestal.getSystemId()+" : "
-//					+ "EFG=" + pedestal.getGeocentricCoordinates().toString(5)
-					+ " lon="+pedestal.getEllipsoidalCoordinates().getEastLongitude().getDegrees()
-					+ " lat="+pedestal.getEllipsoidalCoordinates().getNorthLatitude().getDegrees()
-					+ " h="+pedestal.getHeight()
-					+ " az=" + pedestal.getAzimuth()
-					+ " el=" + pedestal.getElevation());
-		}		
-		Vector3 row = new Vector3(Double.NaN,Double.NaN,Double.NaN);
-		double [] rhs = new double [pedSensorCnt];
-		double [][] matrixData = new double [pedSensorCnt][3];
-		int i = 0; 
-		for(Pedestal pedestal : pedestals) {	
-			//compute q_AG
-			System.out.println("q_NG="+pedestal.q_NG.toString(5));
-			System.out.println("q_AN="+pedestal.q_AN.toString(5));
-			pedestal.q_AG.put(new Operator(pedestal.q_NG).rightMultiply(pedestal.q_AN));
-			System.out.println("Pedestal "+pedestal.getSystemId()+": q_AG = "+pedestal.q_AG.toString(5));
-			//Assuming two axial sensors per pedestal...			
-			row = pedestal.q_AG.getImage_k();//axial AZ
-			matrixData[i][0] = row.getX();
-			matrixData[i][1]= row.getY();
-			matrixData[i][2] = row.getZ();
-			
-			rhs[i] = new Vector3(origin).subtract(pedestal.geo_EFG).getDot(row);
-			i+=1;
-			
-			row = pedestal.q_AG.getImage_j();//axial EL
-			matrixData[i][0] = row.getX();
-			matrixData[i][1]= row.getY();
-			matrixData[i][2] = row.getZ();
-			rhs[i] = new Vector3(origin).subtract(pedestal.geo_EFG).getDot(row);
-			i+=1;	
-		}
-				
-		Solution solution = new Solution();
-		
-		RealMatrix a = new Array2DRowRealMatrix(matrixData);
-	System.out.println("Sensors in solution: "+a.getRowDimension());
-	System.out.println(a.getColumnDimension()); // 3
-		
-		SingularValueDecomposition svd = new SingularValueDecomposition(a);
-		RealVector b = new ArrayRealVector(rhs);
-		RealVector y = svd.getSolver().solve(b);
-		
-		solution.condition = svd.getConditionNumber();
-//		solution.position_EFG = new Vector3(y.getEntry(0), y.getEntry(1), y.getEntry(2)).add(origin);
-		solution.position_EFG = new Vector3(y.getEntry(0), y.getEntry(1), y.getEntry(2)).negate().add(origin);
-	System.out.println("Condition number : "+solution.condition);
-	System.out.println( solution.position_EFG.toString(5) );
-		
-		return solution;
-	}
-	
 	public String toString() { 
 		return this.systemId 
 				+ "("+this.getLatitude()+", "+this.getLongitude()+", "+this.getHeight()+")"
 				+"("+ped_AER.getAzimuth().getDegrees()+", "+ped_AER.getElevation().getDegrees()+")";
 	}
-
-
-
-//	// TODO
-//	//	pedestal.direction =f(az,el); //NED
-//	protected Vector3 direction(Principle az, Principle el){
-//		double elCos = el.cos();
-//		return direction.put(elCos * az.cos(), elCos * az.sin(),
-//				-el.sin());
-//	}
-
-	
-
-
-
 
 }

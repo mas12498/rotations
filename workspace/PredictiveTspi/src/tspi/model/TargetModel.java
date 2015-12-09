@@ -17,7 +17,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 public class TargetModel extends AbstractTableModel implements Iterable<Target> {
 
 	protected ArrayList<Target> targets = new ArrayList<Target>();
-	public static final int TIME=0, LAT=1, LON=2, H=3, ERR = 4;
+	public static final int TIME=0, LAT=1, LON=2, H=3, ERR = 4, COND =5;
 	public static final int GEOCENTRIC=1, ELLIPSOIDAL=2;
 	protected int system = ELLIPSOIDAL;
 	
@@ -39,9 +39,9 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 		this.fireTableRowsDeleted(index, index);
 	}
 	
-	public void clearDeltas() {
+	public void clearSolutions() {
 		for(Target target : targets)
-			target.error = null;
+			target.solution = null;
 	}
 	
 	public void setCoordinateSystem(int system) {
@@ -55,7 +55,7 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 	public Iterator<Target> iterator() { return this.targets.iterator(); }
 	
 	@Override
-	public int getColumnCount() { return 5; }
+	public int getColumnCount() { return 6; }
 
 	@Override
 	public int getRowCount() { return targets.size(); }
@@ -69,6 +69,7 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 			case LON: return "Longitude";
 			case H: return "Height";
 			case ERR: return "Error";
+			case COND: return "Condition";
 			}
 		} else if( system==GEOCENTRIC ) {
 			switch(col) {
@@ -77,6 +78,7 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 			case LON: return "F";
 			case H: return "G";
 			case ERR: return "Error";
+			case COND: return "Condition";
 			}
 		}
 		return "";
@@ -90,6 +92,7 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 		case LON: return Double.class;
 		case H: return Double.class;
 		case ERR: return Double.class;
+		case COND: return Double.class;
 		default: return Object.class;
 		}
 	}
@@ -103,7 +106,14 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 			case LAT: return target.getLatitude();
 			case LON: return target.getLongitude();
 			case H: return target.getHeight();
-			case ERR: return target.getError();
+			case ERR:
+				if(target.solution!=null)
+					return target.solution.error;
+				break;
+			case COND:
+				if(target.solution!=null)
+					return target.solution.condition;
+				break;
 			}
 		} else if( system==GEOCENTRIC ) {
 			switch(col) {
@@ -111,7 +121,14 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 			case LAT: return target.getE();
 			case LON: return target.getF();
 			case H: return target.getG();
-			case ERR: return target.getError();
+			case ERR:
+				if(target.solution!=null)
+					return target.solution.error;
+				break;
+			case COND:
+				if(target.solution!=null)
+					return target.solution.condition;
+				break;
 			}
 		}
 		return null;
@@ -119,7 +136,7 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 
 	@Override
 	public boolean isCellEditable(int row, int col) {
-		if(col==ERR)
+		if(col==ERR || col==COND)
 			return false;
 		return true;
 	}
@@ -133,7 +150,7 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 			case LAT: target.setLatitude( (Double)value ); break;
 			case LON: target.setLongitude( (Double)value ); break;
 			case H: target.setHeight( (Double)value ); break;
-			case ERR: target.setError( (Double)value ); break;
+			case ERR: case COND: break;//target.setError( (Double)value ); break;
 			}
 		} else if( system==GEOCENTRIC ) {
 			switch(col) {
@@ -141,7 +158,7 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 			case LAT: target.setE( (Double)value ); break;
 			case LON: target.setF( (Double)value ); break;
 			case H: target.setG( (Double)value ); break;
-			case ERR: target.setError( (Double)value ); break;
+			case ERR: case COND: break;//target.setError( (Double)value ); break;
 			}
 		}
 	}
@@ -187,9 +204,11 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 			writer.append(Double.toString(target.getLongitude()));
 			writer.append(",");
 			writer.append(Double.toString(target.getHeight()));
-			if(target.error!=null) {
+			if(target.solution!=null) {
 				writer.append(",");
-				writer.append(Double.toString(target.getError()));
+				writer.append(Double.toString(target.solution.error));
+				writer.append(",");
+				writer.append(Double.toString(target.solution.condition));
 				// TODO there will be more complex measures of error...
 			}
 			writer.println();
@@ -210,7 +229,7 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 				cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 			else cell = super.getTableCellRendererComponent(table, value, false, hasFocus, row, col);
 			
-			if(col==ERR )
+			if(col==ERR || col==COND)
 				cell.setEnabled(false);
 			else
 				cell.setEnabled(true);
