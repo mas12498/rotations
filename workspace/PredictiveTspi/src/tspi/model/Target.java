@@ -61,7 +61,7 @@ public class Target {
 		if(wgs84.equals(null)){
 			wgs84 = new Location(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
-		this.wgs84.setEllipsoidHeight(h);
+		this.wgs84.setGeodeticHeight(h);
 		this.geo = wgs84.getGeocentric();
 	}
 
@@ -70,7 +70,7 @@ public class Target {
 		if(wgs84.equals(null)){
 			wgs84 = new Location(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
-		this.wgs84.set( geo );
+		this.wgs84.setLocation( geo );
 	}
 
 	public void setF(double F) {
@@ -78,7 +78,7 @@ public class Target {
 		if(wgs84.equals(null)){
 			wgs84 = new Location(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
-		this.wgs84.set( geo );
+		this.wgs84.setLocation( geo );
 	}
 
 	public void setG(double G) {
@@ -86,7 +86,7 @@ public class Target {
 		if(wgs84.equals(null)){
 			wgs84 = new Location(Angle.inDegrees(0),Angle.inDegrees(0),0);
 		}
-		this.wgs84.set( geo );
+		this.wgs84.setLocation( geo );
 	}
 
 	public void setSolution(Solution solution) {

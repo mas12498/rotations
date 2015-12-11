@@ -13,10 +13,10 @@ public class Pedestal {
 	
 	protected String systemId; // system identifier
 	protected final Location wgs84_LLh; // lat, lon angles, h meters ellipsoid coordinates
-	protected final Vector3 geo_EFG; // EFG: G location geocentric vector
-	protected final Operator q_NG; //North East Down NED: N-->G
 	protected final Position ped_AER; // az, el angle r meters 
+	protected final Vector3 geo_EFG; // EFG: G location geocentric vector
 	protected final Vector3 dir_NED; // NED navigation vector
+	protected final Operator q_NG; //navigation North East Down {NED} to geocentric {EFG}: N-->G
 	protected final Operator q_AN; //range forward, horz right, vert down  RHV: A-->N
 	protected final Operator q_AG;
 	//TODO Matrix error;// error model 
@@ -34,7 +34,7 @@ public class Pedestal {
 		this.geo_EFG = wgs84_LLh.getGeocentric();
 		
 		//axial operator transforms from local navigation alignment to Geocentric: {NED}-->{XYZ}  
-		this.q_NG = wgs84_LLh.getOpNavToGeo();
+		this.q_NG = wgs84_LLh.getNavigationToGeocentric();
 		
 		
 		/* Pedestal: position aperture class variable PLACE HOLDERS... */
@@ -84,13 +84,13 @@ public class Pedestal {
 	public void setLatitude(double lat) {
 		this.wgs84_LLh.setNorthLatitude(Angle.inDegrees(lat) );//put(lat, wgs84.getY(), wgs84.getZ());
 		this.geo_EFG.put(this.wgs84_LLh.getGeocentric());
-		this.q_NG.put(this.wgs84_LLh.getOpNavToGeo());//local Nav to Geo axial rotation.
+		this.q_NG.put(this.wgs84_LLh.getNavigationToGeocentric());//local Nav to Geo axial rotation.
 	}
 	
 	public void setLongitude(double lon) {
 		this.wgs84_LLh.setEastLongitude( Angle.inDegrees(lon) );//.put(wgs84.getX(), lon, wgs84.getZ());
 		this.geo_EFG.put(this.wgs84_LLh.getGeocentric());
-		this.q_NG.put(this.wgs84_LLh.getOpNavToGeo());//local Nav to Geo axial rotation.
+		this.q_NG.put(this.wgs84_LLh.getNavigationToGeocentric());//local Nav to Geo axial rotation.
 	}
 	
 	/**
@@ -111,27 +111,27 @@ public class Pedestal {
 	}
 	
 	public void setHeight(double meters) {
-		this.wgs84_LLh.setEllipsoidHeight( meters );//.put(wgs84.getX(), wgs84.getY(), meters);
+		this.wgs84_LLh.setGeodeticHeight( meters );//.put(wgs84.getX(), wgs84.getY(), meters);
 		this.geo_EFG.put(this.wgs84_LLh.getGeocentric());
-		this.q_NG.put(this.wgs84_LLh.getOpNavToGeo());//local Nav to Geo axial rotation.
+		this.q_NG.put(this.wgs84_LLh.getNavigationToGeocentric());//local Nav to Geo axial rotation.
 	}
 	
 	public void setE(double E) {
 		this.geo_EFG.put(E, geo_EFG.getY(), geo_EFG.getZ());
-		this.wgs84_LLh.set(this.geo_EFG);
-		this.q_NG.put(this.wgs84_LLh.getOpNavToGeo());//local Nav to Geo axial rotation.
+		this.wgs84_LLh.setLocation(this.geo_EFG);
+		this.q_NG.put(this.wgs84_LLh.getNavigationToGeocentric());//local Nav to Geo axial rotation.
 	}
 	
 	public void setF(double F) {
 		this.geo_EFG.put(geo_EFG.getX(), F, geo_EFG.getZ());
-		this.wgs84_LLh.set(this.geo_EFG);
-		this.q_NG.put(this.wgs84_LLh.getOpNavToGeo());//local Nav to Geo axial rotation.
+		this.wgs84_LLh.setLocation(this.geo_EFG);
+		this.q_NG.put(this.wgs84_LLh.getNavigationToGeocentric());//local Nav to Geo axial rotation.
 	}
 	
 	public void setG(double G) {
 		this.geo_EFG.put(geo_EFG.getX(), geo_EFG.getY(), G);
-		this.wgs84_LLh.set(this.geo_EFG);
-		this.q_NG.put(this.wgs84_LLh.getOpNavToGeo());//local Nav to Geo axial rotation.
+		this.wgs84_LLh.setLocation(this.geo_EFG);
+		this.q_NG.put(this.wgs84_LLh.getNavigationToGeocentric());//local Nav to Geo axial rotation.
 	}
 	
 	public void setAzimuth(double degrees) {

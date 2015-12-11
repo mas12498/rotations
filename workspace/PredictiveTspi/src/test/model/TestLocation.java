@@ -20,6 +20,7 @@ public class TestLocation extends TestCase {
 		int cnt = 0;
 		Operator nav2geo = new Operator(Operator.NAN);
 		Location tmp2 = new Location(Angle.inDegrees(Double.NaN), Angle.inDegrees(Double.NaN),Double.NaN);
+		Location tmp = new Location(Angle.inDegrees(Double.NaN), Angle.inDegrees(Double.NaN),0.0);
 //		Principle plat = tmp2.getNorthLatitude().getPrinciple();
 //		Principle plon =  tmp2.getEastLongitude().getPrinciple();
 //		Principle ptheta = tmp2.getNorthLatitude().getPrinciple(); //Principle.arcTanHalfAngle(q_NG.getEuler_j_kji().cotHalf());
@@ -36,11 +37,11 @@ public class TestLocation extends TestCase {
 					
 					tmp2.setNorthLatitude(Angle.inDegrees(phi));
 					tmp2.setEastLongitude(Angle.inDegrees(lambda));
-					tmp2.setEllipsoidHeight(hgt);
-					nav2geo.put(tmp2.getOpNavToGeo());
+					tmp2.setGeodeticHeight(hgt);
+					nav2geo.put(tmp2.getNavigationToGeocentric());
 //					Location tmp1 = new Location(tmp2.getNorthLatitude(), tmp2.getEastLongitude(), tmp2.getEllipsoidHeight());
 //					Location tmp = new Location(tmp1);
-					Location tmp = Location.createLocation(nav2geo,0.0);
+					tmp.setGeodeticLocation(nav2geo);
 					System.out.print(String.format(" phi = %8f" , phi)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
 					System.out.print(String.format(" lambda = %8f" , lambda)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
 					System.out.print(String.format(" latitude = %8f" , tmp.getNorthLatitude().getDegrees()));
