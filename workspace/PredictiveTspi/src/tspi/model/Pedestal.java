@@ -1,13 +1,5 @@
 package tspi.model;
 
-import java.util.List;
-
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.ArrayRealVector;
-import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.linear.RealVector;
-import org.apache.commons.math3.linear.SingularValueDecomposition;
-
 import rotation.Angle;
 import rotation.Operator;
 import rotation.Principle;
@@ -185,7 +177,7 @@ public class Pedestal {
 		Principle gTwist = q_AN.getEuler_i_kji();
 		this.q_AN.rightMultExpI(gTwist.negate()); 
 		
-		//Assign local aperture directions in local navigation frame coordinates -- from Operator q_AN:
+		//Assign local aperture directions in local navigation frame coordinates -- from final Operator q_AN:
 		dir_NED.put(this.q_AN.getImage_i()); //out pedestal.aperture (unit i) 
 //		Vector3 vertical.put(this.q_AN.getImage_j()); //right (across) pedestal.aperture (unit j)
 //		Vector3 horizontal.put(this.q_AN.getImage_k()); //downward (across) pedestal.aperture (unit k)
@@ -196,14 +188,14 @@ public class Pedestal {
 		//System.out.println("Geocentric direction:"+ r_PT_G.divide(this.aperture.getRange()).toString(7));
 		//System.out.println("Op Geocentric direction match:"+ new Operator(new Quaternion(q_NG).rightMultiply(q_AN)).getImage_i().unit().toString(7));				
 	}
-
-	// pedestal.point = f(orient) 	
-	public void pointNED(Operator ped_q_AN) {
-		//assume non dumping pedestal
-		ped_AER.getPrincipleAzimuth().put( ped_q_AN.getEuler_k_kji());
-		ped_AER.getPrincipleElevation().put( ped_q_AN.getEuler_j_kji());		
-	}
-	
+//
+////	// pedestal.point = f(orient) 	
+////	public void pointNED(Operator ped_q_AN) {
+////		//assume non dumping pedestal
+////		ped_AER.getPrincipleAzimuth().put( ped_q_AN.getEuler_k_kji());
+////		ped_AER.getPrincipleElevation().put( ped_q_AN.getEuler_j_kji());		
+////	}
+//	
 	public String toString() { 
 		return this.systemId 
 				+ "("+this.getLatitude()+", "+this.getLongitude()+", "+this.getHeight()+")"

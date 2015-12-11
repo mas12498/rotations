@@ -1,7 +1,7 @@
 /**
  * 
  */
-package tspi.model;
+package test.model;
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.LUDecomposition;
@@ -15,6 +15,7 @@ import rotation.Principle;
 import rotation.Quaternion;
 import rotation.QuaternionMath;
 import rotation.Vector3;
+import tspi.model.Location;
 
 
 
@@ -34,7 +35,7 @@ public class TestPedestal extends TestCase {
 //		  Principle ptheta =new Principle(theta);
 //		  System.out.println("ptheta: "+ptheta.signedAngle().getDegrees());	
 		  
-		Operator q =QuaternionMath.eulerRotate_kj(temp.getLongitude(), theta.getPrinciple());
+		Operator q =QuaternionMath.eulerRotate_kj(temp.getEastLongitude().getPrinciple(), theta.getPrinciple());
 
 //		Principle pDump = q.getEuler_i_kji();
 //		System.out.println("is dump twist: "+pDump.signedAngle().getDegrees());
@@ -104,7 +105,7 @@ public class TestPedestal extends TestCase {
 			//initial principle Euler angles definition!
 			Principle paz = az.getPrinciple();
 			Principle pel = el.getPrinciple();
-			Principle ptw = tw.getPrinciple();
+//			Principle ptw = tw.getPrinciple();
 			
 			az = Angle.inDegrees(45);
 			el = Angle.inDegrees(30);
@@ -146,11 +147,12 @@ public class TestPedestal extends TestCase {
 			pel = new Principle(Angle.inDegrees(30));
 			q_AN = QuaternionMath.eulerRotate_kj(paz, pel);
 			
-			Vector3 direction = new Vector3(pel.cos() * paz.cos(), pel.cos() * paz.sin(),-pel.sin());
+//			Vector3 direction = new Vector3(pel.cos() * paz.cos(), pel.cos() * paz.sin(),-pel.sin());
+//			
+//			Vector3 rgNormal = q_AN.getImage_i();
+//			Vector3 azNormal = q_AN.getImage_j();
+//			Vector3 elNormal = q_AN.getImage_k();
 			
-			Vector3 rgNormal = q_AN.getImage_i();
-			Vector3 azNormal = q_AN.getImage_j();
-			Vector3 elNormal = q_AN.getImage_k();
 //			System.out.println("**************************************");
 //			System.out.println("Az:"+paz.unsignedAngle().getDegrees());
 //			System.out.println("El:"+pel.signedAngle().getDegrees());
@@ -213,13 +215,13 @@ public class TestPedestal extends TestCase {
 			Principle pitch = q_AN.getEuler_j_kji();
 			Principle twi = q_AN.getEuler_i_kji();
 			
-//			System.out.println("*************Rank-3*******************");
-//			System.out.println("az : "+yaw.unsignedAngle().getDegrees()); 
-//			System.out.println("el : "+pitch.signedAngle().getDegrees());
-//			System.out.println("tw : "+twi.signedAngle().getDegrees());
-//			System.out.println("d_AN : "+d_AN.toString(5)); 
-//			System.out.println("**************************************");
-//			System.out.println("*************Rank-2*******************");
+			System.out.println("*************Rank-3*******************");
+			System.out.println("az : "+yaw.unsignedAngle().getDegrees()); 
+			System.out.println("el : "+pitch.signedAngle().getDegrees());
+			System.out.println("tw : "+twi.signedAngle().getDegrees());
+			System.out.println("d_AN : "+d_AN.toString(5)); 
+			System.out.println("**************************************");
+			System.out.println("*************Rank-2*******************");
 			
 			Operator q_ANx = new Operator(Quaternion.NAN);
 			q_ANx.put(QuaternionMath.foldoverI(d_AN).conjugate());

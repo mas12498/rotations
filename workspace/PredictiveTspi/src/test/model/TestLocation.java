@@ -1,19 +1,20 @@
 /**
  * 
  */
-package tspi.model;
+package test.model;
 
 import junit.framework.TestCase;
 import rotation.Angle;
 //import rotation.BasisUnit;
 import rotation.Operator;
 //import rotation.Principle;
+import tspi.model.Location;
 
 /**
  * @author mike
  *
  */
-public class TestWGS84 extends TestCase {
+public class TestLocation extends TestCase {
 
 	public final void testWGS84WGS84() {
 		int cnt = 0;
@@ -22,8 +23,6 @@ public class TestWGS84 extends TestCase {
 //		Principle plat = tmp2.getNorthLatitude().getPrinciple();
 //		Principle plon =  tmp2.getEastLongitude().getPrinciple();
 //		Principle ptheta = tmp2.getNorthLatitude().getPrinciple(); //Principle.arcTanHalfAngle(q_NG.getEuler_j_kji().cotHalf());
-		Angle atheta = new Angle(Angle.REVOLUTION);
-		Angle alon = new Angle(Angle.REVOLUTION);
 		double qlat;
 		double qlon;
 		for (int i = -3; i <= 3; i++) {

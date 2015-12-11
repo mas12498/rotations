@@ -91,6 +91,26 @@ public class Location {
 		return new Location(Angle.inPiRadians(Double.NaN), Angle.inPiRadians(Double.NaN), Double.NaN);
 	}
 	
+	/**
+	 * @param
+	 * @Note Sets horizontal WGS84 ellipsoid coordinates by local geodetic rotation operator.
+	 */
+	public void setHorizontal(Operator q_NG) { // Operator q_NG84,double height84){
+		double dump = q_NG.getEuler_i_kji().tanHalf();
+		Principle pLat = q_NG.getEuler_j_kji().addRight().negate();
+		Principle pLon = q_NG.getEuler_k_kji();
+		if (Double.isNaN(dump)) { // Northern hemisphere
+			_latitude.put(pLat.negate().signedAngle());
+			_longitude.put(pLon.addStraight().negate().unsignedAngle());
+		} else if (dump == 0d) { // Southern hemisphere
+			_latitude.put(pLat.signedAngle());
+			_longitude.put(pLon.unsignedAngle());
+		}
+		System.out.println("Null pointer exception ERROR: Not wgs84 geo-location! -- NOT VALID q_NG Operator.");
+		_latitude.put(null);
+		_longitude.put(null);
+	}
+	
 
 	
 	//Getters

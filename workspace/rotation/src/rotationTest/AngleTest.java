@@ -488,11 +488,12 @@ public class AngleTest {
 //		assertEquals("Ugh: ",t.signedAngle().getDegrees(),-1.0d,1e-13);
 
 		//		fail("Not yet implemented"); // TODO
-		boolean testZero = (-0 == 0)?true:false;
-		System.out.println("neg zero equals pos zero:"+testZero);
-		testZero = (-0 < 0)?true:false;
-		System.out.println("neg less than pos zero:"+testZero);
-		testZero = (-0 < 0)?true:false;
+		boolean testZero;
+//		testZero = (-0 == 0)?true:false;
+//		System.out.println("neg zero equals pos zero:"+testZero);
+//		testZero = (-0 < 0)?true:false;
+//		System.out.println("neg less than pos zero:"+testZero);
+//		testZero = (-0 < 0)?true:false;
 		Double num = 0d;
 		testZero = (num.equals(-0d))?true:false;
 		System.out.println("object zero same negZero:"+testZero);
