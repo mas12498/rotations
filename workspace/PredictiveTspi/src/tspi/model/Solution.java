@@ -52,14 +52,14 @@ public class Solution {
 			matrixData[i][1]= row.getY();
 			matrixData[i][2] = row.getZ();
 			
-			rhs[i] = new Vector3(origin).subtract(pedestal.geo_EFG).getDot(row);
+			rhs[i] = new Vector3(origin).subtract(pedestal.r_G).getDot(row);
 			i+=1;
 			
 			row = pedestal.q_AG.getImage_j();//axial EL
 			matrixData[i][0] = row.getX();
 			matrixData[i][1]= row.getY();
 			matrixData[i][2] = row.getZ();
-			rhs[i] = new Vector3(origin).subtract(pedestal.geo_EFG).getDot(row);
+			rhs[i] = new Vector3(origin).subtract(pedestal.r_G).getDot(row);
 			i+=1;	
 		}
 		

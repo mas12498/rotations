@@ -7,10 +7,12 @@ import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
@@ -104,11 +106,22 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 		targetTable.setDefaultRenderer(String.class, cell);
 		//targetTable.getColumnModel().getColumn(0).setCellRenderer(cell);
 		
-		JScrollPane pedestalScroll = new JScrollPane(pedestalTable);
-		JScrollPane targetScroll = new JScrollPane(targetTable);
+		JPanel pnlPedestals = new JPanel( new BorderLayout() );
+		JLabel lblPedestals = new JLabel("Pedestals");
+		lblPedestals.setHorizontalAlignment(JLabel.CENTER);
+		JScrollPane scrPedestals = new JScrollPane(pedestalTable);
+		pnlPedestals.add(lblPedestals, BorderLayout.NORTH);
+		pnlPedestals.add(scrPedestals, BorderLayout.CENTER);
+		
+		JPanel pnlTarget = new JPanel( new BorderLayout() );
+		JLabel lblTarget = new JLabel("Targets");
+		lblTarget.setHorizontalAlignment(JLabel.CENTER);
+		JScrollPane scrTarget = new JScrollPane(targetTable);
+		pnlTarget.add(lblTarget, BorderLayout.NORTH);
+		pnlTarget.add(scrTarget, BorderLayout.CENTER);
 		
 		JSplitPane split = new JSplitPane(
-				JSplitPane.VERTICAL_SPLIT, true, pedestalScroll, targetScroll);
+				JSplitPane.VERTICAL_SPLIT, true, pnlPedestals, pnlTarget);
 		split.setResizeWeight(0.5);
 		split.setDividerLocation(0.5);
 		
