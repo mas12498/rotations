@@ -207,8 +207,8 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 			
 			//Debug
 			System.out.println( "\nTarget "+target.getTime()+" : " 
-					+ " lon="+target.getEllipsoidalCoordinates().getEastLongitude().getDegrees()
-					+ " lat="+target.getEllipsoidalCoordinates().getNorthLatitude().getDegrees()
+					+ " lon="+target.getEllipsoidalCoordinates().getEastLongitude().toDegrees(7)
+					+ " lat="+target.getEllipsoidalCoordinates().getNorthLatitude().toDegrees(7)
 					+ " h="+target.getHeight());
 			
 			// point pedestals to target

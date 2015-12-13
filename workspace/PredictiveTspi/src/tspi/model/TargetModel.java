@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -204,11 +205,17 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 			writer.append(Double.toString(target.getLongitude()));
 			writer.append(",");
 			writer.append(Double.toString(target.getHeight()));
+			
+//			NumberFormat localFmt = NumberFormat.getInstance();
+//			localFmt.setMaximumFractionDigits(6);
+			
 			if(target.solution!=null) {
 				writer.append(",");
 				writer.append(Double.toString(target.solution.error));
+//				writer.append(localFmt.format(target.solution.error));
 				writer.append(",");
 				writer.append(Double.toString(target.solution.condition));
+//				writer.append(localFmt.format(target.solution.condition));
 				// TODO there will be more complex measures of error...
 			}
 			writer.println();

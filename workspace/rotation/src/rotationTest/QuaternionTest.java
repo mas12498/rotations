@@ -459,7 +459,8 @@ public class QuaternionTest {
 		
 		theta = Angle.inDegrees(30);
 //		Principle pt = new Principle(theta);		
-		t = new Quaternion(0,0,theta.halfSignedPrincipleAngle().getRadians(),0).exp(); //get half angle operator
+//		t = new Quaternion(0,0,theta.bisectorPrincipleAngle().getRadians(),0).exp(); //get half angle operator
+		t = new Quaternion(0,0,theta.getRadians(),0).exp(); //get half angle operator
 		System.out.println("Theta H="+theta.getDegrees()+"deg  "+t.toString());
 		System.out.println("LN[H]="+new Quaternion(t).ln().multiply(180.0/StrictMath.PI).toString());
 		p = new Quaternion(0,1,0,0);
@@ -471,7 +472,8 @@ public class QuaternionTest {
 		
 		theta = Angle.inDegrees(-30);
 //		pt = new Principle(theta);		
-		t = new Quaternion(0,0,theta.halfSignedPrincipleAngle().getRadians(),0).exp();
+//		t = new Quaternion(0,0,theta.bisectorPrincipleAngle().getRadians(),0).exp();
+		t = new Quaternion(0,0,theta.getRadians(),0).exp();
 		System.out.println("Theta H="+theta.getDegrees()+"deg  "+t.toString());
 		System.out.println("LN[H]="+new Quaternion(t).ln().multiply(180.0/StrictMath.PI).toString());
 		p = new Quaternion(0,1,0,0);
@@ -483,7 +485,8 @@ public class QuaternionTest {
 		
 		theta = Angle.inDegrees(120);
 //		pt = new Principle(theta);		
-		t = new Quaternion(0,0,theta.halfSignedPrincipleAngle().getRadians(),0).exp();
+//		t = new Quaternion(0,0,theta.bisectorPrincipleAngle().getRadians(),0).exp();
+		t = new Quaternion(0,0,theta.getRadians(),0).exp();
 		System.out.println("Theta H="+theta.getDegrees()+"deg  "+t.toString());
 		System.out.println("LN[H]="+new Quaternion(t).ln().multiply(180.0/StrictMath.PI).toString());
 		p = new Quaternion(0,1,0,0);
@@ -495,7 +498,8 @@ public class QuaternionTest {
 		
 		theta = Angle.inDegrees(-120);
 //		pt = new Principle(theta);		
-		t = new Quaternion(0,0,theta.halfSignedPrincipleAngle().getRadians(),0).exp();
+//		t = new Quaternion(0,0,theta.bisectorPrincipleAngle().getRadians(),0).exp();
+		t = new Quaternion(0,0,theta.getRadians(),0).exp();
 		System.out.println("Theta H="+theta.getDegrees()+"deg  "+t.toString());
 		System.out.println("LN[H]="+new Quaternion(t).ln().multiply(180.0/StrictMath.PI).toString());
 		p = new Quaternion(0,1,0,0);

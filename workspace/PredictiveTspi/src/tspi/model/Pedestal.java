@@ -195,18 +195,11 @@ public class Pedestal {
 		//System.out.println("Geocentric direction:"+ r_PT_G.divide(this.aperture.getRange()).toString(7));
 		//System.out.println("Op Geocentric direction match:"+ new Operator(new Quaternion(q_NG).rightMultiply(q_AN)).getImage_i().unit().toString(7));				
 	}
-//
-////	// pedestal.point = f(orient) 	
-////	public void pointNED(Operator ped_q_AN) {
-////		//assume non dumping pedestal
-////		ped_AER.getPrincipleAzimuth().put( ped_q_AN.getEuler_k_kji());
-////		ped_AER.getPrincipleElevation().put( ped_q_AN.getEuler_j_kji());		
-////	}
-//	
+
 	public String toString() { 
 		return this.systemId 
-				+ "("+this.getLatitude()+", "+this.getLongitude()+", "+this.getHeight()+")"
-				+"("+aer.getAzimuth().getDegrees()+", "+aer.getElevation().getDegrees()+")";
+				+ "("+ this.wgs84.getNorthLatitude().toDegrees(7) +", "+ this.wgs84.getEastLongitude().toDegrees(7)+", "+this.getHeight()+")"
+				+"("+aer.getAzimuth().toDegrees(4)+", "+aer.getElevation().toDegrees(4)+")";
 	}
 
 }

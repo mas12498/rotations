@@ -41,44 +41,44 @@ public class AngleTest {
 	/**
 	 * Test method for {@link rotation.Angle#Angle(rotation.Angle)}.
 	 * Test method for {@link rotation.Angle#put(rotation.Angle)}.
-	 * Test method for {@link rotation.Angle#halfSignedPrincipleAngle()}.
+	 * Test method for {@link rotation.Angle#bisectorPrincipleAngle()}.
 	 * 
 	 */
-	@Test
+//	@Test
 //	public void testAngleAngle() {
 //	public void testSet() {
-//	public void testHalf() {
-	public void testAngleSetHalfAngle() {
-		Angle a = Angle.inDegrees(30);
-		Angle b = Angle.inDegrees(60);
-		b = new Angle(a);
-		assertEquals(b.getDegrees(),30,1e-14);
-		a.put(b);
-		assertEquals(a.getDegrees(),30,1e-14);
-		a.put(new Angle(b).halfSignedPrincipleAngle());
-		assertEquals(a.getDegrees(),15,1e-14);
-		assertEquals(b.getDegrees(),30,1e-14);
-		
-		a = Angle.inDegrees(120);
-		b.put(new Angle(a).halfSignedPrincipleAngle());
-		assertEquals(b.getDegrees(),60,1e-14);
-
-		a = Angle.inDegrees(240);
-		b.put(new Angle(a).halfSignedPrincipleAngle());
-		//System.out.println(b.getDegrees()+" degrees"+StrictMath.nextUp(a.getDegrees()));
-		assertEquals(b.getDegrees(),-60,1e-13);
-		
-		a = Angle.inDegrees(380);
-		assertEquals(a.getDegrees(),380,1e-14);
-		b.put(new Angle(a).halfSignedPrincipleAngle());
-		assertEquals(b.getDegrees(),10,1e-14);
-		
-		a = Angle.inDegrees(-120);
-		b.put(new Angle(a).halfSignedPrincipleAngle());
-		assertEquals(b.getDegrees(),-60,1e-14);
-
-		
-	}
+////	public void testHalf() {
+//	public void testAngleSetHalfAngle() {
+//		Angle a = Angle.inDegrees(30);
+//		Angle b = Angle.inDegrees(60);
+//		b = new Angle(a);
+//		assertEquals(b.getDegrees(),30,1e-14);
+//		a.set(b);
+//		assertEquals(a.getDegrees(),30,1e-14);
+//		a.set(new Angle(b).bisectorPrincipleAngle());
+//		assertEquals(a.getDegrees(),15,1e-14);
+//		assertEquals(b.getDegrees(),30,1e-14);
+//		
+//		a = Angle.inDegrees(120);
+//		b.set(new Angle(a).bisectorPrincipleAngle());
+//		assertEquals(b.getDegrees(),60,1e-14);
+//
+//		a = Angle.inDegrees(240);
+//		b.set(new Angle(a).bisectorPrincipleAngle());
+//		//System.out.println(b.getDegrees()+" degrees"+StrictMath.nextUp(a.getDegrees()));
+//		assertEquals(b.getDegrees(),-60,1e-13);
+//		
+//		a = Angle.inDegrees(380);
+//		assertEquals(a.getDegrees(),380,1e-14);
+//		b.set(new Angle(a).bisectorPrincipleAngle());
+//		assertEquals(b.getDegrees(),10,1e-14);
+//		
+//		a = Angle.inDegrees(-120);
+//		b.set(new Angle(a).bisectorPrincipleAngle());
+//		assertEquals(b.getDegrees(),-60,1e-14);
+//
+//		
+//	}
 
 	/**
 	 * Test method for {@link rotation.Angle#inRadians(double)}.
@@ -94,35 +94,35 @@ public class AngleTest {
 //		System.out.println(a.getRadians()+" degrees"+StrictMath.nextUp(a.getRadians()));
 		assertEquals(a.getRadians(),1.0,0);
 		
-		a = a.putRadians(.2);
+		a.setRadians(.2);
 //		System.out.println(a.getRadians()+" degrees"+StrictMath.nextUp(a.getRadians()));
 		assertEquals(a.getRadians(),.2,1e-14);
 		
-		a = a.putRadians(-.2);
+		a.setRadians(-.2);
 //		System.out.println(a.getRadians()+" degrees"+(-StrictMath.nextUp(StrictMath.abs(a.getRadians()))));
 		assertEquals(a.getRadians(),-.2,1e-14);
 		
-		a = a.putRadians(2.2);
+		a.setRadians(2.2);
 //		System.out.println(a.getRadians()+" degrees"+StrictMath.nextAfter(a.getRadians(),1));
 		assertEquals(a.getRadians(),2.2,1e-14);
 		
-		a = a.putRadians(-2.2);
+		a.setRadians(-2.2);
 //		System.out.println(a.getRadians()+" degrees"+StrictMath.nextUp(a.getRadians())); 
 		assertEquals(a.getRadians(),-2.2,1e-14);
 
-		a = a.putRadians(5.2);
+		a.setRadians(5.2);
 //		System.out.println(a.getRadians()+" degrees"+StrictMath.nextUp(a.getRadians()));
 		assertEquals(a.getRadians(),5.2,1e-14);
 		
-		a = a.putRadians(-5.2);
+		a.setRadians(-5.2);
 //		System.out.println(a.getRadians()+" degrees"+StrictMath.nextUp(a.getRadians()));
 		assertEquals(a.getRadians(),-5.2,1e-14);
 		
-		a = a.putRadians(50.2);
+		a.setRadians(50.2);
 //		System.out.println(a.getRadians()+" degrees"+StrictMath.nextUp(a.getRadians()));
 		assertEquals(a.getRadians(),50.2,1e-14);	
 
-		a = a.putRadians(-50.2);
+		a.setRadians(-50.2);
 //		System.out.println(a.getRadians()+" degrees"+StrictMath.nextUp(a.getRadians()));
 		assertEquals(a.getRadians(),-50.2,1e-14);	
 
@@ -172,7 +172,7 @@ public class AngleTest {
 	/**
 	 * Test method for {@link rotation.Angle#inDegrees(double)}.
 	 * Test method for {@link rotation.Angle#getDegrees()}.
-	 * Test method for {@link rotation.Angle#putDegrees(double)}.
+	 * Test method for {@link rotation.Angle#setDegrees(double)}.
 	 */
 //	public void testSetDegrees() {
 //	public void testGetDegrees() {
@@ -184,35 +184,35 @@ public class AngleTest {
 //		System.out.println(a.getDegrees() + " degrees" + a.getDegrees() );
 		assertEquals(a.getDegrees(),45.0,0);
 		
-		a.putDegrees(30);
+		a.setDegrees(30);
 //		System.out.println(a.getDegrees()+" degrees"+StrictMath.nextUp(a.getDegrees()));
 		assertEquals(a.getDegrees(),30.0,1e-14);
 		
-		a.putDegrees(-30);
+		a.setDegrees(-30);
 //		System.out.println(a.getDegrees()+" degrees"+(-StrictMath.nextUp(StrictMath.abs(a.getDegrees()))));
 		assertEquals(a.getDegrees(),-30.0,1e-14);
 		
-		a.putDegrees(150);
+		a.setDegrees(150);
 //		System.out.println(a.getDegrees()+" degrees"+StrictMath.nextAfter(a.getDegrees(),1));
 		assertEquals(a.getDegrees(),150.0,1e-13);
 		
-		a.putDegrees(-150);
+		a.setDegrees(-150);
 //		System.out.println(a.getDegrees()+" degrees"+StrictMath.nextUp(a.getDegrees())); 
 		assertEquals(a.getDegrees(),-150.0,1e-13);
 
-		a.putDegrees(330);
+		a.setDegrees(330);
 //		System.out.println(a.getDegrees()+" degrees"+StrictMath.nextUp(a.getDegrees()));
 		assertEquals(a.getDegrees(),330.0,1e-13);
 		
-		a.putDegrees(-330);
+		a.setDegrees(-330);
 //		System.out.println(a.getDegrees()+" degrees"+StrictMath.nextUp(a.getDegrees()));
 		assertEquals(a.getDegrees(),-330.0,1e-13);
 
-		a.putDegrees(530);
+		a.setDegrees(530);
 //		System.out.println(a.getDegrees()+" degrees"+StrictMath.nextUp(a.getDegrees()));
 		assertEquals(a.getDegrees(),530.0,1e-13);
 		
-		a.putDegrees(-530);
+		a.setDegrees(-530);
 //		System.out.println(a.getDegrees()+" degrees"+StrictMath.nextUp(a.getDegrees()));
 		assertEquals(a.getDegrees(),-530.0,1e-13);
 
@@ -261,7 +261,7 @@ public class AngleTest {
 
 	/**
 	 * Test method for {@link rotation.Angle#inMeasure(double, double)}.
-	 * Test method for {@link rotation.Angle#put(double, double)}.
+	 * Test method for {@link rotation.Angle#set(double, double)}.
 	 * Test method for {@link rotation.Angle#getMeasure(double)}.
 	 */
 //	public void testGetMeasure() {
@@ -275,35 +275,35 @@ public class AngleTest {
 		//System.out.println(a.getMeasure(360) + " degrees" + a.getDegrees() );
 		assertEquals(a.getDegrees(),45.0,0);
 		
-		a.put(30,Angle.DEGREES_REVOLUTION);
+		a.set(30,Angle.DEGREES_REVOLUTION);
 		//System.out.println(a.getMeasure(360)+" degrees"+StrictMath.nextUp(a.getDegrees()));
 		assertEquals(a.getMeasure(Angle.DEGREES_REVOLUTION),30.0,1e-14);
 		
-		a.put(-30*60, Angle.ARCMINUTES_REVOLUTION);
+		a.set(-30*60, Angle.ARCMINUTES_REVOLUTION);
 		//System.out.println(a.getMeasure(360)+" degrees"+(-StrictMath.nextUp(StrictMath.abs(a.getDegrees()))));
 		assertEquals(a.getMeasure(Angle.DEGREES_REVOLUTION),-30.0,1e-14);
 		
-		a.put(150,360);
+		a.set(150,360);
 		//System.out.println(a.getMeasure(360)+" degrees"+StrictMath.nextAfter(a.getDegrees(),1));
 		assertEquals(a.getMeasure(360),150.0,1e-13);
 		
-		a.put(-150,360);
+		a.set(-150,360);
 		//System.out.println(a.getMeasure(360)+" degrees"+StrictMath.nextUp(a.getDegrees())); 
 		assertEquals(a.getMeasure(360),-150.0,1e-13);
 
-		a.put(330,360);
+		a.set(330,360);
 		//System.out.println(a.getMeasure(360)+" degrees"+StrictMath.nextUp(a.getDegrees()));
 		assertEquals(a.getMeasure(360),330.0,1e-13);
 		
-		a.put(-330,360);
+		a.set(-330,360);
 		//System.out.println(a.getMeasure(360)+" degrees"+StrictMath.nextUp(a.getDegrees()));
 		assertEquals(a.getMeasure(360),-330.0,1e-13);
 
-		a.put(530,360);
+		a.set(530,360);
 		//System.out.println(a.getMeasure(360)+" degrees"+StrictMath.nextUp(a.getDegrees()));
 		assertEquals(a.getMeasure(360),530.0,1e-13);
 		
-		a.put(-530,360);
+		a.set(-530,360);
 		//System.out.println(a.getMeasure(360)+" degrees"+StrictMath.nextUp(a.getDegrees()));
 		assertEquals(a.getMeasure(360),-530.0,1e-13);
 
@@ -336,7 +336,7 @@ public class AngleTest {
 
 	/**
 	 * Test method for {@link rotation.Angle#inBinary(int, byte)}.
-	 * Test method for {@link rotation.Angle#putModuloBinary(int, byte)}.
+	 * Test method for {@link rotation.Angle#setModuloBinary(int, byte)}.
 	 * Test method for {@link rotation.Angle#getBinary(byte)}.
 	 */
 	@Test
@@ -353,33 +353,33 @@ public class AngleTest {
 		//System.out.println( n + " parts of revolution.");
 		assertEquals(n,8192);		
 		
-		a.putModuloBinary(m, w);
+		a.setModuloBinary(m, w);
 		//System.out.println(a.getMeasure(360)+" degrees");
 		assertEquals(a.getMeasure(360),45,1e-14);
-		a.putModuloBinary(-m, w);
+		a.setModuloBinary(-m, w);
 		//System.out.println(a.getMeasure(360)+" degrees");
 		assertEquals(a.getMeasure(360),-45,1e-14);
 		
-		a.putModuloBinary(-9*m, w);
+		a.setModuloBinary(-9*m, w);
 	    //System.out.println(a.getDegrees()+" degrees");
 		assertEquals(a.getMeasure(360),-45,1e-12);
 			
-		a.putModuloBinary(3*m, w);
+		a.setModuloBinary(3*m, w);
 		//System.out.println(a.getMeasure(360)+" degrees");
 		assertEquals(a.getMeasure(360),135,1e-14);
-		a.putModuloBinary(-3*m, w);
+		a.setModuloBinary(-3*m, w);
 		//System.out.println(a.getMeasure(360)+" degrees");
 		assertEquals(a.getMeasure(360),-135,1e-14);
 		
         w=8; //bits in revolution representation
         m=32;
-		a.putModuloBinary(m, w);
+		a.setModuloBinary(m, w);
 		//System.out.println(a.getMeasure(360)+" degrees");
 		assertEquals(a.getMeasure(360),45,1e-14);
 
 		w=3;
         m=1;
-		a.putModuloBinary(m, w);// 1/8
+		a.setModuloBinary(m, w);// 1/8
 		long k=a.getBinary(w);
 		////System.out.println(a.getMeasure(360)+" degrees"+StrictMath.nextUp(a.getDegrees()));
 		//System.out.println(a.getMeasure(360)+" degrees");
@@ -470,7 +470,7 @@ public class AngleTest {
 		//System.out.println("Principle: "+t.signedAngle().getDegrees()+"  degrees Angle:"+StrictMath.nextUp(a.getDegrees()));
 		assertEquals(t.signedAngle().getDegrees(),30,1e-13);
 		
-		b.put(t.signedAngle()); //convert principle angle to angle...signed and unsigned.
+		b.set(t.signedAngle()); //convert principle angle to angle...signed and unsigned.
 		
 		Angle c = Angle.inRadians( t.signedAngle().getRadians() );
 
@@ -480,9 +480,9 @@ public class AngleTest {
 		assertEquals(c.getDegrees(),30,1e-13);
 		assertEquals(a.getDegrees(),390,1e-13);
 		
-		c.put(t.unsignedAngle());
+		c.set(t.unsignedAngle());
 		assertEquals(c.getDegrees(),30,1e-13);
-		a.putDegrees(-721);
+		a.setDegrees(-721);
 		t.put(a);
 		//System.out.println( "Principle: " + t.signedAngle().getDegrees() + "  degrees. " );
 //		assertEquals("Ugh: ",t.signedAngle().getDegrees(),-1.0d,1e-13);

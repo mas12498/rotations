@@ -299,7 +299,8 @@ public class OperatorTest {
 	public void testExp() {
 //		System.out.println("=============== TEST EXP =================");
 
-		Operator z = new Operator(0,(Angle.inDegrees(30).halfSignedPrincipleAngle().getRadians()),0,0);
+//		Operator z = new Operator(0,(Angle.inDegrees(30).bisectorPrincipleAngle().getRadians()),0,0);
+		Operator z = new Operator(0,(Angle.inDegrees(15).getRadians()),0,0);
 		Vector3 v = new Vector3(1,0,0);
 		Principle theta = new Principle(Angle.inDegrees(30));
 		

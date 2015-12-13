@@ -30,11 +30,11 @@ public class Solution {
 			//Debug
 			System.out.println( "Pedestal "+pedestal.getSystemId()+" : "
 //					+ "EFG=" + pedestal.getGeocentricCoordinates().toString(5)
-					+ " lon="+pedestal.getEllipsoidalCoordinates().getEastLongitude().getDegrees()
-					+ " lat="+pedestal.getEllipsoidalCoordinates().getNorthLatitude().getDegrees()
+					+ " lon="+pedestal.getEllipsoidalCoordinates().getEastLongitude().toDegrees(7)
+					+ " lat="+pedestal.getEllipsoidalCoordinates().getNorthLatitude().toDegrees(7)
 					+ " h="+pedestal.getHeight()
-					+ " az=" + pedestal.getAzimuth()
-					+ " el=" + pedestal.getElevation());
+					+ " az=" + pedestal.aer.getAzimuth().toDegrees(4)
+					+ " el=" + pedestal.aer.getElevation().toDegrees(4));
 		}		
 		Vector3 row = new Vector3(Double.NaN,Double.NaN,Double.NaN);
 		double [] rhs = new double [pedSensorCnt];
@@ -74,7 +74,7 @@ public class Solution {
 		this.condition = svd.getConditionNumber();
 //		this.position_EFG = new Vector3(y.getEntry(0), y.getEntry(1), y.getEntry(2)).add(origin);
 		this.position_EFG = new Vector3(y.getEntry(0), y.getEntry(1), y.getEntry(2)).negate().add(origin);
-	System.out.println("Condition number : "+this.condition);
+	System.out.println("Condition number : "+formatted(this.condition,5));
 	System.out.println( this.position_EFG.toString(5) );
 	}
 	
@@ -86,4 +86,11 @@ public class Solution {
 		targetPrime.subtract( truth );
 		this.error = targetPrime.getAbs();
 	}
+	
+	public String formatted(double value, int decimals){
+		String fmt = " %."+decimals+"f ";
+		//System.out.println("FORMAT STRING = "+fmt);
+		return String.format(fmt, value);
+	}
+	
 }

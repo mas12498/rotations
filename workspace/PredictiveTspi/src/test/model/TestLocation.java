@@ -132,7 +132,7 @@ public class TestLocation extends TestCase {
 	}
 
 	/**
-	 * Test method for {@link tspi.model.GeodeticLocation#put(rotation.Operator, double)}.
+	 * Test method for {@link tspi.model.GeodeticLocation#set(rotation.Operator, double)}.
 	 */
 	public final void testPut() {
 		fail("Not yet implemented"); // TODO

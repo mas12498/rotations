@@ -42,8 +42,8 @@ import rotation.Vector3;
 		}
 
 		public void set(final Angle az, final Angle el, Double rg ){
-			_azimuth.put(az);
-			_elevation.put(el);
+			_azimuth.set(az);
+			_elevation.set(el);
 			_range = rg;
 		}
 
@@ -51,13 +51,13 @@ import rotation.Vector3;
 		 * @param azimuth the azimuth to set
 		 */
 		public void setAzimuth(Angle azimuth) {
-			this._azimuth.put(azimuth);
+			this._azimuth.set(azimuth);
 		}
 		/**
 		 * @param elevation the elevation to set
 		 */
 		public void setElevation(Angle elevation) {
-			this._elevation.put(elevation);
+			this._elevation.set(elevation);
 		}
 		/**
 		 * @param range the range to set
@@ -67,8 +67,8 @@ import rotation.Vector3;
 		}
 		
 		public void clear(double missingValue){
-			_azimuth.put(Angle.inPiRadians(missingValue));
-			_elevation.put(Angle.inPiRadians(missingValue));
+			_azimuth.set(Angle.inPiRadians(missingValue));
+			_elevation.set(Angle.inPiRadians(missingValue));
 			_range = missingValue;
 		}
 

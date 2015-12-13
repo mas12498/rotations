@@ -90,8 +90,8 @@ public class GeodeticLocation {
 	 * @param height (meters above reference ellipsoid).
 	 */
 	public void set(Angle latitude, Angle longitude, double height){
-		_latitude.put(latitude); 
-		_longitude.put(longitude); 
+		_latitude.set(latitude); 
+		_longitude.set(longitude); 
 		_height = new Double(height);
 	}
 		
@@ -133,9 +133,9 @@ public class GeodeticLocation {
 	    /* 5.0 Set B sign to get sign of latitude and height correct */
 	    double B = (z<ZERO)?-_b:_b;
 	            
-	    _longitude.put(Angle.inRadians(StrictMath.atan2( y, x )));//.unsignedPrincipleAngle()
+	    _longitude.set(Angle.inRadians(StrictMath.atan2( y, x )));
 	    
-	    _latitude.put(Angle.inRadians(StrictMath.atan( (_a*(ONE - t*t)) / (TWO*B*t) )));//.signedPrincipleAngle()
+	    _latitude.set(Angle.inRadians(StrictMath.atan( (_a*(ONE - t*t)) / (TWO*B*t) )));
 	    
 	    _height = (r - _a*t)*StrictMath.cos(_latitude.getRadians()) + (z - B)*StrictMath.sin(_latitude.getRadians());
 	
@@ -150,15 +150,15 @@ public class GeodeticLocation {
 		Principle pLat = q_NG.getEuler_j_kji().addRight().negate();
 		Principle pLon = q_NG.getEuler_k_kji();
 		if (Double.isNaN(dump)) { // Northern hemisphere
-			_latitude.put(pLat.negate().signedAngle());
-			_longitude.put(pLon.addStraight().negate().unsignedAngle());
+			_latitude.set(pLat.negate().signedAngle());
+			_longitude.set(pLon.addStraight().negate().unsignedAngle());
 		} else if (dump == 0d) { // Southern hemisphere
-			_latitude.put(pLat.signedAngle());
-			_longitude.put(pLon.unsignedAngle());
+			_latitude.set(pLat.signedAngle());
+			_longitude.set(pLon.unsignedAngle());
 		} else {
 		System.out.println("Null pointer exception ERROR: Not wgs84 geo-location! -- NOT VALID q_NG Operator.");
-		_latitude.put(null);
-		_longitude.put(null);
+		_latitude.set(null);
+		_longitude.set(null);
 		}
 	}
 		
@@ -173,7 +173,7 @@ public class GeodeticLocation {
 	 * @param latitude defined positive in northern hemisphere
 	 */
 	public void setNorthLatitude(Angle latitude) {
-		_latitude.put(latitude);
+		_latitude.set(latitude);
 		
 	}
 
@@ -182,7 +182,7 @@ public class GeodeticLocation {
 		 * @param GeodeticLocation East longitude
 		 */
 		public void setEastLongitude(Angle eastLongitude) {
-			_longitude.put(eastLongitude);
+			_longitude.set(eastLongitude);
 		}
 
 			
@@ -191,8 +191,8 @@ public class GeodeticLocation {
 		 * @param missingValue sentinel
 		 */
 		public void clear(double missingValue){
-			_latitude.put(Angle.inPiRadians(missingValue));
-			_longitude.put(Angle.inPiRadians(missingValue)); 
+			_latitude.set(Angle.inPiRadians(missingValue));
+			_longitude.set(Angle.inPiRadians(missingValue)); 
 			_height = missingValue;
 		}
 
