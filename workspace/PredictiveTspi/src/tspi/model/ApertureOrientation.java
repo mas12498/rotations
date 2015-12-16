@@ -23,13 +23,13 @@ import rotation.Vector3;
 		}
 
 		/**
-		 * @return the azimuth
+		 * @return the unsigned principle azimuth
 		 */
 		public Angle getAzimuth() {
 			return _azimuth.unsignedPrincipleAngle();
 		}
 		/**
-		 * @return the elevation
+		 * @return the signed principle elevation
 		 */
 		public Angle getElevation() {
 			return _elevation.signedPrincipleAngle();
@@ -76,10 +76,10 @@ import rotation.Vector3;
 			return QuaternionMath.eulerRotate_kj(_azimuth.getPrinciple(), _elevation.getPrinciple());
 		}
 		
-		public Vector3 getDirection(){
-		return new Vector3(StrictMath.cos(_azimuth.getRadians()) * StrictMath.cos(_elevation.getRadians()),
-				StrictMath.sin(_azimuth.getRadians()) * StrictMath.cos(_elevation.getRadians()),
-				-StrictMath.sin(_elevation.getRadians()));
-		}
+//		public Vector3 getDirection(){ //deprecated if have op_AN...
+//		return new Vector3(StrictMath.cos(_azimuth.getRadians()) * StrictMath.cos(_elevation.getRadians()),
+//				StrictMath.sin(_azimuth.getRadians()) * StrictMath.cos(_elevation.getRadians()),
+//				-StrictMath.sin(_elevation.getRadians()));
+//		}
 		
 	}

@@ -12,59 +12,56 @@ import rotation.Vector3;
 public class Pedestal {
 	
 	protected String systemId; // system identifier
-	protected final GeodeticLocation wgs84; // lat, lon angles, h meters ellipsoid coordinates
-	protected final ApertureOrientation aer; // az, el angle r meters 
-	protected final Vector3 r_G; // EFG: Geocentric location vector
-	protected final Vector3 r_N; // NED: Navigation vector
+	protected final GeodeticLocation wgs84; // geodetic position: lat, lon angles, h meters ellipsoid coordinates
+	protected final Vector3 efg; // geocentric position vector: EFG
+	protected final ApertureOrientation aer; //Aperture position: az, el angle r meters 
+	//axial operators...
 	protected final Operator q_NG; //navigation North East Down {NED} to geocentric {EFG}: N-->G
-	protected final Operator q_AN; //range forward, horz right, vert down  RHV: A-->N
-	protected final Operator q_AG;
+	protected final Operator q_AN; //aperture range, horz-right, vert-down  {RHV} to navigation {NED}: A-->N
+	protected final Operator q_AG; //aperture range, horz-right, vert-down  {RHV} to geocentric {EFG}: A-->G
+	
 	//TODO Matrix error;// error model 
 	//TODO SolidAngle mask;//angularBounds
 
 	public Pedestal( String id, double lat, double lon, double h) {
 		this.systemId = id;
 		
-		/* Pedestal: fixed location... in EFG orientation */
+		/* Pedestal: has location... in EFG with geodetic orientation */
 		
 		//Pedestal location (WGS84) in ellipsoid coordinates: Latitude, Longitude, height
 		this.wgs84 = new GeodeticLocation(Double.NaN);
 		this.wgs84.set(Angle.inDegrees(lat),Angle.inDegrees(lon), h );
 		
 		//Pedestal location (WGS84) in geocentric Cartesian frame coordinates (WGS84): E,F,G [a.k.a. ECEF X,Y,Z]
-		this.r_G = wgs84.geocentric();
+		this.efg = wgs84.geocentric();
 		
 		//axial operator transforms from local navigation alignment to Geocentric: {NED}-->{XYZ}  
 		this.q_NG = wgs84.axialOperator_NG();
 		
 		
 		/* Pedestal: position aperture class variable PLACE HOLDERS... */
-		
+
 		//Pedestal aperture position in local (AER) coordinates: Azimuth, Elevation, Range
 		this.aer = new ApertureOrientation(Double.NaN); //Angle.inDegrees(Double.NaN),Angle.inDegrees(Double.NaN),Double.NaN);
 	
 		//axial operator from local pedestal aperture to local navigation: {RHV} --> {NED:
 		this.q_AN = new Operator(Quaternion.NAN); //aperture.op_AN();
-		
-		this.r_N = new Vector3(Vector3.NAN);
-		
+				
 		//Pedestal: position aperture... in EFG orientation
 		this.q_AG = new Operator(Quaternion.NAN); //aperture.op_AN();
 		// q_AG = q_NG.euler_kj(paz,el);
 		
 	}
 	
-	public GeodeticLocation getEllipsoidalCoordinates() { return this.wgs84; }
-	public Vector3 getGeocentricCoordinates() { 
-		return this.r_G;	//this.wgs84.geocentric();	//slower 
-	}
 	public String getSystemId() { return this.systemId; }
+	public GeodeticLocation getEllipsoidalCoordinates() { return this.wgs84; }
 	public double getLatitude() { return this.wgs84.getNorthLatitude().getDegrees(); }
 	public double getLongitude() { return this.wgs84.getEastLongitude().getDegrees(); }
 	public double getHeight() { return this.wgs84.getEllipsoidHeight(); }
-	public double getE() { return this.r_G.getX(); } //this.wgs84.geocentric().getX(); //slower
-	public double getF() { return this.r_G.getY(); }
-	public double getG() { return this.r_G.getZ(); }
+	public Vector3 getGeocentricCoordinates() { return this.efg; }	//this.wgs84.getGeocentricCoordinates();	//slower 
+	public double getE() { return this.efg.getX(); } //this.wgs84.geocentric().getX(); //slower
+	public double getF() { return this.efg.getY(); }
+	public double getG() { return this.efg.getZ(); }
 		
 	// the following getters may return null to denote there is no current need for a heading
 	
@@ -78,23 +75,17 @@ public class Pedestal {
 		return this.aer.getRange(); 
 	}
 	
-//	public void clearAperturePosition() {
-//		this.ped_AER.setAzimuth(Angle.inPiRadians(Double.NaN));
-//		this.ped_AER.setElevation(Angle.inPiRadians(Double.NaN));
-//		this.ped_AER.setRange(Double.NaN);
-//	}
-	
 	public void setSystemId(String id) { this.systemId = id; }
 	
 	public void setLatitude(double lat) {
 		this.wgs84.setNorthLatitude(Angle.inDegrees(lat) );//put(lat, wgs84.getY(), wgs84.getZ());
-		this.r_G.put(this.wgs84.geocentric());
+		this.efg.put(this.wgs84.geocentric());
 		this.q_NG.put(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
 	}
 	
 	public void setLongitude(double lon) {
 		this.wgs84.setEastLongitude( Angle.inDegrees(lon) );//.put(wgs84.getX(), lon, wgs84.getZ());
-		this.r_G.put(this.wgs84.geocentric());
+		this.efg.put(this.wgs84.geocentric());
 		this.q_NG.put(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
 	}
 	
@@ -119,45 +110,42 @@ public class Pedestal {
 	
 	public void setHeight(double meters) {
 		this.wgs84.setEllipsoidHeight( meters );//.put(wgs84.getX(), wgs84.getY(), meters);
-		this.r_G.put(this.wgs84.geocentric());
+		this.efg.put(this.wgs84.geocentric());
 		this.q_NG.put(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
 	}
 	
 	public void setE(double E) {
-		this.r_G.put(E, r_G.getY(), r_G.getZ());
-		this.wgs84.set(this.r_G);
+		this.efg.put(E, efg.getY(), efg.getZ());
+		this.wgs84.set(this.efg);
 		this.q_NG.put(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
 	}
 	
 	public void setF(double F) {
-		this.r_G.put(r_G.getX(), F, r_G.getZ());
-		this.wgs84.set(this.r_G);
+		this.efg.put(efg.getX(), F, efg.getZ());
+		this.wgs84.set(this.efg);
 		this.q_NG.put(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
 	}
 	
 	public void setG(double G) {
-		this.r_G.put(r_G.getX(), r_G.getY(), G);
-		this.wgs84.set(this.r_G);
+		this.efg.put(efg.getX(), efg.getY(), G);
+		this.wgs84.set(this.efg);
 		this.q_NG.put(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
 	}
 	
 	public void setAzimuth(double degrees) {
 		this.aer.setAzimuth(Angle.inDegrees(degrees));
 		this.q_AN.put(this.aer.op_AN());
-		r_N.put(q_AN.getImage_i()).unit();		
 	}
 	
 	public void setElevation(double degrees) {
 		this.aer.setElevation( Angle.inDegrees(degrees));
 		this.q_AN.put(this.aer.op_AN());
-		r_N.put(q_AN.getImage_i()).unit();		
 	}
 	
 	public void setAperturePosition(double az, double el) {
 		this.aer.setAzimuth(Angle.inDegrees(az));
 		this.aer.setElevation( Angle.inDegrees(el));
 		this.q_AN.put(this.aer.op_AN());
-		r_N.put(q_AN.getImage_i()).unit();		
 	}
 	
 	public void setRange( double meters ) {
@@ -171,7 +159,7 @@ public class Pedestal {
 	 * @param targetEFG Position of the taget in geocentric coordinates.  */
 	public void point(Vector3 targetEFG) {
 		//Define geocentric vector from ped to target -- obtain pedestal.aperture range to target.
-		Vector3 r_PT_G = new Vector3(targetEFG).subtract(r_G);
+		Vector3 r_PT_G = new Vector3(targetEFG).subtract(efg);
 		aer.setRange(r_PT_G.getAbs());
 		
 		//Make initial (rank-2) 'put' of q_AN -- returns pedestal.aperture azimuth & elevation direction (line-of-sight) to target.
@@ -185,7 +173,7 @@ public class Pedestal {
 		this.q_AN.rightMultExpI(gTwist.negate()); 
 		
 		//Assign local aperture directions in local navigation frame coordinates -- from final Operator q_AN:
-		r_N.put(this.q_AN.getImage_i()); //out pedestal.aperture (unit i) 
+//		r_N.put(this.q_AN.getImage_i()); //out pedestal.aperture (unit i) .. necessary?
 //		Vector3 vertical.put(this.q_AN.getImage_j()); //right (across) pedestal.aperture (unit j)
 //		Vector3 horizontal.put(this.q_AN.getImage_k()); //downward (across) pedestal.aperture (unit k)
 		
