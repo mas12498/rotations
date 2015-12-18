@@ -2,21 +2,19 @@
 	
 	import rotation.Angle;
 import rotation.Operator;
-import rotation.Principle;
 import rotation.QuaternionMath;
-import rotation.Vector3;
 	
-	public class ApertureOrientation {
+	public class Aperture {
 		protected final Angle _azimuth;
 		protected final Angle _elevation;
 		protected Double _range;
 		
-		public ApertureOrientation(double missingValue){
-			_azimuth = Angle.inPiRadians(missingValue);
-			_elevation = Angle.inPiRadians(missingValue);
-			_range = missingValue;
+		public Aperture(){
+			_azimuth = Angle.inPiRadians(Double.NaN);
+			_elevation = Angle.inPiRadians(Double.NaN);
+			_range = Double.NaN;
 		}
-		public ApertureOrientation(ApertureOrientation template){
+		public Aperture(Aperture template){
 			_azimuth = new Angle(template._azimuth);
 			_elevation = new Angle(template._elevation);
 			_range = template._range;

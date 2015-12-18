@@ -5,19 +5,19 @@ import rotation.Vector3;
 
 public class Target {
 	long time;
-	GeodeticLocation wgs84;
+	Location wgs84;
 	Vector3 geo;
 	Solution solution;
 	
 	public Target(long time, double lat, double lon, double h) {
 		this.time = time;
-		this.wgs84 = new GeodeticLocation(Double.NaN);
+		this.wgs84 = new Location();
 		this.wgs84.set(Angle.inDegrees(lat),Angle.inDegrees(lon),h);
 		this.geo = wgs84.geocentric();
 		this.solution = null;
 	}
 
-	public GeodeticLocation getEllipsoidalCoordinates() { return this.wgs84; }
+	public Location getEllipsoidalCoordinates() { return this.wgs84; }
 	public Vector3 getGeocentricCoordinates() { return this.geo; }
 
 	public long getTime() { return this.time; } 
@@ -41,7 +41,7 @@ public class Target {
 
 	public void setLatitude(double lat) {
 		if(wgs84.equals(null)){
-			wgs84 = new GeodeticLocation(0);
+			wgs84 = new Location();
 		}
 		this.wgs84.setNorthLatitude( Angle.inDegrees(lat) );
 		this.geo = wgs84.geocentric();
@@ -49,7 +49,7 @@ public class Target {
 
 	public void setLongitude(double lon) {
 		if(wgs84.equals(null)){
-			wgs84 = new GeodeticLocation(0);
+			wgs84 = new Location();
 		}
 		this.wgs84.setEastLongitude( Angle.inDegrees(lon));
 		this.geo = wgs84.geocentric();
@@ -57,7 +57,7 @@ public class Target {
 
 	public void setHeight(double h) {
 		if(wgs84.equals(null)){
-			wgs84 = new GeodeticLocation(0);
+			wgs84 = new Location();
 		}
 		this.wgs84.setEllipsoidHeight(h);
 		this.geo = wgs84.geocentric();
@@ -66,7 +66,7 @@ public class Target {
 	public void setE(double E) {
 		this.geo.put(E, geo.getY(), geo.getZ());
 		if(wgs84.equals(null)){
-			wgs84 = new GeodeticLocation(0);
+			wgs84 = new Location();
 		}
 		this.wgs84.set( geo );
 	}
@@ -74,7 +74,7 @@ public class Target {
 	public void setF(double F) {
 		this.geo.put(geo.getX(), F, geo.getZ());
 		if(wgs84.equals(null)){
-			wgs84 = new GeodeticLocation(0);
+			wgs84 = new Location();
 		}
 		this.wgs84.set( geo );
 	}
@@ -82,7 +82,7 @@ public class Target {
 	public void setG(double G) {
 		this.geo.put(geo.getX(), geo.getY(), G);
 		if(wgs84.equals(null)){
-			wgs84 = new GeodeticLocation(0);
+			wgs84 = new Location();
 		}
 		this.wgs84.set( geo );
 	}

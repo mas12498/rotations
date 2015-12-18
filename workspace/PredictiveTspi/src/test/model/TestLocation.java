@@ -8,7 +8,7 @@ import rotation.Angle;
 //import rotation.BasisUnit;
 import rotation.Operator;
 //import rotation.Principle;
-import tspi.model.GeodeticLocation;
+import tspi.model.Location;
 
 /**
  * @author mike
@@ -19,8 +19,8 @@ public class TestLocation extends TestCase {
 	public final void testWGS84WGS84() {
 		int cnt = 0;
 		Operator nav2geo = new Operator(Operator.NAN);
-		GeodeticLocation tmp2 = new GeodeticLocation(Double.NaN);
-		GeodeticLocation tmp = new GeodeticLocation(Double.NaN);
+		Location tmp2 = new Location();
+		Location tmp = new Location();
 		tmp2.set(Angle.inDegrees(Double.NaN), Angle.inDegrees(Double.NaN),Double.NaN);
 		tmp.set(Angle.inDegrees(Double.NaN), Angle.inDegrees(Double.NaN),0.0);
 //		Principle plat = tmp2.getNorthLatitude().getPrinciple();
@@ -82,42 +82,42 @@ public class TestLocation extends TestCase {
 
 
 	/**
-	 * Test method for {@link tspi.model.GeodeticLocation#WGS84(rotation.Vector3)}.
+	 * Test method for {@link tspi.model.Location#WGS84(rotation.Vector3)}.
 	 */
 	public final void testWGS84Vector3() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.GeodeticLocation#WGS84(rotation.Operator, double)}.
+	 * Test method for {@link tspi.model.Location#WGS84(rotation.Operator, double)}.
 	 */
 	public final void testWGS84OperatorDouble() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.GeodeticLocation#WGS84(rotation.Operator, rotation.Vector3)}.
+	 * Test method for {@link tspi.model.Location#WGS84(rotation.Operator, rotation.Vector3)}.
 	 */
 	public final void testWGS84OperatorVector3() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.GeodeticLocation#getLocationXYZ()}.
+	 * Test method for {@link tspi.model.Location#getLocationXYZ()}.
 	 */
 	public final void testGetXYZ() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.GeodeticLocation#getFromNEDtoEFG()}.
+	 * Test method for {@link tspi.model.Location#getFromNEDtoEFG()}.
 	 */
 	public final void testGetFromNEDtoEFG() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.GeodeticLocation#getNorthLatitude()}.
+	 * Test method for {@link tspi.model.Location#getNorthLatitude()}.
 	 */
 	public final void testGetAngleLatitude() {
 		fail("Not yet implemented"); // TODO
@@ -125,49 +125,49 @@ public class TestLocation extends TestCase {
 
 
 	/**
-	 * Test method for {@link tspi.model.GeodeticLocation#putXYZ(rotation.Vector3)}.
+	 * Test method for {@link tspi.model.Location#putXYZ(rotation.Vector3)}.
 	 */
 	public final void testPutXYZ() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.GeodeticLocation#set(rotation.Operator, double)}.
+	 * Test method for {@link tspi.model.Location#set(rotation.Operator, double)}.
 	 */
 	public final void testPut() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.GeodeticLocation#putLatitude(rotation.Principle)}.
+	 * Test method for {@link tspi.model.Location#putLatitude(rotation.Principle)}.
 	 */
 	public final void testPutLatitudePrinciple() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.GeodeticLocation#putLatitude(rotation.Angle)}.
+	 * Test method for {@link tspi.model.Location#putLatitude(rotation.Angle)}.
 	 */
 	public final void testPutLatitudeAngle() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.GeodeticLocation#putLongitude(rotation.Principle)}.
+	 * Test method for {@link tspi.model.Location#putLongitude(rotation.Principle)}.
 	 */
 	public final void testPutLongitudePrinciple() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.GeodeticLocation#putLongitude(rotation.Angle)}.
+	 * Test method for {@link tspi.model.Location#putLongitude(rotation.Angle)}.
 	 */
 	public final void testPutLongitudeAngle() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.GeodeticLocation#putHeight(double)}.
+	 * Test method for {@link tspi.model.Location#putHeight(double)}.
 	 */
 	public final void testPutHeight() {
 		fail("Not yet implemented"); // TODO

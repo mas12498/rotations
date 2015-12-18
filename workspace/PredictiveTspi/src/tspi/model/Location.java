@@ -20,7 +20,7 @@ import rotation.Vector3;
  * @author mike
  *
  */
-public class GeodeticLocation {	
+public class Location {	
 	private static final double ZERO = 0d;
 	private static final double ONE = 1d;
 	private static final double TWO = 2d;
@@ -47,7 +47,7 @@ public class GeodeticLocation {
 	 * Copy constructor.
 	 * @param referenceEllipsoid
 	 */
-	public GeodeticLocation(GeodeticLocation referenceEllipsoid){
+	public Location(Location referenceEllipsoid){
 		_latitude = new Angle(referenceEllipsoid.getNorthLatitude()); 
 		_longitude = new Angle(referenceEllipsoid.getEastLongitude()); 
 		_height = new Double(referenceEllipsoid.getEllipsoidHeight());
@@ -57,11 +57,16 @@ public class GeodeticLocation {
 	 * Empty constructor.
 	 * @param missingValue
 	 */
-	public GeodeticLocation(double missingValue){
-		_latitude = Angle.inPiRadians(missingValue);
-		_longitude = Angle.inPiRadians(missingValue); 
-		_height = missingValue;
-	}
+	public Location(){
+		_latitude = Angle.inPiRadians(Double.NaN);
+		_longitude = Angle.inPiRadians(Double.NaN); 
+		_height = Double.NaN;
+	}	
+//	public WGS84(double missingValue){
+//		_latitude = Angle.inPiRadians(missingValue);
+//		_longitude = Angle.inPiRadians(missingValue); 
+//		_height = missingValue;
+//	}
 	
 	/**
 	 * @return meters above ellipsoid
@@ -179,7 +184,7 @@ public class GeodeticLocation {
 
 		
 		/** Setter:
-		 * @param GeodeticLocation East longitude
+		 * @param Location East longitude
 		 */
 		public void setEastLongitude(Angle eastLongitude) {
 			_longitude.set(eastLongitude);

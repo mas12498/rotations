@@ -15,7 +15,7 @@ import rotation.Principle;
 import rotation.Quaternion;
 import rotation.QuaternionMath;
 import rotation.Vector3;
-import tspi.model.GeodeticLocation;
+import tspi.model.Location;
 
 
 
@@ -28,7 +28,7 @@ public class TestPedestal extends TestCase {
 		//Location temp = new Location(Angle.inDegrees(-30),Angle.inDegrees(-91),3000);		
 		//Vector3 result = temp.getGeocentric();
 		//temp.set(result);
-		GeodeticLocation temp = new GeodeticLocation(Double.NaN);
+		Location temp = new Location();
 		temp.set(Angle.inDegrees(-30),Angle.inDegrees(-89),3000);		
 		  System.out.println("lat: "+temp.getNorthLatitude().getDegrees());
 		  System.out.println("lon: "+temp.getEastLongitude().getDegrees());

@@ -30,8 +30,8 @@ public class Solution {
 			//Debug
 			System.out.println( "Pedestal "+pedestal.getSystemId()+" : "
 //					+ "EFG=" + pedestal.getGeocentricCoordinates().toString(5)
-					+ " lon="+pedestal.getEllipsoidalCoordinates().getEastLongitude().toDegrees(7)
-					+ " lat="+pedestal.getEllipsoidalCoordinates().getNorthLatitude().toDegrees(7)
+					+ " lon="+pedestal.getGeodeticEllipsoidCoordinates().getEastLongitude().toDegrees(7)
+					+ " lat="+pedestal.getGeodeticEllipsoidCoordinates().getNorthLatitude().toDegrees(7)
 					+ " h="+pedestal.getHeight()
 					+ " az=" + pedestal.aer.getAzimuth().toDegrees(4)
 					+ " el=" + pedestal.aer.getElevation().toDegrees(4));
@@ -41,11 +41,7 @@ public class Solution {
 		double [][] matrixData = new double [pedSensorCnt][3];
 		int i = 0; 
 		for(Pedestal pedestal : pedestals) {	
-			//compute q_AG
-			System.out.println("q_NG="+pedestal.q_NG.toString(5));
-			System.out.println("q_AN="+pedestal.q_AN.toString(5));
-			pedestal.q_AG.put(new Operator(pedestal.q_NG).rightMultiply(pedestal.q_AN));
-			System.out.println("Pedestal "+pedestal.getSystemId()+": q_AG = "+pedestal.q_AG.toString(5));
+			System.out.println("Pedestal "+pedestal.getSystemId()+": q_NG="+pedestal.q_NG.toString(5)+"  q_AG = "+pedestal.q_AG.toString(5));
 			//Assuming two axial sensors per pedestal...			
 			row = pedestal.q_AG.getImage_k();//axial AZ
 			matrixData[i][0] = row.getX();

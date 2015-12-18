@@ -216,7 +216,7 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 				pedestal.point(geo);
 			
 			// TODO obtain the origin from somewhere instead of just using the first pedestal!
-			Vector3 origin = new Vector3( selected.get(0).getGeocentricCoordinates() );
+			Vector3 origin = new Vector3( selected.get(0).getGeocentricCartesianCoordinates() );
 			
 			// compute new target and measure error
 			Solution solution = new Solution( origin, selected );

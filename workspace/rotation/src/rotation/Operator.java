@@ -15,6 +15,14 @@ public class Operator extends Quaternion {
 	/**
 	 * Constructor FastQuaternion:
 	 */
+	public Operator() {
+		super(Quaternion.NAN);
+	}
+	
+	
+	/**
+	 * Constructor FastQuaternion:
+	 */
 	public Operator(Quaternion q) {
 		super(q);
 	}
