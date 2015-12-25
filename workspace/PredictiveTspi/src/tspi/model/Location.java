@@ -42,7 +42,19 @@ public class Location {
 	protected final Angle _latitude;
 	protected final Angle _longitude;
 	protected double _height;
-	
+
+	/**
+	 * @param latitude
+	 * @param longitude
+	 * @param height (meters above reference ellipsoid).
+	 */
+	protected Location(Angle latitude, Angle longitude, double height){
+		_latitude=new Angle(latitude); 
+		_longitude=new Angle(longitude); 
+		_height = new Double(height);
+	}
+		
+
 	/**
 	 * Copy constructor.
 	 * @param referenceEllipsoid

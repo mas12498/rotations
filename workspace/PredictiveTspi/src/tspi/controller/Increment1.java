@@ -23,6 +23,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import rotation.Angle;
 import rotation.Vector3;
 import tspi.model.Pedestal;
 import tspi.model.PedestalModel;
@@ -306,7 +307,7 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 				int index = this.pedestalTable.getSelectedRow();
 				if(index==-1)
 					index = this.pedestals.getRowCount();
-				Pedestal pedestal = new Pedestal("",0.0,0.0,0.0);
+				Pedestal pedestal = new Pedestal("",Angle.inPiRadians(0.0),Angle.inPiRadians(0.0),0.0);
 				this.pedestals.add(index, pedestal);
 				this.pedestalTable.setRowSelectionInterval(index, index);
 				

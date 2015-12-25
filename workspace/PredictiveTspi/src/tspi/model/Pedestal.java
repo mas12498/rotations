@@ -18,24 +18,22 @@ public class Pedestal {
 	protected final Aperture aer; //Aperture position: az, el angle r meters 
 	//axial operators...
 	protected final Operator q_NG; //navigation North East Down {NED} to geocentric {EFG}: N-->G
-//	protected final Operator q_AN; //aperture range, horz-right, vert-down  {RHV} to navigation {NED}: A-->N
 	protected final Operator q_AG; //aperture range, horz-right, vert-down  {RHV} to geocentric {EFG}: A-->G
 	
 	//TODO Matrix error;// error model 
 	//TODO SolidAngle mask;//angularBounds
 
-	public Pedestal( String id, double lat, double lon, double h) {
+	public Pedestal( String id, Angle lat, Angle lon, double h) {
 		
 		this.systemId = id;
 		
 		//WGS84 ellipsoid coordinates: Latitude, Longitude, height
-		this.wgs84 = new Location();
-		this.wgs84.set(Angle.inDegrees(lat),Angle.inDegrees(lon), h );
+		this.wgs84 = new Location(lat,lon, h );
 		
-		//WGS84 location in Cartesian coordinates (geocentric): E,F,G [a.k.a. ITRF X,Y,Z]
+		//produce WGS84 location in Cartesian coordinates (geocentric): E,F,G [a.k.a. ITRF X,Y,Z]
 		this.efg = wgs84.geocentric();
 		
-		//axial operator transforms from local navigation alignment to geocentric: {NED}-->{XYZ}  
+		//produce axial rotator from local navigation alignment to geocentric: {NED}-->{XYZ}  
 		this.q_NG = wgs84.axialOperator_NG();
 				
 		/* Pedestal: position aperture class variable PLACE HOLDERS... */
@@ -49,37 +47,46 @@ public class Pedestal {
 	}
 	
 	public String getSystemId() { return this.systemId; }
-	public Location getGeodeticEllipsoidCoordinates() { return this.wgs84; }
-	public double getLatitude() { return this.wgs84.getNorthLatitude().getDegrees(); }
-	public double getLongitude() { return this.wgs84.getEastLongitude().getDegrees(); }
-	public double getHeight() { return this.wgs84.getEllipsoidHeight(); }
 	public Vector3 getGeocentricCartesianCoordinates() { return this.efg; }	//this.survey.getGeocentricCoordinates(); //slower 
+
+	public Location getGeodeticEllipsoidCoordinates() { return this.wgs84; }
+	// the following getters may return null to denote there is no current need for a heading
+	
+	// the following getters may return null to denote there is no current need for a heading
+	
+	public Angle getElevation() {
+		return this.aer.getElevation();
+	}
+
+	public Angle getAzimuth() {	
+		return this.aer.getAzimuth();	
+	}
+
+	public Angle getLatitude() { return this.wgs84.getNorthLatitude(); }
+	// the following getters may return null to denote there is no current need for a heading
+	
+	public Angle getLongitude() { return this.wgs84.getEastLongitude(); }
+	public double getHeight() { return this.wgs84.getEllipsoidHeight(); }
 	public double getE() { return this.efg.getX(); } //this.survey.geocentric().getX(); //slower
 	public double getF() { return this.efg.getY(); }
 	public double getG() { return this.efg.getZ(); }
 		
 	// the following getters may return null to denote there is no current need for a heading
 	
-	public Double getAzimuth() {	
-		return this.aer.getAzimuth().getDegrees();	
-	}
-	public Double getElevation() {
-		return this.aer.getElevation().getDegrees();
-	}
 	public Double getRange() { 
 		return this.aer.getRange(); 
 	}
 	
 	public void setSystemId(String id) { this.systemId = id; }
 	
-	public void setLatitude(double lat) {
-		this.wgs84.setNorthLatitude(Angle.inDegrees(lat) );
+	public void setLatitude(Angle lat) {
+		this.wgs84.setNorthLatitude(lat);
 		this.efg.put(this.wgs84.geocentric());
 		this.q_NG.put(this.wgs84.axialOperator_NG());
 	}
 	
-	public void setLongitude(double lon) {
-		this.wgs84.setEastLongitude( Angle.inDegrees(lon) );
+	public void setLongitude(Angle lon) {
+		this.wgs84.setEastLongitude(lon);
 		this.efg.put(this.wgs84.geocentric());
 		this.q_NG.put(this.wgs84.axialOperator_NG());
 	}
@@ -127,19 +134,19 @@ public class Pedestal {
 		this.q_NG.put(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
 	}
 	
-	public void setAzimuth(double degrees) {
-		this.aer.setAzimuth(Angle.inDegrees(degrees));
+	public void setAzimuth(Angle paz) {
+		this.aer.setAzimuth(paz);
 		this.q_AG.put(q_NG).rightMultExpK(aer.getAzimuth().getPrinciple()).rightMultExpJ(aer.getElevation().getPrinciple());
 	}
 	
-	public void setElevation(double degrees) {
-		this.aer.setElevation( Angle.inDegrees(degrees));
+	public void setElevation(Angle pel) {
+		this.aer.setElevation(pel);
 		this.q_AG.put(q_NG).rightMultExpK(aer.getAzimuth().getPrinciple()).rightMultExpJ(aer.getElevation().getPrinciple());
 	}
 	
-	public void setAperturePosition(double az, double el) {
-		this.aer.setAzimuth(Angle.inDegrees(az));
-		this.aer.setElevation( Angle.inDegrees(el));
+	public void setAperturePosition(Angle paz, Angle pel) {
+		this.aer.setAzimuth(paz);
+		this.aer.setElevation( pel);
 		this.q_AG.put(q_NG).rightMultExpK(aer.getAzimuth().getPrinciple()).rightMultExpJ(aer.getElevation().getPrinciple());
 	}
 	

@@ -13,6 +13,8 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import rotation.Angle;
+
 /** A model which represents a list of Pedestals. Also provides a file load and save, as well as a CellRenderer appropriate for the model. */
 @SuppressWarnings("serial")
 public class PedestalModel extends AbstractTableModel implements Iterable<Pedestal> {
@@ -124,8 +126,8 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 			case LAT: return pedestal.getLatitude();
 			case LON: return pedestal.getLongitude();
 			case H: return pedestal.getHeight();
-			case AZ: return pedestal.getAzimuth();
-			case EL: return pedestal.getElevation();
+			case AZ: return pedestal.getAzimuth().getDegrees();
+			case EL: return pedestal.getElevation().getDegrees();
 			case R: return pedestal.getRange();
 			}
 		} else if( this.system == GEOCENTRIC ) {
@@ -134,8 +136,8 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 			case LAT: return pedestal.getE();
 			case LON: return pedestal.getF();
 			case H: return pedestal.getG();
-			case AZ: return pedestal.getAzimuth();
-			case EL: return pedestal.getElevation();
+			case AZ: return pedestal.getAzimuth().getDegrees();
+			case EL: return pedestal.getElevation().getDegrees();
 			case R: return pedestal.getRange();
 			}
 		}
@@ -147,23 +149,51 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 		Pedestal pedestal = pedestals.get(row);
 		if( this.system == ELLIPSOIDAL ) {
 			switch(col) {
-			case ID: pedestal.setSystemId( (String)value ); break;
-			case LAT: pedestal.setLatitude( (Double)value ); break;
-			case LON: pedestal.setLongitude( (Double)value ); break;
-			case H: pedestal.setHeight( (Double)value ); break;
-			case AZ: pedestal.setAzimuth( (Double)value ); break;
-			case EL: pedestal.setElevation( (Double)value ); break;
-			case R: pedestal.setRange( (Double)value ); break;
+			case ID:
+				pedestal.setSystemId((String) value);
+				break;
+			case LAT:
+				pedestal.setLatitude(Angle.inDegrees((Double) value));
+				break;
+			case LON:
+				pedestal.setLongitude(Angle.inDegrees((Double) value));
+				break;
+			case H:
+				pedestal.setHeight((Double) value);
+				break;
+			case AZ:
+				pedestal.setAzimuth(Angle.inDegrees((Double) value));
+				break;
+			case EL:
+				pedestal.setElevation(Angle.inDegrees((Double) value));
+				break;
+			case R:
+				pedestal.setRange((Double) value);
+				break;
 			}
-		} else if( this.system == GEOCENTRIC ) {
-			switch(col) {
-			case ID: pedestal.setSystemId( (String)value ); break;
-			case LAT: pedestal.setE( (Double)value ); break;
-			case LON: pedestal.setF( (Double)value ); break;
-			case H: pedestal.setG( (Double)value ); break;
-			case AZ: pedestal.setAzimuth( (Double)value ); break;
-			case EL: pedestal.setElevation( (Double)value ); break;
-			case R: pedestal.setRange( (Double)value ); break;
+		} else if (this.system == GEOCENTRIC) {
+			switch (col) {
+			case ID:
+				pedestal.setSystemId((String) value);
+				break;
+			case LAT:
+				pedestal.setE((Double) value);
+				break;
+			case LON:
+				pedestal.setF((Double) value);
+				break;
+			case H:
+				pedestal.setG((Double) value);
+				break;
+			case AZ:
+				pedestal.setAzimuth(Angle.inDegrees((Double) value));
+				break;
+			case EL:
+				pedestal.setElevation(Angle.inDegrees((Double) value));
+				break;
+			case R:
+				pedestal.setRange((Double) value);
+				break;
 			}
 		}
 	}
@@ -183,7 +213,7 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 				Double lat = Double.parseDouble(cols[1].trim());
 				Double lon = Double.parseDouble(cols[2].trim());
 				Double h = Double.parseDouble(cols[3].trim());
-				Pedestal pedestal = new Pedestal(id, lat, lon, h);
+				Pedestal pedestal = new Pedestal(id, Angle.inDegrees(lat), Angle.inDegrees(lon), h);
 				pedestals.add(pedestal);
 				n++;
 			}
@@ -202,16 +232,16 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 		for(Pedestal pedestal : pedestals) {
 			writer.append(pedestal.getSystemId());
 			writer.append(",");
-			writer.append(Double.toString(pedestal.getLatitude()));
+			writer.append(pedestal.getLatitude().toDegrees(7));
 			writer.append(",");
-			writer.append(Double.toString(pedestal.getLongitude()));
+			writer.append(pedestal.getLongitude().toDegrees(7));
 			writer.append(",");
 			writer.append(Double.toString(pedestal.getHeight()));
 			if(pedestal.aer.getAzimuth()!=null && pedestal.aer.getElevation()!=null) {
 				writer.append(",");
-				writer.append(Double.toString(pedestal.getAzimuth()));
+				writer.append(pedestal.getAzimuth().toDegrees(7));
 				writer.append(",");
-				writer.append(Double.toString(pedestal.getElevation()));
+				writer.append(pedestal.getElevation().toDegrees(7));
 				// TODO add range?
 //				writer.append(",");
 //				writer.append(Double.toString(pedestal.getRange()));
