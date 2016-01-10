@@ -345,7 +345,7 @@ public class AngleTest {
 //	public void testInBinary() {
 	public void testGetSetInBinary() {
 		
-		Angle a = Angle.inMeasure(45,Angle.DEGREES_REVOLUTION);		
+		Angle a = Angle.inMeasure(45,360);		
 
 		byte w=16;
 		int m = 8192; //=2^
@@ -483,7 +483,7 @@ public class AngleTest {
 		c.set(t.unsignedAngle());
 		assertEquals(c.getDegrees(),30,1e-13);
 		a.setDegrees(-721);
-		t.put(a);
+		t.set(a);
 		//System.out.println( "Principle: " + t.signedAngle().getDegrees() + "  degrees. " );
 //		assertEquals("Ugh: ",t.signedAngle().getDegrees(),-1.0d,1e-13);
 

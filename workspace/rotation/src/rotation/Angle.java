@@ -10,7 +10,7 @@ public class Angle //adapter class -- Angle
 	//Math constants:
 	public final static double PI     = StrictMath.PI;
 	public final static double PI_2   = StrictMath.scalb(StrictMath.PI,-1);
-	public final static double PI_4   = StrictMath.scalb(StrictMath.PI,-2);//=StrictMath.atan(1);
+	public final static double PI_4   = StrictMath.atan(1); //StrictMath.scalb(StrictMath.PI,-2);//=StrictMath.atan(1);
 
 	//Units:
 	public final static double MILLIRADIANS_PIRADIAN = PI*1000;	
@@ -18,59 +18,68 @@ public class Angle //adapter class -- Angle
 	public final static double DEGREES_PIRADIAN      = 180;
 	public final static double ARCMINUTES_PIRADIAN   = DEGREES_PIRADIAN*60;
 	public final static double ARCSECONDS_PIRADIAN   = DEGREES_PIRADIAN*3600;
-	public final static double DEGREES_REVOLUTION    = DEGREES_PIRADIAN*2;
-	public final static double ARCMINUTES_REVOLUTION = DEGREES_PIRADIAN*60*2;
-	
+		
 	//Stored Angles:
-	public final static Angle REVOLUTION         = new Angle(2d);
-	public final static Angle HALF_REVOLUTION    = new Angle(1d);
-	public final static Angle QUARTER_REVOLUTION = new Angle(1d/2);
 	public final static Angle EIGHTH_REVOLUTION  = new Angle(1d/4);
+	public final static Angle QUARTER_REVOLUTION = new Angle(1d/2);
+	public final static Angle HALF_REVOLUTION    = new Angle(1d);
+	public final static Angle THREE_QUARTER_REVOLUTION = new Angle(3d/2);
+	public final static Angle REVOLUTION         = new Angle(2d);
+
+	public final static double DEGREES_REVOLUTION    = 360d;
+	public final static double ARCMINUTES_REVOLUTION    = 360d*60;
+
 	
 	private double _piRadAngle; //internally stores PiRadian measure...
 
-	/** Protected constructor: Internals assume PiRadians measure Angle... */
-	protected Angle(double p) { _piRadAngle = p; }
+	/** Internal constructor -- assumes PiRadians measure Angle... */
+	protected Angle(double piRadians) { _piRadAngle = piRadians; }
 	
 	/** Copy constructor. */
 	public Angle(Angle p) { _piRadAngle = p._piRadAngle; }
 
 	/** Empty constructor. */
-	public Angle() { _piRadAngle = Double.NaN; }	/** Empty sentinel. */
+	public Angle() { _piRadAngle = Double.NaN; }	/** Empty angle default. */
 	
 
 	//Angle factories:
 	
-	/** Angle Static Factory -- Produce <b><i>Angle</i></b> of <b>p</b> PiRadians.*/
-	public static Angle inPiRadians(double p){ return new Angle(p); }
- 
-	/** Angle Static Factory -- Produce <b><i>Angle</i></b> of <b>r</b> radians.*/
-	public static Angle inRadians(double r){ return new Angle(r/PI); }
-	
-	/** Angle Static Factory -- Produce <b><i>Angle</i></b> of <b>d</b> degrees. */
-	public static Angle inDegrees(double d){ return new Angle(d/DEGREES_PIRADIAN); }
+	/** Static factory. 
+	 * @param degrees double angle measure.*/
+	public static Angle inDegrees(double degrees){ return new Angle(degrees/DEGREES_PIRADIAN); }
 		
-	/** Angle Static Factory -- Produce <b><i>Angle</i></b> measured. */
+	/** Static factory. 
+	 * @param radians double angle measure.*/
+	public static Angle inRadians(double radians){ return new Angle(radians/PI); }
+	
+	/** Static factory. 
+	 * @param piRadians double angle measure.*/
+	public static Angle inPiRadians(double piRadians){ return new Angle(piRadians); }
+ 
+	/** Static factory. 
+	 * @param unitsAngle double arc measure.
+	 * @param unitsRevolution double circle-arc measure. */
 	public static Angle inMeasure(double unitsAngle, double unitsRevolution)
 	{ return new Angle(( unitsAngle/StrictMath.scalb(unitsRevolution,-1) )); }
 	
-	/** Angle Static Factory -- Produce <b><i>Angle</i></b> from integer representation of <b>numBits</b>. */
+	/** Static factory. 
+	 * @param unitsAngle integer arc measure (binary).
+	 * @param numBitsRevolution byte number-of-bits in circle-arc representation. */
 	public static Angle inBinary(int binaryAngle, byte numBitsRevolution){
 	  int signed=-(numBitsRevolution-1); double cast = binaryAngle;
 	  return new Angle(( StrictMath.scalb(cast,signed) ));  }
 
-	/** Angle Static Factory -- Produce <b><i>Angle</i></b> from long representation of <b>numBits</b>. */
+	/** Static factory. 
+	 * @param unitsAngle long arc measure (binary).
+	 * @param numBitsRevolution byte number-of-bits in circle-arc representation. */
 	public static Angle inBinary(long binaryAngle, byte numBitsRevolution){
 	  int signed=-(numBitsRevolution-1); double cast = binaryAngle;
 	  return new Angle(( StrictMath.scalb(cast,signed) ));  }
 	
-	
-	/** Factories.*/
-	
-	/** Angle factory of this signed principle measure.*/
+	/** Factory of <i>signed principle Angle</i> of this measure.*/
 	public Angle signedPrincipleAngle(){
 		
-		double p=StrictMath.IEEEremainder(_piRadAngle, 2d);
+		double p=StrictMath.IEEEremainder(_piRadAngle, 2d); // (-1..1] ??
         
 		return Angle.inPiRadians(p);
 //		double p=StrictMath.IEEEremainder(_piRadAngle, 2d);
@@ -89,7 +98,7 @@ public class Angle //adapter class -- Angle
 //		return Angle.inPiRadians(p);
 	}
 
-	/** Angle factory of this unsigned principle measure.*/
+	/** Factory of <i>unsigned principle Angle</i> of this measure.*/
 	public Angle unsignedPrincipleAngle(){
 		Double p = this.signedPrincipleAngle().getPiRadians();
 //		if(p.equals(-0d)){
@@ -101,31 +110,30 @@ public class Angle //adapter class -- Angle
 		return Angle.inPiRadians(p);	
 	}
 	
-	/** Principle (coded angle) factory of this coded Angle measure. */
+	/** Factory of <i>encoded Principle angle</i>) of this measure. */
 	public Principle getPrinciple() {
 		return Principle.arcTanHalfAngle(this.getCodedPrinciple());	
 	}
 
-	/** Angle factory of <b>halved copy</b> of <i>this</i> signed principle Angle. */
+	/** Factory of <i>halved Angle</i> of this signed principle measure. */
 	protected Angle bisectorOfSignedPrincipleAngle() {
 		Angle half = this.signedPrincipleAngle(); 	//create signed principle angle, PiRadians: [-1..1].
 		half._piRadAngle /= 2.d;					//make half.
-		return half;								
+		return half;								//return.
 	}
 
 	
 	//Getters:
 
-	/** Get <i>double</i>: PiRadians measure of <b><i>Angle</b></i>. */
-	public double getPiRadians(){ return _piRadAngle; }
-	
-	/** Get <i>double</i>: radians measure of <b><i>Angle</b></i>. */
-	public double getRadians(){ return _piRadAngle*PI; }
-	
-
 	/** Get <i>double</i>: degrees measure of <b><i>Angle</b></i>. */
 	public double getDegrees(){ return _piRadAngle*DEGREES_PIRADIAN; }
 
+	/** Get <i>double</i>: radians measure of <b><i>Angle</b></i>. */
+	public double getRadians(){ return _piRadAngle*PI; }
+	
+	/** Get <i>double</i>: PiRadians measure of <b><i>Angle</b></i>. */
+	public double getPiRadians(){ return _piRadAngle; }
+	
 	/** Get <i>double</i>: <i>units measure</i> of <b><i>Angle</b></i>. 
 	 * @param double <b>units_in_revolution</b>.
 	 * */
@@ -137,6 +145,12 @@ public class Angle //adapter class -- Angle
 	 */
 	public int getBinary(byte number_bits)
 	{ return (int) StrictMath.rint(StrictMath.scalb(_piRadAngle,number_bits-1)); }
+
+//	/** Get <i>long</i>: <i>binary</i> angle representation of <b><i>Angle</b></i>. 
+//	 * @param byte <b>number_bits</b> coded in angle of revolution.
+//	 */
+//	public long getBinary(byte number_bits)
+//	{ return (long) StrictMath.rint(StrictMath.scalb(_piRadAngle,number_bits-1)); }
 
 	/** 
 	 * Get coded Principle <i>value</i> of this angle. 
@@ -153,10 +167,11 @@ public class Angle //adapter class -- Angle
 
 	//Setters:
 	
-	public void set(Angle copy) { _piRadAngle = copy._piRadAngle;  }
+	public void set(Angle copy) { _piRadAngle = copy._piRadAngle; }
 	
 	public void setRadians(double r){ _piRadAngle = r/PI; }	
 
+	public void setPiRadians(double r){ _piRadAngle = r; }	
 	public void setDegrees(double d){ _piRadAngle = d/DEGREES_PIRADIAN; }
 
     /**  Set <b><i>this</i></b> equal to measured angle of units per revolution specified.*/ 
@@ -171,7 +186,7 @@ public class Angle //adapter class -- Angle
 		_piRadAngle= StrictMath.scalb(cast,signed); 
 	}
 
-    /** Set <b><i>this</i></b> set to <b>binaryAngle</b> of modulus <b>angleBits</b>.*/ 
+    /** Set <b><i>this</i></b> set to <b>binaryAngle</b> of circle-arc modulus <b>angleBits</b>.*/ 
 	public void setModuloBinary(int binaryAngle, byte angleBits) {
 		int signed=-(angleBits-1); 	
 		// mod in cast prevents impossible binary inputs being accepted.
@@ -185,7 +200,7 @@ public class Angle //adapter class -- Angle
 	
 	// Mutators:
 	
-	/** Mutator. Returns positive Angle MAGNITUDE. Method is unaware of angle wrapping.*/
+	/** Mutator. Returns Angle of positive measure MAGNITUDE. Method is unaware of angle wrapping.*/
 	public Angle abs(){
 		_piRadAngle = StrictMath.abs(_piRadAngle);
 		return this;

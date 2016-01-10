@@ -210,31 +210,31 @@ public class Vector3Test {
 		assertTrue((new Quaternion(q3)).ln().multiply(45 / StrictMath.atan(1))
 				.isEquivalent(new Quaternion(0, 0, 30, 0), 1e-14));
 
-		q3.put(v3.exp());		
+		q3.set(v3.exp());		
 //		System.out
 //				.println("exp(ln(exp(0,30,0))) = " + new Quaternion(q3).ln().exp().toString());
 		assertTrue((new Quaternion(q3)).ln().exp()
 				.isEquivalent(new Quaternion(StrictMath.sqrt(3)/2, 0, .5, 0), 1e-14));
 
 		Vector3 v4 = new Vector3(0, Angle.inDegrees(30).getRadians(), 0);
-		q3.put(v4.ln());
+		q3.set(v4.ln());
 		// System.out.println("ln(0,30,0) = " + q3.toString());
 		assertEquals(q3.getW(), StrictMath.log(StrictMath.PI / 6), 1e-14);
 
 		
-		q3.put(v4.ln());
+		q3.set(v4.ln());
 //		System.out.println("ln(0,30,0) = " + new Quaternion(q3).toString());
 		//TODO MAS	
 		assertEquals(q3.getY(), StrictMath.PI/2, 1e-14);
 		//assertEquals(q3.j(), 1, 1e-14);
 
 		v4.put(new Vector3(0, 0, 0));
-		q3.put(v4.ln());
+		q3.set(v4.ln());
 		// System.out.println("ln(0,0,0) = " + q3.toString());
 		assertEquals(Boolean.TRUE, Quaternion.NAN.equals(q3));
 
 		v3.put(new Vector3(0, Angle.inDegrees(30).getRadians(), 0));
-		q3.put(v3.exp()).ln().ln();
+		q3.set(v3.exp());q3.ln().ln();
 		// System.out.println("ln(0,30,0) = " + q3.toString());
 		assertEquals(q3.getW(), StrictMath.log(StrictMath.PI / 6), 1e-14);
 		assertEquals(q3.getY(), .5 * StrictMath.PI, 1e-14);
@@ -263,7 +263,7 @@ public class Vector3Test {
 		q.multiply(a);
 //		System.out.println(q.toString());
 
-		q.put(p.unit());
+		q.set(p.unit());
 //		System.out.println(q.toString());
 		q.ln();
 //		System.out.println(q.toString());
@@ -299,7 +299,7 @@ public class Vector3Test {
 //		System.out.println(q.toString());
 		assertTrue(q.isEquivalent(new Quaternion(StrictMath.sqrt(3),-1,0,0),1e-14));
 
-		q.put(p.unit());
+		q.set(p.unit());
 //		System.out.println(q.toString());
 		q.ln();
 //		System.out.println(q.toString());
@@ -325,7 +325,7 @@ public class Vector3Test {
 		q.multiply(a);
 //		System.out.println(q.toString());
 
-		q.put(p.unit());
+		q.set(p.unit());
 //		System.out.println(q.toString());
 		q.ln();
 //		System.out.println(q.toString());
@@ -351,7 +351,7 @@ public class Vector3Test {
 		q.multiply(a);
 //		System.out.println(q.toString());
 
-		q.put(p.unit());
+		q.set(p.unit());
 //		System.out.println(q.toString());
 		q.ln();
 //		System.out.println(q.toString());
@@ -377,7 +377,7 @@ public class Vector3Test {
 		q.multiply(a);
 //		System.out.println(q.toString());
 
-		q.put(p.unit());
+		q.set(p.unit());
 //		System.out.println(q.toString());
 		q.ln();
 //		System.out.println(q.toString());
@@ -409,7 +409,7 @@ public class Vector3Test {
 		q.multiply(a);
 //		System.out.println(q.toString());
 
-		q.put(p.unit());
+		q.set(p.unit());
 //		System.out.println(q.toString());
 		q.ln();
 //		System.out.println(q.toString());
@@ -490,7 +490,7 @@ public class Vector3Test {
 //		System.out.println("restore:"+q.toString());
 		assertTrue(q.isEquivalent(new Quaternion(1,2,3,4),1e-14));
 
-		q.put(new Quaternion(1, 2, 3, 4));
+		q.set(new Quaternion(1, 2, 3, 4));
 
 //		System.out.println(q.toString());
 		q.power(.5);
@@ -499,38 +499,38 @@ public class Vector3Test {
 //		System.out.println("restore:"+q.toString());
 		assertTrue(q.isEquivalent(new Quaternion(1,2,3,4),1e-14));
 
-		q.put(new Quaternion(1, -2, 3, -4));
+		q.set(new Quaternion(1, -2, 3, -4));
 //		System.out.println(q.toString());
 		Quaternion p = new Quaternion(3, -1, 1, 2).unit();
 //		System.out.println(p.toString());
 		q.power(p);
 //		System.out.println(q.toString());
-		p.put(new Quaternion(3, -1, 1, 2).unit().reciprocal());
+		p.set(new Quaternion(3, -1, 1, 2).unit().reciprocal());
 		q.power(p);
 //		System.out.println("restore:"+q.toString());
 		assertTrue(q.isEquivalent(new Quaternion(1,-2,3,-4),1e-14));
 
-		q.put(new Quaternion(1, 2, -3, -4));
+		q.set(new Quaternion(1, 2, -3, -4));
 //		System.out.println(q.toString());
 		// p = new Quaternion(3,-1,1,2);
-		p.put(new Quaternion(3, -1, 1, 2).unit().divide(5));
+		p.set(new Quaternion(3, -1, 1, 2).unit().divide(5));
 //		System.out.println(p.toString());
 		q.power(p);
 //		System.out.println(q.toString());
 		// p = new Quaternion(3,-1,1,2).reciprocal();
-		p.put(new Quaternion(3, -1, 1, 2).unit().divide(5).reciprocal());
+		p.set(new Quaternion(3, -1, 1, 2).unit().divide(5).reciprocal());
 		q.power(p);
 //		System.out.println("small 1:" + q.toString());
 		assertTrue(q.isEquivalent(new Quaternion(1,2,-3,-4),1e-14));
 
 		
-		q.put(new Quaternion(1, -2, -3, -4));
+		q.set(new Quaternion(1, -2, -3, -4));
 //		System.out.println(q.toString());
-		p.put(new Quaternion(3, -1, 1, 2).unit());
+		p.set(new Quaternion(3, -1, 1, 2).unit());
 //		System.out.println(p.toString());
 		q.power(p.unit());
 //		System.out.println(q.toString());
-		p.put((new Quaternion(3, -1, 1, 2).unit().reciprocal()));
+		p.set((new Quaternion(3, -1, 1, 2).unit().reciprocal()));
 		q.power(p);
 //		System.out.println(" s and vector: " + q.toString());
 		assertTrue(q.isEquivalent(new Quaternion(1,-2,-3,-4),1e-14));
@@ -545,7 +545,7 @@ public class Vector3Test {
 //		System.out.println(t.toString());
 		// q.pow(t);
 		// System.out.println(q.toString());
-		p.put(new Quaternion(0, t));
+		p.set(new Quaternion(0, t));
 		// System.out.println(q.toString());
 //		System.out.println("vector POWER == " + p.toString()
 		// +"\n abs p "+p.abs()
@@ -562,7 +562,7 @@ public class Vector3Test {
 		// +"   q^p "+q.abs()
 //				);
 //		System.out.println(t.toString());
-		p.put(new Quaternion(0, t).reciprocal());
+		p.set(new Quaternion(0, t).reciprocal());
 //		System.out.println("vector inverse == " + p.toString()
 		// +" "+p.abs()
 //				);

@@ -166,16 +166,36 @@ public class Location {
 		double dump = q_NG.getEuler_i_kji().tanHalf();
 		Principle pLat = q_NG.getEuler_j_kji().addRight().negate();
 		Principle pLon = q_NG.getEuler_k_kji();
-		if (Double.isNaN(dump)) { // Northern hemisphere
+		Double tst2 = 0d;
+		if (Double.isInfinite(dump)) { // Northern hemisphere -- cos neg
+			// System.out.println("***Infintie: Right Angle!");
 			_latitude.set(pLat.negate().signedAngle());
 			_longitude.set(pLon.addStraight().negate().unsignedAngle());
+			if (_longitude.getPiRadians() == 0) {
+				if (tst2.equals(_longitude.getPiRadians())) {
+					_longitude.setPiRadians(1d);
+				} else {
+					_longitude.setPiRadians(0d);
+				}
+			}
 		} else if (dump == 0d) { // Southern hemisphere
+			//System.out.println("dump == "+dump+" plon == "+pLon.signedAngle().getDegrees()+" ");
 			_latitude.set(pLat.signedAngle());
 			_longitude.set(pLon.unsignedAngle());
+			Double lonD = _longitude.getPiRadians();
+			if (lonD.equals(-0d)){//ugly... but maps south pole.
+				_longitude.set(Angle.HALF_REVOLUTION);
+			}
 		} else {
-		System.out.println("Null pointer exception ERROR: Not wgs84 geo-location! -- NOT VALID q_NG Operator.");
-		_latitude.set(null);
-		_longitude.set(null);
+			if (Double.isNaN(dump)) { // Northern hemisphere
+				System.out.println("***NaN: Empty Angle!");
+				_latitude.set(pLat.negate().signedAngle());
+				_longitude.set(pLon.addStraight().negate().unsignedAngle());
+			} else {
+				System.out.println("Null pointer exception ERROR: Not wgs84 geo-location! -- NOT VALID q_NG Operator.");
+				_latitude.set(null);
+				_longitude.set(null);
+			}
 		}
 	}
 		
@@ -220,6 +240,7 @@ public class Location {
 	 * @return Operator quaternion {w,xI,yJ,zK}
 	 */
 	public Operator axialOperator_NG(){
+		//System.out.println("inputs axial OP: "+_latitude.getDegrees()+"  "+_longitude.getDegrees());
 		Angle theta = new Angle(_latitude).add(Angle.QUARTER_REVOLUTION).negate();
 		return QuaternionMath.eulerRotate_kj(_longitude.getPrinciple(),theta.getPrinciple());
 	}

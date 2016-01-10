@@ -46,23 +46,23 @@ public class PrincipleTest {
 		Principle t = new Principle(p);
 		assertEquals(t.signedAngle().getDegrees(),30,1e-14);
 
-		p.put(b); //angle
+		p.set(b); //angle
 		assertEquals(p.signedAngle().getDegrees(),60,1e-14);
 
-		p.put(t); //principle angle	
+		p.set(t); //principle angle	
 		assertEquals(p.signedAngle().getDegrees(),30,1e-14);
 
 	  //check factory casts back to Angle class
 		
-		t.put(Angle.inDegrees(-30)); 
+		t.set(Angle.inDegrees(-30)); 
 		assertEquals(t.signedAngle().getDegrees(),-30,1e-14);
 		assertEquals(t.unsignedAngle().getDegrees(),330,1e-13);
 
-		t.put(Angle.inDegrees(-150));
+		t.set(Angle.inDegrees(-150));
 		assertEquals(t.signedAngle().getDegrees(),-150,1e-13);
 		assertEquals(t.unsignedAngle().getDegrees(),210,1e-13);
 
-		t.put(Angle.inDegrees(-180));
+		t.set(Angle.inDegrees(-180));
 		assertEquals(t.signedAngle().getDegrees(),-180,1e-13);
 		assertEquals(t.unsignedAngle().getDegrees(),180,1e-13);
 	
@@ -78,22 +78,22 @@ public class PrincipleTest {
 		assertEquals(p.tanHalf(),1.0D,1e-15);
 		
 		a.setDegrees(180.0D);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tanHalf());
 		assertEquals(1d/p.tanHalf(),0,1e-15);
 		
 		a.setDegrees(-90.0D);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tanHalf());
 		assertEquals(p.tanHalf(),-1.0d,1e-15);
 		
 		a.setDegrees(-180.0D);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tanHalf());
 		assertEquals(1d/p.tanHalf(),0,1e-15);
 		
 		a.setDegrees(0d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tanHalf());
 		assertEquals(p.tanHalf(),0,1e-15);
 		
@@ -207,74 +207,74 @@ public class PrincipleTest {
 		assertEquals(p.tan(),0D,1e-15);
 		
 		a.setDegrees(45d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tan());
 		assertEquals(p.tan(),1,1e-15);
 		
 		a.setDegrees(90d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tan());
 		//System.out.println("ans: " + (p.tan()) +" ans+eps: " + ((p.tan())+ 0.4999999999999999d));
 		assertEquals(1/p.tan(),0d,1e-15);
 		
 		a.setDegrees(180d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tan());
 		assertEquals(p.tan(),0d,1e-15);
 			
 		a.setDegrees(-45d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tan());
 		assertEquals(p.tan(),-1,1e-15);
 		
 		a.setDegrees(-90d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tan());
 		//System.out.println("ans: " + (p.tan()) +" ans+eps: " + ((p.tan())+ 0.4999999999999999d));
 		assertEquals(1/p.tan(),0d,1e-15);
 		
 		a.setDegrees(-180d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tan());
 		assertEquals(p.tan(),0d,1e-15);
 		
 		a.setDegrees(270d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tan());
 		//System.out.println("ans: " + (p.tan()) +" ans+eps: " + ((p.tan())+ 0.4999999999999999d));
 		assertEquals(1/p.tan(),0d,1e-15);
 		
 		a.setDegrees(-270d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tan());
 		//System.out.println("ans: " + (p.tan()) +" ans+eps: " + ((p.tan())+ 0.4999999999999999d));
 		assertEquals(1/p.tan(),0d,1e-15);
 		
 		a.setDegrees(-179.99d);
-		p.put(a);
+		p.set(a);
 		//System.out.println("tan(-179.99d) = "+ p.tan());
 		//System.out.println("tan(-179.99d) = "+ StrictMath.tan(StrictMath.toRadians(-179.99d)));
 		assertEquals(p.tan(),StrictMath.tan(StrictMath.toRadians(-179.99d)),1e-15);
 		
 		a.setDegrees(-180.0d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tan());
 		assertEquals(p.tan(),StrictMath.tan(StrictMath.toRadians(-180.0d)),1e-15);
 		
 		a.setDegrees(179.99d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tan());
 		assertEquals(p.tan(),StrictMath.tan(StrictMath.toRadians(179.99d)),1e-15);
 		
 	
 		a.setDegrees(89.99d);
-		p.put(a);
+		p.set(a);
 		//System.out.println("my tan(89.99d) = "+ p.tan());
 		//System.out.println("tan(89.99d) = "+ StrictMath.tan(StrictMath.toRadians(89.99d)));
 		assertEquals(p.tan(),StrictMath.tan(StrictMath.toRadians(89.99d)),1e-7);
 
 		a.setDegrees(90.0d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tan());
 		//System.out.println("tan(90.0d) = "+ p.tan());
 		////System.out.println("tan(90.0d) = "+ StrictMath.tan(StrictMath.toRadians(90.0d)));
@@ -283,26 +283,26 @@ public class PrincipleTest {
 		
 		
 		a.setDegrees(90.01d);
-		p.put(a);
+		p.set(a);
 		//System.out.println("tan(90.01d) = "+ p.tan()); //mine more accurate!!
 		//System.out.println("tan(90.01d) = "+ StrictMath.tan(StrictMath.toRadians(90.01d)));
 		assertEquals(p.tan(),StrictMath.tan(StrictMath.toRadians(90.01d)),1e-8);
 		
 		
 		a.setDegrees(-90.01d);
-		p.put(a);
+		p.set(a);
 		//System.out.println("tan(-90.01d) = "+ p.tan());
 		//System.out.println("tan(-90.01d) = "+ StrictMath.tan(StrictMath.toRadians(90.0d)));
 		assertEquals(p.tan(),StrictMath.tan(StrictMath.toRadians(-90.01d)),1e-8);
 
 		a.setDegrees(45.01d);
-		p.put(a);
+		p.set(a);
 		//System.out.println("tan(45.01d) = "+ p.tan());
 		//System.out.println("tan(45.01d) = "+ StrictMath.tan(StrictMath.toRadians(90.0d)));
 		assertEquals(p.tan(),StrictMath.tan(StrictMath.toRadians(45.01d)),1e-14);
 		
 		a.setDegrees(44.99d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.tan()+" is pos??");
 		assertEquals(p.tan(),StrictMath.tan(StrictMath.toRadians(44.99d)),1e-14);
 
@@ -317,80 +317,80 @@ public class PrincipleTest {
 		assertEquals(p.sin(),0,1e-15);
 		
 		a.setDegrees(15d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(" Sin of 15 degrees: "+p.sin());
 		assertEquals(p.sin(),StrictMath.sin(StrictMath.toRadians(15)),1e-15);
 		
 
 		a.setDegrees(30d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.signedAngle().getDegrees());
 		//System.out.println(p.sin());
 		assertEquals(p.sin(),.5d,1e-15);
 		assertEquals(p.sin(),StrictMath.sin(StrictMath.toRadians(30)),1e-15);
 		
 		a.setDegrees(90d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.sin());
 		assertEquals(p.sin(),1d,1e-15);
 		
 		a.setDegrees(180d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.sin());
 		assertEquals(p.sin(),0d,1e-15);
 			
 		a.setDegrees(-30d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.sin());
 		assertEquals(p.sin(),-.5d,1e-15);
 		
 		a.setDegrees(-90d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.sin());
 		assertEquals(p.sin(),-1d,1e-15);
 		
 		a.setDegrees(-180d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.sin());
 		assertEquals(p.sin(),0d,1e-15);
 		
 		a.setDegrees(150d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.sin());
 		assertEquals(p.sin(),.5d,1e-15);
 		
 		a.setDegrees(210d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.sin());
 		assertEquals(p.sin(),-.5d,1e-15);
 		
 		a.setDegrees(0.1d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.sin());
 		assertEquals(p.sin(),StrictMath.sin(StrictMath.toRadians(.1)),1e-15);
 
 		a.setDegrees(0.0d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.sin());
 		assertEquals(p.sin(),StrictMath.sin(StrictMath.toRadians(0)),1e-15);
 		
 		a.setDegrees(-0.1d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.sin());
 		assertEquals(p.sin(),StrictMath.sin(StrictMath.toRadians(-.1)),1e-15);
 
 		a.setDegrees(90.0001d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.sin());
 		assertEquals(p.sin(),StrictMath.sin(StrictMath.toRadians(90.0001)),1e-15);
 
 		a.setDegrees(90.0d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.sin());
 		assertEquals(p.sin(),StrictMath.sin(StrictMath.toRadians(90)),1e-15);
 	
 		a.setDegrees(89.9999d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.sin());
 		assertEquals(p.sin(),StrictMath.sin(StrictMath.toRadians(89.9999d)),1e-15);
 
@@ -407,94 +407,94 @@ public class PrincipleTest {
 		assertEquals(p.cos(),1,1e-15);
 		
 		a.setDegrees(60d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos()+ " Cosine of 60 degrees: "+ StrictMath.cos(StrictMath.toRadians(60)));
 		assertEquals(p.cos(),.5d,1e-14);
 		
 		a.setDegrees(90d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),0d,1e-15);
 		
 		a.setDegrees(180d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),-1d,1e-15);
 			
 		a.setDegrees(-60d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),.5d,1e-15);
 		
 		a.setDegrees(-90d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos()+" Cosine -90 degrees: " + StrictMath.cos(StrictMath.toRadians(-90)));
 		assertEquals(p.cos(),0d,1e-15);
 		
 		a.setDegrees(-180d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),-1d,1e-15);
 		
 		//a.setDegrees(120d);
 		a.setRadians(StrictMath.PI*(2d/3));
-		p.put(a);
+		p.set(a);
 		//System.out.println(a.getDegrees() + " Degrees. "+ p.signedAngle().getDegrees());
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),-.5d,1e-15);
 		
 		a.setDegrees(-120d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos()+ " of Degrees. "+ p.unsignedAngle().getDegrees());
 		assertEquals(p.cos(),-.5d,1e-15);			
 		
 		a.setDegrees(240d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),-.5d,1e-15);
 
 		a.setDegrees(60d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),.5d,1e-15);
 		
 		a.setDegrees(-60d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),.5d,1e-15);
 		
 		a.setDegrees(300d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),.5d,1e-15);
 		
 		a.setDegrees(300d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),.5d,1e-15);
 		
 		a.setDegrees(89.99999999999999d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),StrictMath.cos(StrictMath.toRadians(89.99999999999999d)),1e-15);
 
 		a.setDegrees(90d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),StrictMath.cos(StrictMath.toRadians(90.0d)),1e-15);
 		
 		a.setDegrees(90.00000000000001d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),StrictMath.cos(StrictMath.toRadians(90.00000000000001d)),1e-15);
 		
 		a.setDegrees( 0.000001d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),StrictMath.cos(StrictMath.toRadians(0.000001d)),1e-15);
 
 		a.setDegrees(-0.000001d);
-		p.put(a);
+		p.set(a);
 		//System.out.println(p.cos());
 		assertEquals(p.cos(),StrictMath.cos(StrictMath.toRadians(-0.000001d)),1e-15);
 		
@@ -582,7 +582,7 @@ public class PrincipleTest {
 		for (int i = 0; i < 13; i++) {
 			a = Angle.inRadians(n);
 		    //System.out.println("Summed Principle Angle: " + a.getRadians());
-		    assertEquals(p1.unsignedAngle().getRadians(), a.getRadians() ,1e-15);
+		    assertEquals(p1.unsignedAngle().getRadians(), a.getRadians() ,1e-13);
 			n += b.getRadians();
 			p1.add(p2);
 		}
@@ -673,18 +673,18 @@ public class PrincipleTest {
 		    assertEquals(p1.unsignedAngle().getRadians(), a.getRadians() ,1e-14);
 		}
 		
-		p1.put(Angle.inDegrees(359.9));
-		p2.put(Angle.inDegrees(0.1));
+		p1.set(Angle.inDegrees(359.9));
+		p2.set(Angle.inDegrees(0.1));
 		//System.out.println("Principle Angle Diff: " + (new Principle(p1).subtract(p2).abs()).signedAngle().getDegrees());
 		//System.out.println("Principle Angle Diff: " + (new Principle(p2).subtract(p1).abs()).signedAngle().getDegrees());
 	    assertEquals(0.2d, (new Principle(p1).subtract(p2).abs()).signedAngle().getDegrees() ,1e-13);
-		p1.put(Angle.inDegrees(179.85));
-		p2.put(Angle.inDegrees(180.15));
+		p1.set(Angle.inDegrees(179.85));
+		p2.set(Angle.inDegrees(180.15));
 		//System.out.println("Principle Angle Diff: " + (new Principle(p1).subtract(p2).abs()).signedAngle().getDegrees());
 		//System.out.println("Principle Angle Diff: " + (new Principle(p2).subtract(p1).abs()).signedAngle().getDegrees());
 	    assertEquals(0.3d, (new Principle(p1).subtract(p2).abs()).signedAngle().getDegrees() ,1e-13);
-		p1.put(Angle.inDegrees(-0.1));
-		p2.put(Angle.inDegrees(0.1));
+		p1.set(Angle.inDegrees(-0.1));
+		p2.set(Angle.inDegrees(0.1));
 		//System.out.println("Principle Angle Diff: " + (new Principle(p1).subtract(p2).abs()).signedAngle().getDegrees());
 		//System.out.println("Principle Angle Diff: " + (new Principle(p2).subtract(p1).abs()).signedAngle().getDegrees());
 	    assertEquals(0.2d, (new Principle(p1).subtract(p2).abs()).signedAngle().getDegrees() ,1e-13);
@@ -726,33 +726,33 @@ public class PrincipleTest {
 		
 		//show min possible representation lost a bit...
 	
-		angle.setRadians(-2*Double.MIN_VALUE);
-		test.put(angle);
+		angle.setPiRadians(-2*Double.MIN_VALUE);
+		test.set(angle);
 		assertEquals(test.isZero(),Boolean.FALSE);
 		
 		angle.setRadians(-Double.MIN_VALUE);
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isZero(),Boolean.TRUE); //lost last sig bit of Radians
 	
 		angle.setRadians(Double.MIN_VALUE);
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isZero(),Boolean.TRUE); //lost last sig bit of Radians
 	
-		angle.setRadians(2*Double.MIN_VALUE);
-		test.put(angle);
+		angle.setPiRadians(2*Double.MIN_VALUE);
+		test.set(angle);
 		assertEquals(test.isZero(),Boolean.FALSE);
 		
 		
-		angle.setRadians(Double.MIN_NORMAL);
-		test.put(angle);
+		angle.setPiRadians(Double.MIN_NORMAL);
+		test.set(angle);
 		assertEquals(test.isZero(),Boolean.FALSE);
 		
 		angle.setRadians(Double.MIN_NORMAL/256);
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isZero(),Boolean.FALSE);
 		
-		angle.setRadians(2*Double.MIN_VALUE);
-		test.put(angle);
+		angle.setPiRadians(2*Double.MIN_VALUE);
+		test.set(angle);
 		assertEquals(test.isZero(),Boolean.FALSE);
 		
 	}
@@ -765,23 +765,23 @@ public class PrincipleTest {
 	
 		//show zero case
 		angle.set(Angle.inRadians(0.0));		
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isPositive(),Boolean.TRUE);
 
 		//show negative zero becomes zero case
 		angle.set(Angle.inRadians(-0.0));		
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isPositive(),Boolean.TRUE);
 
 		
 		//show greatest value less than negative-zero computes as zero by loss of bit representation...	
 		angle.setRadians(-Double.MIN_VALUE);
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isPositive(),Boolean.TRUE); //lost last sig bit of Radians
 	
 		//show value largest value not to test positive...	
-		angle.setRadians(-2*Double.MIN_VALUE);
-		test.put(angle);
+		angle.setPiRadians(-2*Double.MIN_VALUE);
+		test.set(angle);
 		assertEquals(test.isPositive(),Boolean.FALSE); //neg last sig bit of Radians now visible.
 	
 		
@@ -794,78 +794,78 @@ public class PrincipleTest {
 		assertEquals(test.isAcute(),Boolean.TRUE); //lost last sig bit of Radians
 
 		angle.set(Angle.inRadians(StrictMath.scalb(StrictMath.PI,-1)));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.TRUE); 
 
 		angle.set(Angle.inRadians(StrictMath.nextUp(StrictMath.scalb(StrictMath.PI,-1))));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.FALSE); 
 
 		angle.set(Angle.inRadians(-StrictMath.scalb(StrictMath.PI,-1)));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.TRUE); 
 
 		angle.set(Angle.inRadians(-StrictMath.nextUp(StrictMath.scalb(StrictMath.PI,-1))));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.FALSE); 
 
 
 		
 		angle.set(Angle.inRadians(7));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.TRUE); 
 
 		angle.set(Angle.inRadians(6));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.TRUE); 
 
 		angle.set(Angle.inRadians(5));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.TRUE); 
 
 		angle.set(Angle.inRadians(4));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.FALSE); 
 
 		angle.set(Angle.inRadians(3));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.FALSE); 
 
 		angle.set(Angle.inRadians(2));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.FALSE); 
 
 		angle.set(Angle.inRadians(1));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.TRUE); 
 
 		angle.set(Angle.inRadians(-1));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.TRUE); 
 
 		angle.set(Angle.inRadians(-2));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.FALSE); 
 
 		
 		angle.set(Angle.inRadians(-3));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.FALSE); 
 
 		angle.set(Angle.inRadians(-4));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.FALSE); 
 		
 		angle.set(Angle.inRadians(-5));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.TRUE); 
 		
 		angle.set(Angle.inRadians(-6));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.TRUE); 
 
 		angle.set(Angle.inRadians(-7));
-		test.put(angle);
+		test.set(angle);
 		assertEquals(test.isAcute(),Boolean.TRUE); 
 
 	}
@@ -892,9 +892,9 @@ public class PrincipleTest {
 		Principle tol = new Principle(Principle.ZERO);
 	    	
 		assertEquals(test.isEqualTo(tryit, tol),Boolean.TRUE);
-		test.put(Angle.inRadians(StrictMath.PI));
+		test.set(Angle.inRadians(StrictMath.PI));
 		assertEquals(test.isEqualTo(tryit, tol),Boolean.FALSE);
-		tol.put(Angle.inRadians(0.2));
+		tol.set(Angle.inRadians(0.2));
 		assertEquals(test.isEqualTo(tryit, tol),Boolean.TRUE);
 		test.add(tol);
 		assertEquals(test.isEqualTo(tryit, tol),Boolean.FALSE);

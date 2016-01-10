@@ -29,21 +29,23 @@ public class TestLocation extends TestCase {
 		double qlat;
 		double qlon;
 		for (int i = -3; i <= 3; i++) {
-		  //int i = 0; {
-			double phi = i * 30.0d-1; //latitude pole to pole
+            //int i = 0; {//lats
+			double phi = i * 30.0d; //latitude pole to pole
 			for (int j = 0; j <= 12; j++) {
-				//int j=0; {
+				//int j=6; {//lon
 				double lambda = j * 30.0d; //longitude 360
-				for (int h = -1; h <= 2; h++) {
+				//for (int h = -1; h <= 2; h++) {
+					int h=2; {
 					double hgt = h * 1000.0d; //height above and below ellipsoid
 					
 					tmp2.setNorthLatitude(Angle.inDegrees(phi));
 					tmp2.setEastLongitude(Angle.inDegrees(lambda));
 					tmp2.setEllipsoidHeight(hgt);
-					nav2geo.put(tmp2.axialOperator_NG());
+					nav2geo.set(tmp2.axialOperator_NG());
 //					Location tmp1 = new Location(tmp2.getNorthLatitude(), tmp2.getEastLongitude(), tmp2.getEllipsoidHeight());
 //					Location tmp = new Location(tmp1);
 					tmp.setEllipsoidHorizontal(nav2geo);
+					System.out.print(String.format(" q = " + nav2geo.toString(15))); //tmp.axialOperator_NG().toString(15)));
 					System.out.print(String.format(" phi = %8f" , phi)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
 					System.out.print(String.format(" lambda = %8f" , lambda)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
 					System.out.print(String.format(" latitude = %8f" , tmp.getNorthLatitude().getDegrees()));

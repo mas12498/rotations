@@ -58,11 +58,11 @@ public class QuaternionTest {
 		Quaternion p = new Quaternion(0,3,1,4);
 		Quaternion q = new Quaternion(0,3,1,4);
 		assertTrue(p.isEquivalent(q, 1e-13));
-		q.put(0,3,1,4-(1e-10));
+		q.set(0,3,1,4-(1e-10));
 		assertFalse(p.isEquivalent(q, 1e-13));
 		assertTrue(p.isEquivalent(q, 1e-7));
 		// assertTrue(p.isEqual(t, 1e-13));
-		t.put(1,2,3,4);
+		t.set(1,2,3,4);
 	}
 	
 	
@@ -72,7 +72,7 @@ public class QuaternionTest {
 	@Test
 	public void testHasNan() {
 		Quaternion t = new Quaternion(Double.NaN,3,1,4);
-		t.put(1,2,3,4);
+		t.set(1,2,3,4);
 //        long id = t.hashCode();
 		t = new Quaternion(1,Double.NaN,3,4);
         assertTrue(t.hasNan());
@@ -100,11 +100,11 @@ public class QuaternionTest {
 		assertEquals(t.getDeterminant(),t.getW()*t.getW()+t.getX()*t.getX()+t.getY()*t.getY()+t.getZ()*t.getZ(),1e-15);
 		assertEquals(t.getDeterminant(),t.getAbs()*t.getAbs(),1e-13);	
 		
-		t.put(1,1,1,1);
+		t.set(1,1,1,1);
 		assertEquals(t.getDeterminant(),t.getW()*t.getW()+t.getX()*t.getX()+t.getY()*t.getY()+t.getZ()*t.getZ(),1e-15);	
 		assertEquals(t.getDeterminant(),t.getAbs()*t.getAbs(),1e-15);	
 		
-		t.put(2,1,5,7);
+		t.set(2,1,5,7);
 		assertEquals(t.getDeterminant(),t.getW()*t.getW()+t.getX()*t.getX()+t.getY()*t.getY()+t.getZ()*t.getZ(),1e-15);	
 		assertEquals(t.getDeterminant(),t.getAbs()*t.getAbs(),1e-15);	
 	}
@@ -129,15 +129,15 @@ public class QuaternionTest {
 //		System.out.println("The magnitude is: "+t.abs());
 		assertEquals(t.getAbs(),1.0,1e-15);
 //		
-		t.put(-0,0,-0.06,0.08);
+		t.set(-0,0,-0.06,0.08);
 		assertEquals(t.getAbs(),0.1,1e-13);
 //		
-		t.put(-0,0,-6,8);
+		t.set(-0,0,-6,8);
 		assertEquals(t.getAbs(),10d,1e-13);	
 //		
 		
-		t.put(-0,0,-0.06,0.08);
-		t.put(t);
+		t.set(-0,0,-0.06,0.08);
+		t.set(t);
 //		System.out.println("The magnitude is: "+t.abs());
 		assertEquals(t.getAbs(),0.1,1e-15);	
 		
@@ -158,33 +158,33 @@ public class QuaternionTest {
 		assertEquals(t.getArg().getPiRadians(),0,1e-15);	
 		
 		//MAS: error!!! -60=2 * -30 deg. rotation
-		t.put( new Quaternion(StrictMath.sqrt(3),-1,0,0));
+		t.set( new Quaternion(StrictMath.sqrt(3),-1,0,0));
 //		System.out.println("angle1 deg= "+t.arg().getRadians()*180/StrictMath.PI);
 		assertEquals(t.getArg().getPiRadians(),StrictMath.PI/3,1e-15);	
 		
 		
 		//60=2 * 30 deg. rotation
-		t.put( new Quaternion(StrictMath.sqrt(3),1,0,0));
+		t.set( new Quaternion(StrictMath.sqrt(3),1,0,0));
 		assertEquals(t.getArg().getPiRadians(),StrictMath.PI/3,1e-15);	
 		
 		//-60=2 * -30 deg. rotation [150 ?]
-		t.put( new Quaternion(-StrictMath.sqrt(3),1,0,0));
+		t.set( new Quaternion(-StrictMath.sqrt(3),1,0,0));
 		assertEquals(t.getArg().getPiRadians(),-StrictMath.PI/3,1e-15);	
 		
 		//-60=2 * -30    [210 ?]
-		t.put( new Quaternion(-StrictMath.sqrt(3),-1,0,0));
+		t.set( new Quaternion(-StrictMath.sqrt(3),-1,0,0));
 		assertEquals(t.getArg().getPiRadians(),-StrictMath.PI/3,1e-15);	
 
 		
 		//60 degrees
 		
 		//120=2 * 60
-		t.put( new Quaternion(.5,StrictMath.sqrt(3)/2,0,0));
+		t.set( new Quaternion(.5,StrictMath.sqrt(3)/2,0,0));
 //		System.out.println("angle2 deg= "+t.arg().getRadians()*180/StrictMath.PI);
 		assertEquals(t.getArg().getPiRadians(),StrictMath.PI/1.5,1e-15);	
 		
 		//-120=2 * -60    [240 ?]
-		t.put( new Quaternion(-1,-StrictMath.sqrt(3),0,0));
+		t.set( new Quaternion(-1,-StrictMath.sqrt(3),0,0));
 		assertEquals(t.getArg().getPiRadians(),-StrictMath.PI/1.5,1e-15);	
 		
 		//180=2 * 90
@@ -213,7 +213,7 @@ public class QuaternionTest {
 			for (k = -2; k <= 2; ++k) {
 				for (j = -2; j <= 2; ++j) {
 					for (i = -2; i <= 2; ++i) {
-						q.put(i, j, k, l);
+						q.set(i, j, k, l);
 						if (!q.equals(Quaternion.ZERO))
 							assertEquals(new Quaternion(i, j, k, l).unit()
 									.getDeterminant(), 1.0, 1e-10);
@@ -224,11 +224,11 @@ public class QuaternionTest {
 		}
 		assertTrue(new Quaternion(Quaternion.ZERO).unit().equals(Quaternion.NAN));
 		
-		t.put(Quaternion.ZERO).unit();
+		t.set(Quaternion.ZERO);t.unit();
 //		System.out.println("t = NaN: "+t.toString());
-		t.put(Quaternion.NAN).unit();
+		t.set(Quaternion.NAN);t.unit();
 		assertTrue(t.hasNan());			
-		t.put(Quaternion.ZERO).divide(0);
+		t.set(Quaternion.ZERO);t.divide(0);
 //		System.out.println("t = NaN: "+t.toString());
 		assertTrue(t.hasNan());	
 
@@ -398,8 +398,8 @@ public class QuaternionTest {
 		assertTrue(t.isEquivalent(t1, 1e-15));
 
 		
-		p.put(1,2,3,4);
-		q.put(1,1,2,2);
+		p.set(1,2,3,4);
+		q.set(1,1,2,2);
 		t = new Quaternion(p).add(new Quaternion(q).multiply(3));
 //		t= new Quaternion(p).addMultiply(3,q);
 //		t.put(p).addMultiply(3,q);
@@ -509,7 +509,7 @@ public class QuaternionTest {
 		assertTrue(p.isEquivalent(new Quaternion(0, -.5, 0, StrictMath.sqrt(3) / 2),
 				1e-15));
 // test scalar functional equivalence...
-		p.put(StrictMath.log(2),0,0,0);
+		p.set(StrictMath.log(2),0,0,0);
 		p.exp();
 		assertEquals( p.getW(),2,1e-15);
 		
@@ -538,7 +538,7 @@ public class QuaternionTest {
 		t = new Quaternion(1,2,3,4);
 		e = new Quaternion(t);
 		e.exp();
-		t.put(e.ln());
+		t.set(e.ln());
 		e.exp();
 		e.ln();
 //		System.out.println("start: "+t.toString());
@@ -568,25 +568,25 @@ public class QuaternionTest {
 //	System.out.println(" p = "+p.toString());
 //	System.out.println("InvLn10*Ln: p = "+x.put(p).ln().multiply(Quaternion.INVERSE_LN10).toString());
 //	System.out.println("Log10: p = "+y.put(p).log10().toString());
-	x.put(p).ln().multiply(Quaternion.INVERSE_LN10).toString();
-	y.put(p).log10().toString();
+	x.set(p);x.ln().multiply(Quaternion.INVERSE_LN10).toString();
+	y.set(p);y.log10().toString();
 	assertTrue(x.isEquivalent(y, 1e-15));
 
-	p.put(10,0,0,0);
+	p.set(10,0,0,0);
 //	System.out.println(" p = "+p.toString());
 //	System.out.println("InvLn10*Ln: p = "+new Quaternion(p).ln().multiply(Quaternion.INVERSE_LN10).toString());
 //	System.out.println("Log10: p = "+new Quaternion(p).log10().toString());
-	x.put(p).ln().multiply(Quaternion.INVERSE_LN10).toString();
-	y.put(p).log10().toString();
+	x.set(p);x.ln().multiply(Quaternion.INVERSE_LN10).toString();
+	y.set(p);y.log10().toString();
 	assertTrue(x.isEquivalent(y, 1e-15));
 
 	Angle a = Angle.inDegrees(30);
 	Principle t = new Principle(a);
-	p.put(t.cos(),0,t.sin(),0);
+	p.set(t.cos(),0,t.sin(),0);
 //	System.out.println("InvLn10*Ln: 30 deg = "+new Quaternion(p).ln().multiply(Quaternion.INVERSE_LN10).toString());
 //	System.out.println("Log10: 30 deg = "+new Quaternion(p).log10().toString());
-	x.put(p).ln().multiply(Quaternion.INVERSE_LN10).toString();
-	y.put(p).log10().toString();
+	x.set(p);x.ln().multiply(Quaternion.INVERSE_LN10).toString();
+	y.set(p);y.log10().toString();
 	assertTrue(x.isEquivalent(y, 1e-15));
 
 	//	fail("Not yet implemented");
@@ -665,16 +665,28 @@ public class QuaternionTest {
 		assertTrue(x.equals(x));
 		assertFalse(x.equals(y));
 		assertTrue(x.isEquivalent(y,1e-10));
-		assertFalse(x.put(-1,2,3,4).equals(y.put(1,2,3,4)));
-		assertFalse(x.put(1,-2,3,4).equals(y.put(1,2,3,4)));
-		assertFalse(x.put(1,2,-3,4).equals(y.put(1,2,3,4)));
-		assertFalse(x.put(1,2,3,-4).equals(y.put(1,2,3,4)));
-		assertTrue(x.put(1,2,3,4).equals(y.put(1,2,3,4)));
-		assertFalse(x.put(-1,2,3,4).isEquivalent(y.put(1,2,3,4),1e-10));
-		assertFalse(x.put(1,-2,3,4).isEquivalent(y.put(1,2,3,4),1e-10));
-		assertFalse(x.put(1,2,-3,4).isEquivalent(y.put(1,2,3,4),1e-10));
-		assertFalse(x.put(1,2,3,-4).isEquivalent(y.put(1,2,3,4),1e-10));
-		assertTrue(x.put(1,2,3,4).isEquivalent(y.put(1,2,3,4),1e-10));
+		x.set(-1,2,3,4); y.set(1,2,3,4);	
+		assertFalse(x.equals(y));
+		x.set(1,-2,3,4); y.set(1,2,3,4);
+		assertFalse(x.equals(y));
+		x.set(1,2,-3,4); y.set(1,2,3,4);
+		assertFalse(x.equals(y));
+		x.set(1,2,3,-4); y.set(1,2,3,4);
+		assertFalse(x.equals(y));
+		x.set(1,2,3,4); y.set(1,2,3,4);
+		assertTrue(x.equals(y));
+		x.set(-1,2,3,4); y.set(1,2,3,4);
+		assertFalse(x.isEquivalent(y,1e-10));
+		x.set(1,-2,3,4); y.set(1,2,3,4);
+		assertFalse(x.isEquivalent(y,1e-10));
+		x.set(1,2,-3,4); y.set(1,2,3,4);
+		assertFalse(x.isEquivalent(y,1e-10));
+		x.set(1,2,3,-4); y.set(1,2,3,4);
+		assertFalse(x.isEquivalent(y,1e-10));
+		x.set(1,2,3,4); y.set(1,2,3,4);
+		assertTrue(x.isEquivalent(y,1e-10));
+		
+		
 		assertTrue(x.isEquivalent(x,1e-10));
 		assertFalse(x.isEquivalent(new Double(5),1e-10));
 		assertFalse(x.equals(new Double(5)));
@@ -691,16 +703,16 @@ public class QuaternionTest {
 		assertTrue(x.isEquivalent(y,1e-15));
 		d = 2;
 		q = new Quaternion(d,0,0,0);
-		p.put(1,2,3,4);
+		p.set(1,2,3,4);
 		x = new Quaternion(p).power(d);
 		y = new Quaternion(p).power(q);
 //		System.out.println("x = "+x.toString());
 //		System.out.println("y = "+y.toString());
 		assertTrue(x.isEquivalent(y,1e-13));
 		
-		q.put(0,StrictMath.log(2),0,0);
+		q.set(0,StrictMath.log(2),0,0);
 		Vector3 v = new Vector3(StrictMath.log(2),0,0);
-		p.put(1,2,3,4);
+		p.set(1,2,3,4);
 		x = new Quaternion(p).power(v);
 		y = new Quaternion(p).power(q);
 //		System.out.println("x = "+x.toString());
@@ -726,9 +738,9 @@ public class QuaternionTest {
 		assertTrue(t.isEquivalent(new Operator(0, .5, StrictMath.sqrt(3) / 2d, 0),
 				1e-15));
 
-		p.put(0,1,0,0);
-		q.put(0,0,1,0);
-		t.put(q).slerp(p, (2d/3d));
+		p.set(0,1,0,0);
+		q.set(0,0,1,0);
+		t.set(q);t.slerp(p, (2d/3d));
 //		System.out.println("Slerp 2/3: "+t.toString());	
 		assertTrue(t.isEquivalent(new Operator(0, StrictMath.sqrt(3) / 2, .5, 0),
 				1e-15));
@@ -771,11 +783,11 @@ public class QuaternionTest {
 		vq.put(0,1,1);
 //		System.out.println("Faster Slerp 1/2: "+vq.slerp(vp, (1d/2d)).toString());
 		System.out.println("Faster Slerp to I [1]: "+vq.slerp(vp, (1d)).toString());
-		p.put(0,5,2,.5);
-		q.put(0,0,1,1);
+		p.set(0,5,2,.5);
+		q.set(0,0,1,1);
 		System.out.println("Faster Slerp to I [1]: "+q.slerp(p, (1d)).toString());
-		p.put(0,5,2,.5);
-		q.put(0,0,1,1);
+		p.set(0,5,2,.5);
+		q.set(0,0,1,1);
 		System.out.println("Faster Slerp to I [1]: "+q.slerp(p, (.25d)).unit().toString());
 		vp.put(5,2,.5);
 		vq.put(0,1,1);
@@ -789,7 +801,8 @@ public class QuaternionTest {
 		System.out.println("Faster Slerp: "+vq.slerp(vp, (.5d)).unit().toString());
 		vp.put(0,6,8);
 		vq.put(0,0,20);
-		System.out.println("Last Faster Slerp Q: "+q.put(new Quaternion(q).slerp(p, (1d))).toString()+" mag= "+q.getDeterminant());
+		q.set(new Quaternion(q));
+		System.out.println("Last Faster Slerp Q: "+q.slerp(p, (1d)).toString()+" mag= "+q.getDeterminant());
 		System.out.println("Check Slerp: "+vq.toString()+" mag= "+vq.getAbs());		
 		vp.put(0,6,8);
 		vq.put(0,0,20);
@@ -800,7 +813,8 @@ public class QuaternionTest {
 		vq.put(0,0,20);
 		p.put(0,vp);
 		q.put(0,vq);
-		System.out.println("Last Faster Slerp Q: "+q.put(new Quaternion(q).slerp(p, (1d))).toString()+" arg= "+q.getArg().signedAngle().getDegrees());
+		q.set(new Quaternion(q));
+		System.out.println("Last Faster Slerp Q: "+q.slerp(p, (1d)).toString()+" arg= "+q.getArg().signedAngle().getDegrees());
 		System.out.println("Last Faster Slerp: "+vq.put(new Vector3(vq).slerp(vp, (0d))).toString()+" mag= "+new Vector3(vq).getAbs()*vq.getAbs());
 		//System.out.println("Check Slerp: "+vp.toString()+" mag= "+vp.abs());		
 		//System.out.println("Check Slerp: "+vq.toString()+" det= "+vq.abs()*vq.abs());		
@@ -809,7 +823,8 @@ public class QuaternionTest {
 		vq.put(0,0,20);
 		p.put(0,vp);
 		q.put(0,vq);
-		System.out.println("Last Faster Slerp Q: "+q.put(new Quaternion(q).slerp(p, (1d))).toString()+" arg= "+q.getArg().signedAngle().getDegrees());
+		q.set(new Quaternion(q));
+		System.out.println("Last Faster Slerp Q: "+q.slerp(p, (1d)).toString()+" arg= "+q.getArg().signedAngle().getDegrees());
 		System.out.println("Last Faster Slerp: "+vq.put(new Vector3(vq).slerp(vp, (.25d))).toString()+" mag= "+new Vector3(vq).getAbs()*vq.getAbs());
 		//System.out.println("Check Slerp: "+vp.toString()+" mag= "+vp.abs());		
 		//System.out.println("Check Slerp: "+vq.toString()+" det= "+vq.abs()*vq.abs());		
@@ -818,7 +833,8 @@ public class QuaternionTest {
 		vq.put(0,0,20);
 		p.put(0,vp);
 		q.put(0,vq);
-		System.out.println("Last Faster Slerp Q: "+q.put(new Quaternion(q).slerp(p, (1d))).toString()+" arg= "+q.getArg().signedAngle().getDegrees());
+		q.set(new Quaternion(q));
+		System.out.println("Last Faster Slerp Q: "+q.slerp(p, (1d)).toString()+" arg= "+q.getArg().signedAngle().getDegrees());
 		System.out.println("Last Faster Slerp: "+vq.put(new Vector3(vq).slerp(vp, (.5d))).toString()+" mag= "+new Vector3(vq).getAbs()*vq.getAbs());
 		//System.out.println("Check Slerp: "+vp.toString()+" mag= "+vp.abs());		
 		//System.out.println("Check Slerp: "+vq.toString()+" det= "+vq.abs()*vq.abs());		
@@ -827,7 +843,8 @@ public class QuaternionTest {
 		vq.put(0,0,20);
 		p.put(0,vp);
 		q.put(0,vq);
-		System.out.println("Last Faster Slerp Q: "+q.put(new Quaternion(q).slerp(p, (1d))).toString()+" arg= "+q.getArg().signedAngle().getDegrees());
+		q.set(new Quaternion(q));
+		System.out.println("Last Faster Slerp Q: "+q.slerp(p, (1d)).toString()+" arg= "+q.getArg().signedAngle().getDegrees());
 		System.out.println("Last Faster Slerp: "+vq.put(new Vector3(vq).slerp(vp, (.75d))).toString()+" mag= "+new Vector3(vq).getAbs()*vq.getAbs());
 		//System.out.println("Check Slerp: "+vp.toString()+" mag= "+vp.abs());		
 		//System.out.println("Check Slerp: "+vq.toString()+" det= "+vq.abs()*vq.abs());		
@@ -836,7 +853,8 @@ public class QuaternionTest {
 		vq.put(0,0,20);
 		p.put(0,vp);
 		q.put(0,vq);
-		System.out.println("Last Faster Slerp Q: "+q.put(new Quaternion(q).slerp(p, (1d))).toString()+" arg= "+q.getArg().signedAngle().getDegrees());
+		q.set(new Quaternion(q));
+		System.out.println("Last Faster Slerp Q: "+q.slerp(p, (1d)).toString()+" arg= "+q.getArg().signedAngle().getDegrees());
 		System.out.println("Last Faster Slerp: "+vq.put(new Vector3(vq).slerp(vp, (1d))).toString()+" mag= "+new Vector3(vq).getAbs()*vq.getAbs());
 		//System.out.println("Check Slerp: "+vp.toString()+" mag= "+vp.abs());		
 		//System.out.println("Check Slerp: "+vq.toString()+" det= "+vq.abs()*vq.abs());		
@@ -852,7 +870,7 @@ public class QuaternionTest {
 		Quaternion t = new Quaternion(1,2,3,4);
 		double d = t.getNorm1();
 		assertEquals(d,10,1e-14);	
-        t.put(1,-2,-3,-4);
+        t.set(1,-2,-3,-4);
 		d = t.getNorm1();
 		assertEquals(d,10,1e-14);	
 //		fail("Not yet implemented");
@@ -866,7 +884,7 @@ public class QuaternionTest {
 		Quaternion t = new Quaternion(1,2,3,4);
 		double d = t.getNormInf();
 		assertEquals(d,4,1e-14);	
-        t.put(1,-2,-3,-4);
+        t.set(1,-2,-3,-4);
 		d = t.getNormInf();
 		assertEquals(d,4,1e-14);	
 //		fail("Not yet implemented");

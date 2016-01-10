@@ -118,7 +118,9 @@ public class TestPedestal extends TestCase {
 			//Operator q_AN = (Operator) QuaternionMath.exp_k(paz.put(az)).rightMultExpJ(pel.put(el));
 			
 			//Operator q_AN = QuaternionMath.exp_k(paz.put(az)).exp_j(pel.put(el));
-			Operator q_AN = QuaternionMath.eulerRotate_kj(paz.put(az), pel.put(el));
+			paz.set(az); 
+			pel.set(el);
+			Operator q_AN = QuaternionMath.eulerRotate_kj(paz, pel);
 			
 			System.out.println("q_AN = "+q_AN.toString(10));
 			System.out.println("twist     q_AN = "+q_AN.getEuler_i_kji().signedAngle().getDegrees());
@@ -203,7 +205,7 @@ public class TestPedestal extends TestCase {
 			
 			paz = new Principle(Angle.inDegrees(150));
 			pel = new Principle(Angle.inDegrees(30.0));
-			q_AN.put(QuaternionMath.eulerRotate_kj(paz, pel).unit());
+			q_AN.set(QuaternionMath.eulerRotate_kj(paz, pel).unit());
 //			System.out.println("**************input*******************");
 //			System.out.println("yaw|bearing: "+paz.unsignedAngle().getDegrees());
 //			System.out.println("pitch|el   : "+pel.signedAngle().getDegrees()); //unit is a mutator!!!
@@ -225,7 +227,7 @@ public class TestPedestal extends TestCase {
 			System.out.println("*************Rank-2*******************");
 			
 			Operator q_ANx = new Operator(Quaternion.NAN);
-			q_ANx.put(QuaternionMath.foldoverI(d_AN).conjugate());
+			q_ANx.set(QuaternionMath.foldoverI(d_AN).conjugate());
 //			q_ANw.putRightTiltI(d_AN).conjugate();
 //			q_ANw.put( new Quaternion(Quaternion.IDENTITY).rightMultiplyTiltI(d_AN).conjugate());
 //			q_ANw.put( new Quaternion(Quaternion.IDENTITY).leftMultiplyTiltI(d_AN).conjugate());

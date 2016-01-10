@@ -73,31 +73,38 @@ public class Operator extends Quaternion {
 	 * 
 	 * @return Principle
 	 */
-	public Principle getEuler_k_kji() {
-		if(getZ() == 0){ //On prime meridian
-			if(getW()>0){
-//				System.out.print("trap00000");
+	public Principle getEuler_k_kji() {	
+
+		
+		//not sure why works...
+		if(((getY() == 0)&&(getX()!= 0))){ 
+			return new Principle(Principle.STRAIGHT).negate();							
+		}	 
+	    
+		double sk = getW() * getZ() + getX() * getY();
+		if (sk == 0) { //On the equator...+/-
+			if(getW()>0){//zero
 				return new Principle(Principle.ZERO);				
 			}
-			//not necessary... but faster return.
-//			System.out.print("trap11111");
-			return new Principle(Principle.STRAIGHT).negate();							
-		}
-		double sk = getW() * getZ() + getX() * getY();
-		if (sk == 0) { //On the equator...
-//			System.out.print("trapEquatorialZZ");
-
+			if(getZ()==0) return new Principle(Double.POSITIVE_INFINITY);
 			return new Principle(getW() / -getZ());
 		}
+		
 		double ck = StrictMath.scalb(
 				getW() * getW() 
 				+ getX() * getX() 
 				- getY() * getY() 
 				- getZ() * getZ()
 				, -1);
-
 		double r = StrictMath.hypot(sk, ck);
-		return new Principle(sk / (r + ck));
+		
+		
+		if(r<1e-15){ //TODO: Define real numerical limit to double smallness. ... Euler instability.
+			//System.out.println("sk = "+sk+" ck = "+ck+" r = "+r);
+			return new Principle( getZ()/getW());
+		}
+		
+		return new Principle(sk / (r + ck)); //
 	}
 
 	/**
@@ -108,16 +115,18 @@ public class Operator extends Quaternion {
 	public Principle getEuler_j_kji() {
 		double sj = (getW() * getY() - getZ() * getX()) 
 				/ StrictMath.scalb(getDeterminant(), -1);
-//		if(sj==1){
-//			return new Principle(1); //90 degrees...
-//		}
+		double check = 1d-StrictMath.abs(sj);
+		
+		if (StrictMath.abs(check)<1e-15) { //TODO: Define real numerical limit to smallness. ... Euler numerical instability.
+			return new Principle(StrictMath.copySign(1d,sj));
+		}
+		
 		return new Principle(sj / (1 + StrictMath.sqrt(1 - sj * sj)));
 	}
 
 	/**
-	 * Tait-Bryan Roll | Centerline twist :
 	 * 
-	 * @return Principle
+	 * @return boolean
 	 */
 	public boolean getDump_kj() {
 		double si = getW() * getX() + getY() * getZ();
@@ -140,7 +149,11 @@ public class Operator extends Quaternion {
 		double ci = StrictMath.scalb(getW() * getW() - getX() * getX() - getY() * getY()
 				+ getZ() * getZ(), -1);			
 		double r = StrictMath.hypot(si, ci);
-		return new Principle(si / (r + ci));
+		double p = si / (r + ci);
+		if(Double.isNaN(p)){
+			p=(si>0d)?Double.POSITIVE_INFINITY:Double.NEGATIVE_INFINITY;
+		}
+		return Principle.arcTanHalfAngle(p);
 	}
 
 	// @Note: need array of Principle.
@@ -864,7 +877,7 @@ public class Operator extends Quaternion {
 	 */
 	@Override
 	public Operator slerp(Quaternion p, double t) {
-		put(QuaternionMath.slerp(this, p, t));
+		set(QuaternionMath.slerp(this, p, t));
 		return this;
 	}
 
@@ -874,7 +887,7 @@ public class Operator extends Quaternion {
 	 * this image after operation by object:
 	 */
 	public Operator image(Quaternion object) {
-		this.put(QuaternionMath.multiply(QuaternionMath.multiply(this, object),
+		this.set(QuaternionMath.multiply(QuaternionMath.multiply(this, object),
 				QuaternionMath.reciprocal(this)));
 		return this;
 	}
@@ -886,7 +899,7 @@ public class Operator extends Quaternion {
 	 * this pre-image before operation by object:
 	 */
 	public Operator preImage(Quaternion object) {
-		this.put(QuaternionMath.multiply(QuaternionMath.multiply(
+		this.set(QuaternionMath.multiply(QuaternionMath.multiply(
 				QuaternionMath.reciprocal(this), object), this));
 		return this;
 	}

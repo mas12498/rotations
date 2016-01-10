@@ -334,15 +334,12 @@ public class Quaternion {
 	 *            : Second imaginary coefficient.
 	 * @param z
 	 *            : Third imaginary coefficient.
-	 * 
-	 * @return put --> this overwritten.
 	 */
-	public final Quaternion put(double w, double x, double y, double z) {
+	public final void set(double w, double x, double y, double z) {
 		_w = w;
 		_x = x;
 		_y = y;
 		_z = z;
-		return this;
 	}
 
 	/**
@@ -368,17 +365,14 @@ public class Quaternion {
 	 * 
 	 * @param t
 	 *            : template.
-	 * 
-	 * @return put --> this overwritten.
 	 */
-	public final Quaternion put(final Quaternion t) {
+	public final void set(final Quaternion t) {
 		if (this != t) {
 			_w = t._w;
 			_x = t._x;
 			_y = t._y;
 			_z = t._z;
-		} // else throw?
-		return this;
+		} // do nothing ...else throw?
 	}
 	
 	
@@ -518,7 +512,8 @@ public class Quaternion {
 		// return conjugate().divide(determinant());
 		final double d = -(_w*_w + _x*_x + _y*_y + _z*_z);//-getDeterminant();
 		if (d == 0) {
-			return put(Quaternion.NAN);
+			set(Quaternion.NAN);
+			return this;
 		}
 		_x /= d;
 		_y /= d;
@@ -594,7 +589,8 @@ public class Quaternion {
 	 */
 	public final Quaternion divide(final double scalarDivisor) {
 		if (scalarDivisor == 0) {
-			return put(Quaternion.NAN);
+			set(Quaternion.NAN);
+			return this;
 		}
 		_w /= scalarDivisor;
 		_x /= scalarDivisor;
@@ -725,7 +721,9 @@ public class Quaternion {
 	 * Put this^(vector) mutator:
 	 */
 	public Quaternion power(Vector3 v) {
-		return put(QuaternionMath.multiply(ln(), v)).exp();
+        set(QuaternionMath.multiply(ln(), v));
+        return this.exp();
+        
 	}
 
 	/**
@@ -734,7 +732,8 @@ public class Quaternion {
 	 * Put this^(q) mutator:
 	 */
 	public Quaternion power(Quaternion q) {
-		return put( QuaternionMath.multiply(ln(), q)).exp();
+		set( QuaternionMath.multiply(ln(), q));
+		return this.exp();
 	}
 
 	/**
@@ -743,7 +742,8 @@ public class Quaternion {
 	 * SLERP mutator:
 	 */
 	public Quaternion slerp(final Quaternion p, final double t) {
-		return put(QuaternionMath.slerp(this, p, t));
+		set(QuaternionMath.slerp(this, p, t));
+		return this;
 	}
 
 //	/**

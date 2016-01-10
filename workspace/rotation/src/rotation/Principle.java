@@ -4,11 +4,11 @@
 package rotation;
 
 /**
- * Class for encoding principle arguments of angle rotations. 
+ * Class for encoding principle arguments of angle rotators. 
  * 
- * Speeds computations: 
- * 		minimizes storage of intermediate computations.
- * 		minimizes unnecessary trigonometric conversions.
+ * Use to speed computations: 
+ * 		minimize storage of intermediate computations.
+ * 		minimize unnecessary trigonometric conversions.
  * 
  * Companion to the Angle adapter class in the rotation package.
  * 
@@ -16,7 +16,7 @@ package rotation;
  * <p>  -- case (Signed)S: [-1/2 .. 1/2]
  * <p>  -- case Unsigned: [   0 .. 1  ]
  *   
- * <p>Privately encoded <i>trigonometric</i> representation:
+ * <p>As privately encoded <i>trigonometric</i> representation:
  * <p>  -- unit-less: No preferred units to interface.
  * <p>  -- spans Doubles from [-Inf .. Inf]
  * <p>  -- provides publicly decoded Tan,Sin,Cos,TanHalf methods without additional resort to math trig library funcitons.
@@ -25,11 +25,24 @@ package rotation;
  *
  */
 public class Principle {
+	
 	static final public Principle ZERO = new Principle(0.0d);
 	static final public Principle RIGHT = new Principle(1.0d);
 	static final public Principle STRAIGHT = new Principle(Double.POSITIVE_INFINITY);
+	static final public Principle EMPTY = new Principle(Double.NaN);
 	
 	private double _ta;
+
+	/** Principle double constructor -- by externally encoded angle representations. */
+	protected Principle(double encoded) {   _ta = encoded; }	
+	
+	/** Principle Angle constructor */
+	public Principle(Angle a){ _ta = (double) a.getCodedPrinciple(); }
+
+	/** Principle Copy constructor */
+	public Principle(Principle copy) { _ta = copy._ta; }
+	
+
 	
 	/** 
 	 * return double representing signed Principle angle in PI radians: 
@@ -39,12 +52,11 @@ public class Principle {
 		if(_ta==0){
 			return StrictMath.copySign(0,_ta);
 		}
-		
-		if(Double.isInfinite(_ta)){ //tan 90 degrees... makes straight angle
+		if(Double.isInfinite(_ta)){ //tan +/-90 degrees... makes straight angle
 			return StrictMath.copySign(1d,_ta);			
 		}
 		if(Double.isNaN(_ta)){
-			return 1d;
+			return _ta;
 		}
 		return StrictMath.atan(_ta)/Angle.PI_2; }
 
@@ -64,19 +76,7 @@ public class Principle {
 	 * @param tanHalfAngle
 	 * @return Principle Angle as-is encoded.
 	 */
-	public static Principle arcTanHalfAngle(double tanHalfAngle) { return new Principle(tanHalfAngle); }
-	
-	/** 
-	 * Construct Principle from externally encoded double: 
-	 *   (Reserved for rotation package internal use)
-	 * */
-	protected Principle(double encoded) {   _ta = encoded; }	
-	
-	/** Principle Angle Constructor */
-	public Principle(Angle a){ _ta = (double) a.getCodedPrinciple(); }
-
-	/** Principle Copy Constructor */
-	public Principle(Principle copy) { _ta = copy._ta; }
+	public static final Principle arcTanHalfAngle(double tanHalfAngle) { return new Principle(tanHalfAngle); }
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -121,11 +121,17 @@ public class Principle {
 //    /** Mutator -- Set Principle equal to zero angle. */
 //    public Principle setZero() { return this.put(Principle.ZERO); }
 	
-    /** Mutator -- Set to Principle angle of Angle measure. */
-	public Principle put(Angle measure) { _ta = measure.getCodedPrinciple(); return this; }
+    /** Setter to Principle angle of Angle measure. */
+	public void set(Angle measure) { 
+		_ta = measure.getCodedPrinciple();
+		return;
+	}
 
-    /** Mutator -- Set equal to another Principle angle measure. */
-	public Principle put(Principle measure){ _ta = measure._ta; return this;}
+    /** Setter to another Principle angle's measure. */
+	public void set(Principle measure){
+		_ta = measure._ta; 
+		return;
+	}
 
 	/** Factory. Get <i>signed</i> Angle.
 	 *  @return Angle */
@@ -308,18 +314,23 @@ public class Principle {
 	}
 	
 	public Principle addStraight(){
-		if(_ta==0){
-			_ta=Double.POSITIVE_INFINITY;
-			return this;
-		}
-		if(_ta==Double.POSITIVE_INFINITY){
-			_ta=0;
-			return this;
-		}
-		if(_ta==Double.NEGATIVE_INFINITY){
-			_ta=-0;
-			return this;
-		}
+//		Double negZero= new Double(-0);
+//		if((negZero.equals(_ta))){
+//			_ta=Double.NEGATIVE_INFINITY;
+//			return this;
+//		}
+//		if(_ta==0){
+//			_ta=Double.POSITIVE_INFINITY;
+//			return this;
+//		}
+//		if(_ta==Double.POSITIVE_INFINITY){
+//			_ta=0; //Double.NEGATIVE_INFINITY;
+//			return this;
+//		}
+//		if(_ta==Double.NEGATIVE_INFINITY){
+//			_ta=0; //Double.POSITIVE_INFINITY;
+//			return this;
+//		}
 		_ta=1/_ta;
 		return this;
 	}
@@ -329,29 +340,29 @@ public class Principle {
 	/** Mutator -- sum right angle.
 	 */
 	public Principle addRight() //addend == RightAngle [90 degrees]: addend.ta = 1
-	{ 	//problem when dealing with 45 degrees...denominators goto zero!
+	{ 	//problem when dealing with principle of +/-45 degrees...denominators goto infinitie or zeros!
 		
-		if(isRight()){//needed for sign of zero...
-			if(_ta>0){//not observed
-				System.out.print("Wahhhhoooo111");
-				_ta=Double.POSITIVE_INFINITY;
-				return this;
-			}
-			//needed for equator...Something odd.
-			//System.out.print("Wahhhhoooo22222");
-			_ta = -0;
-			return this;
-		}		
-		if (isStraight()) { //not observed
-		//	System.out.print("WahhhhooooSSSSSINFINY");
-			_ta = -1d;
-			return this;
-		}	
-		if (isZero()) { //On all of zero latitudes...become rightangled!!!
-			//System.out.print("Wahhhh000");
-			_ta = 1d;
-			return this;
-		}	
+//		if(isRight()){//needed for sign of zero...
+////			if(_ta>0){//not observed
+////				System.out.print("Wahhhhoooo111");
+////				_ta=Double.POSITIVE_INFINITY;
+////				return this;
+////			}
+//			//needed for equator...Something odd.
+//			//System.out.print("Wahhhhoooo22222");
+//			_ta = 0;
+//			return this;
+//		}		
+//		if (isStraight()) { //not observed
+//		//	System.out.print("WahhhhooooSSSSSINFINY");
+//			_ta = -1d;
+//			return this;
+//		}	
+//		if (isZero()) { //On all of zero latitudes...become rightangled!!!
+//			//System.out.print("Wahhhh000");
+//			_ta = 1d;
+//			return this;
+//		}	
 		//assigns to ta...blows up as approach 1.
 		//System.out.print("Wahhhhoooo");		
 		_ta = (isAcute())
@@ -420,9 +431,12 @@ public class Principle {
 	}
 
 	/** True if Principle exactly equals zero angle. */
+	public boolean isEmpty() { return (_ta==Double.NaN); } //Math.abs(t)<2*Epsilon;
+
+	/** True if Principle exactly equals zero angle. */
 	public boolean isZero() { return (_ta==0.0); } //Math.abs(t)<2*Epsilon;
 
-	/** True if Principle angle is positive. */
+	/** True if Principle angle is positive or zero. */
 	public boolean isPositive() { return (_ta>=0.0d); } //t>= Epsilon;
 
 	/** True if <i>absolute</i> Principle angle is acute. */
@@ -438,8 +452,8 @@ public class Principle {
 
 	/** True if Principle is straight angle. */
 	public boolean isStraight() { 
-		return (StrictMath.abs(_ta)==Double.POSITIVE_INFINITY);
-//		return (ta==Double.NEGATIVE_INFINITY)||(ta==Double.POSITIVE_INFINITY);
+//		return (StrictMath.abs(_ta)==Double.POSITIVE_INFINITY);
+		return (_ta==Double.NEGATIVE_INFINITY)||(_ta==Double.POSITIVE_INFINITY);
 		} //Math.abs(t)<2*Epsilon;
 
 	/** True if Principle is equal to principle angle measure by Tolerance. 

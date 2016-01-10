@@ -82,13 +82,13 @@ public class Pedestal {
 	public void setLatitude(Angle lat) {
 		this.wgs84.setNorthLatitude(lat);
 		this.efg.put(this.wgs84.geocentric());
-		this.q_NG.put(this.wgs84.axialOperator_NG());
+		this.q_NG.set(this.wgs84.axialOperator_NG());
 	}
 	
 	public void setLongitude(Angle lon) {
 		this.wgs84.setEastLongitude(lon);
 		this.efg.put(this.wgs84.geocentric());
-		this.q_NG.put(this.wgs84.axialOperator_NG());
+		this.q_NG.set(this.wgs84.axialOperator_NG());
 	}
 	
 	/**
@@ -113,41 +113,43 @@ public class Pedestal {
 	public void setHeight(double meters) {
 		this.wgs84.setEllipsoidHeight( meters );//.put(wgs84.getX(), wgs84.getY(), meters);
 		this.efg.put(this.wgs84.geocentric());
-		this.q_NG.put(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
+		this.q_NG.set(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
 	}
 	
 	public void setE(double E) {
 		this.efg.put(E, efg.getY(), efg.getZ());
 		this.wgs84.set(this.efg);
-		this.q_NG.put(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
+		this.q_NG.set(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
 	}
 	
 	public void setF(double F) {
 		this.efg.put(efg.getX(), F, efg.getZ());
 		this.wgs84.set(this.efg);
-		this.q_NG.put(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
+		this.q_NG.set(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
 	}
 	
 	public void setG(double G) {
 		this.efg.put(efg.getX(), efg.getY(), G);
 		this.wgs84.set(this.efg);
-		this.q_NG.put(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
+		this.q_NG.set(this.wgs84.axialOperator_NG());//local Nav to Geo axial rotation.
 	}
 	
 	public void setAzimuth(Angle paz) {
 		this.aer.setAzimuth(paz);
-		this.q_AG.put(q_NG).rightMultExpK(aer.getAzimuth().getPrinciple()).rightMultExpJ(aer.getElevation().getPrinciple());
+		this.q_AG.set(q_NG);
+		this.q_AG.rightMultExpK(aer.getAzimuth().getPrinciple()).rightMultExpJ(aer.getElevation().getPrinciple());
 	}
 	
 	public void setElevation(Angle pel) {
 		this.aer.setElevation(pel);
-		this.q_AG.put(q_NG).rightMultExpK(aer.getAzimuth().getPrinciple()).rightMultExpJ(aer.getElevation().getPrinciple());
+		this.q_AG.set(q_NG);
+		this.q_AG.rightMultExpK(aer.getAzimuth().getPrinciple()).rightMultExpJ(aer.getElevation().getPrinciple());
 	}
 	
 	public void setAperturePosition(Angle paz, Angle pel) {
 		this.aer.setAzimuth(paz);
 		this.aer.setElevation( pel);
-		this.q_AG.put(q_NG).rightMultExpK(aer.getAzimuth().getPrinciple()).rightMultExpJ(aer.getElevation().getPrinciple());
+		this.q_AG.set(q_NG);
 	}
 	
 	public void setRange( double meters ) {
@@ -164,12 +166,14 @@ public class Pedestal {
 		this.aer.setRange(r_PT_G.getAbs());
 				
 		//Solve pedestal.aperture azimuth & elevation direction (allowing twisted line-of-sight) from within Geocentric frame.
-		this.q_AG.put(this.q_NG).leftMultiplyTiltI(r_PT_G).conjugate();
+		this.q_AG.set(this.q_NG);
+		this.q_AG.leftMultiplyTiltI(r_PT_G).conjugate();
 		
 		//Re-Solve axial Op from defined 'untwisted' pedestal aperture frame to geocentric frame orientation:
 		Principle pAzimuth = this.q_AG.getEuler_k_kji();
 		Principle pElevation = this.q_AG.getEuler_j_kji();
-		this.q_AG.put(this.q_NG).rightMultExpK(pAzimuth).rightMultExpJ(pElevation);
+		this.q_AG.set(this.q_NG);
+		this.q_AG.rightMultExpK(pAzimuth).rightMultExpJ(pElevation);
 		
 		//Set pedestal Euler positioning definition: 
 		this.aer.setAzimuth(pAzimuth.unsignedAngle());		
