@@ -23,7 +23,7 @@ import tspi.model.Location;
  * @author mike
  *
  */
-public class TestPedestal extends TestCase {
+public class PedestalTest extends TestCase {
 	public void testSetWGS84() {
 		//Location temp = new Location(Angle.inDegrees(-30),Angle.inDegrees(-91),3000);		
 		//Vector3 result = temp.getGeocentric();

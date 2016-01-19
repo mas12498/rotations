@@ -3,9 +3,7 @@ package tspi.model;
 import rotation.Angle;
 import rotation.Operator;
 import rotation.Principle;
-import rotation.Quaternion;
 import rotation.Vector3;
-import sun.security.action.PutAllAction;
 
 //import org.apache.commons.math3.linear.*;
 
@@ -47,36 +45,23 @@ public class Pedestal {
 	}
 	
 	public String getSystemId() { return this.systemId; }
-	public Vector3 getGeocentricCartesianCoordinates() { return this.efg; }	//this.survey.getGeocentricCoordinates(); //slower 
-
-	public Location getGeodeticEllipsoidCoordinates() { return this.wgs84; }
-	// the following getters may return null to denote there is no current need for a heading
 	
-	// the following getters may return null to denote there is no current need for a heading
+	public Aperture getAER() { return this.aer; }
+	public Angle getAzimuth() {	return this.aer.getAzimuth(); }
+	public Angle getElevation() { return this.aer.getElevation(); }
+	public Double getRange() { return this.aer.getRange(); }
 	
-	public Angle getElevation() {
-		return this.aer.getElevation();
-	}
-
-	public Angle getAzimuth() {	
-		return this.aer.getAzimuth();	
-	}
-
-	public Angle getLatitude() { return this.wgs84.getNorthLatitude(); }
-	// the following getters may return null to denote there is no current need for a heading
-	
-	public Angle getLongitude() { return this.wgs84.getEastLongitude(); }
-	public double getHeight() { return this.wgs84.getEllipsoidHeight(); }
-	public double getE() { return this.efg.getX(); } //this.survey.geocentric().getX(); //slower
+	public Vector3 getGeocentricCartesianCoordinates() { return this.efg; }	 
+	public double getE() { return this.efg.getX(); } 
 	public double getF() { return this.efg.getY(); }
 	public double getG() { return this.efg.getZ(); }
-		
-	// the following getters may return null to denote there is no current need for a heading
 	
-	public Double getRange() { 
-		return this.aer.getRange(); 
-	}
-	
+	public Location getGeodeticEllipsoidCoordinates() { return this.wgs84; }
+	public Angle getLatitude() { return this.wgs84.getNorthLatitude(); }
+	public Angle getLongitude() { return this.wgs84.getEastLongitude(); }
+	public double getHeight() { return this.wgs84.getEllipsoidHeight(); }
+
+
 	public void setSystemId(String id) { this.systemId = id; }
 	
 	public void setLatitude(Angle lat) {
@@ -92,7 +77,7 @@ public class Pedestal {
 	}
 	
 	/**
-	 * Get Location by Op q_NG (default WGS84._HEIGHT height):
+	 * Get local geodetic oriented location (default WGS84._HEIGHT height):
 	 */
 	protected Location getEuler_NG() { // Operator q_NG84,double height84){
 		double dump = q_NG.getEuler_i_kji().tanHalf();
@@ -168,10 +153,10 @@ public class Pedestal {
 		//Solve pedestal.aperture azimuth & elevation direction (allowing twisted line-of-sight) from within Geocentric frame.
 		this.q_AG.set(this.q_NG);
 		this.q_AG.leftMultiplyTiltI(r_PT_G).conjugate();
-		
-		//Re-Solve axial Op from defined 'untwisted' pedestal aperture frame to geocentric frame orientation:
 		Principle pAzimuth = this.q_AG.getEuler_k_kji();
 		Principle pElevation = this.q_AG.getEuler_j_kji();
+		
+		//Re-Solve axial Op from defined 'untwisted' pedestal aperture frame to geocentric frame orientation:
 		this.q_AG.set(this.q_NG);
 		this.q_AG.rightMultExpK(pAzimuth).rightMultExpJ(pElevation);
 		
@@ -182,7 +167,7 @@ public class Pedestal {
 
 	public String toString() { 
 		return this.systemId 
-				+ "("+ this.wgs84.getNorthLatitude().toDegrees(7) +", "+ this.wgs84.getEastLongitude().toDegrees(7)+", "+this.getHeight()+")"
+				+ "("+ this.wgs84.getNorthLatitude().toDegrees(8) +", "+ this.wgs84.getEastLongitude().toDegrees(8)+", "+this.getHeight()+")"
 				+"("+aer.getAzimuth().toDegrees(4)+", "+aer.getElevation().toDegrees(4)+")";
 	}
 

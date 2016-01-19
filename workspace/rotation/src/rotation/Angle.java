@@ -158,10 +158,10 @@ public class Angle //adapter class -- Angle
 	protected double getCodedPrinciple()
 	{ 
 		double r = this.bisectorOfSignedPrincipleAngle().getPiRadians();
-		if(r==0) return r;		
-		if(r==.5) return Double.POSITIVE_INFINITY;
-		if(r==-.5) return Double.NEGATIVE_INFINITY;
-		return StrictMath.tan(r*PI);	
+		if(r==0) return r;		//no op coded Principle
+		if(r==.5) return Double.POSITIVE_INFINITY; //+ extreme [straight] coded Principle
+		if(r==-.5) return Double.NEGATIVE_INFINITY; //- extreme [straight] coded Principle
+		return StrictMath.tan(r*PI);	//coded principle: tan half-angle
 	}
 	
 

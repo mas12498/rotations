@@ -28,15 +28,17 @@ public class Location {
 	private static final double ONE_THIRD = ONE/THREE;
 	private static final double FOUR_THIRDS = 4d/THREE;
 	
-	/**	 * WGS 84 oblate ellipsoid flattening	 */
-	public static final double _f = 0.00335281068118d;
 	/**	 * WGS 84 semimajor axis.	 */
 	public static final double _a = 6378137.0d;
+	/**	 * WGS 84 oblate ellipsoid flattening	 */
+	public static final double _f = 0.00335281068118d;
+	
+	private static final double MINOR_MAJOR = ONE - _f; // = _b/_a; 
+    private static final double FUNSQ= (MINOR_MAJOR)*(MINOR_MAJOR); // = (_b/_a)*(_b/_a)
+	private static final double DIFFERENCE_AXES_RATIOS = (ONE - FUNSQ)/MINOR_MAJOR; //= (_a/_b) - (_b/_a);	
 
-	public static final double _b = _a * (ONE - _f);
-	private static final double DIFFERENCE_AXES_RATIOS = (_a/_b) - (_b/_a);
+	public static final double _b = _a * (MINOR_MAJOR);
     private static final double FLATFN= (TWO - _f)*_f;
-    private static final double FUNSQ= (ONE - _f)*(ONE - _f);
     
 	/* Reference ellipsoid determined by _f and _a: Hard coded here as WGS84 values: */   
 	protected final Angle _latitude;
@@ -112,6 +114,81 @@ public class Location {
 		_height = new Double(height);
 	}
 		
+	
+//	/**
+//	 * Static Operator NG
+//	 */
+//	public static Operator axialOperator_NG(Vector3 geocentricEFG){	
+//				
+//	    double x= geocentricEFG.getX(); //E
+//	    double y= geocentricEFG.getY(); //F
+//	    double z= geocentricEFG.getZ(); //G   
+//	
+//	    /* 2.0 compute intermediate values for latitude */
+//	    double r= StrictMath.sqrt( x*x + y*y );
+//	    double e = (StrictMath.abs(z) / _a - DIFFERENCE_AXES_RATIOS) / (r / _b);
+//		double f = (StrictMath.abs(z) / _a + DIFFERENCE_AXES_RATIOS) / (r / _b);
+//	    
+//	    /* 3.0 Find solution to: t^4 + 2*E*t^3 + 2*F*t - 1 = 0  */
+//	    double p= FOUR_THIRDS * (e*f + ONE);
+//	    double q= TWO * (e*e - f*f);
+//	    
+//	    double d = p*p*p + q*q;
+//	    double v;
+//	    if( d >= ZERO ) {
+//	            v= StrictMath.pow( (StrictMath.sqrt( d ) - q), ONE_THIRD )
+//	             - StrictMath.pow( (StrictMath.sqrt( d ) + q), ONE_THIRD );
+//	    } else {
+//	            v= TWO * StrictMath.sqrt( -p )
+//	             * StrictMath.cos( StrictMath.acos( q/(p * StrictMath.sqrt( -p )) ) / THREE );
+//	    }
+//	    
+//	    /* 4.0 Improve v. NOTE: not really necessary unless point is near pole */
+//	    if( v*v < StrictMath.abs(p) ) {
+//	            v= -(v*v*v + TWO*q) / (THREE*p);
+//	    }
+//	    double g = (StrictMath.sqrt( e*e + v ) + e) / TWO;
+//	    double t = StrictMath.sqrt( g*g  + (f - v*g)/(TWO*g - e) ) - g;
+//	
+//	    /* 5.0 Set B to semi-minor axis with sign of latitude */
+//	    
+////	    double B = (z<ZERO)?-_b:_b;	    
+////	    Angle longitude = (Angle.inRadians(StrictMath.atan2( y, x )));
+////	    Angle latitude = (Angle.inRadians(StrictMath.atan( (_a*(ONE - t*t)) / (TWO*B*t) )));
+////	    /* height correct... */	    
+////	   // double height = (r - _a*t)*StrictMath.cos(latitude.getRadians()) + (z - B)*StrictMath.sin(latitude.getRadians());
+////	    
+////		Angle theta = new Angle(latitude).add(Angle.QUARTER_REVOLUTION).negate();
+////		
+////		//Principle plon = longitude.getPrinciple();
+////		//Principle ptheta = theta.getPrinciple();
+//	    
+//		
+//		//Direct Principle angle computations:
+//		
+//		double latNumk = ONE - t*t;
+//		double latDenk = TWO*t*StrictMath.copySign(MINOR_MAJOR,z);
+//		double cosLat = latDenk/StrictMath.sqrt(latNumk*latNumk+latDenk*latDenk); //assume always positive
+//		
+////		// Angle theta = new Angle(latitude).add(Angle.QUARTER_REVOLUTION).negate();
+//		Principle ptheta = Principle.arcTanHalfAngle(StrictMath.copySign(StrictMath.sqrt((1+cosLat)/(1-cosLat)),z));
+//	    
+//		//from above: r = StrictMath.sqrt(x*x+y*y); //projected radius... goes to zero at poles...get another way?
+//		//If (r == 0.0) then pole condition: undefined longitude...cannot compute longitude from location, return longitude NaN.
+//		
+//		double cosLon = x/r; // /r always positive.
+//		//if (y==0.0) return new Principle y;
+//		//if (x==0.0) return new Principle StrictMath.copySign(Double.POSITIVE_INFINITY,y);
+//		Principle plon = Principle.arcTanHalfAngle(StrictMath.copySign(StrictMath.sqrt((1-cosLon)/(1+cosLon)),y));
+//		
+//		return (Operator) QuaternionMath.exp_k(plon).exp_j(ptheta);
+//
+//		// double B = (z<ZERO)?-_b:_b;	    
+//		// double height = (r - _a*t)*StrictMath.cos(latitude.getRadians()) + (z - B)*StrictMath.sin(latitude.getRadians());
+//		
+//	}
+	
+	
 	/** 
 	 * @param geocentricEFG earth-centered, earth-fixed Cartesian position
 	 */
@@ -167,8 +244,7 @@ public class Location {
 		Principle pLat = q_NG.getEuler_j_kji().addRight().negate();
 		Principle pLon = q_NG.getEuler_k_kji();
 		Double tst2 = 0d;
-		if (Double.isInfinite(dump)) { // Northern hemisphere -- cos neg
-			// System.out.println("***Infintie: Right Angle!");
+		if (Double.isInfinite(dump)) { // Northern hemisphere 
 			_latitude.set(pLat.negate().signedAngle());
 			_longitude.set(pLon.addStraight().negate().unsignedAngle());
 			if (_longitude.getPiRadians() == 0) {
@@ -179,16 +255,15 @@ public class Location {
 				}
 			}
 		} else if (dump == 0d) { // Southern hemisphere
-			//System.out.println("dump == "+dump+" plon == "+pLon.signedAngle().getDegrees()+" ");
 			_latitude.set(pLat.signedAngle());
 			_longitude.set(pLon.unsignedAngle());
 			Double lonD = _longitude.getPiRadians();
-			if (lonD.equals(-0d)){//ugly... but maps south pole.
+			if (lonD.equals(-0d)){//ugly... but sentinel trap maps south pole.
 				_longitude.set(Angle.HALF_REVOLUTION);
 			}
-		} else {
-			if (Double.isNaN(dump)) { // Northern hemisphere
-				System.out.println("***NaN: Empty Angle!");
+		} else { // Error in representation traps! 
+			if (Double.isNaN(dump)) {
+				System.out.println("***NaN: Empty GEODETIC Angle!");
 				_latitude.set(pLat.negate().signedAngle());
 				_longitude.set(pLon.addStraight().negate().unsignedAngle());
 			} else {

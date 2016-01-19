@@ -14,7 +14,7 @@ import tspi.model.Location;
  * @author mike
  *
  */
-public class TestLocation extends TestCase {
+public class LocationTest extends TestCase {
 
 	public final void testWGS84WGS84() {
 		int cnt = 0;
@@ -30,10 +30,10 @@ public class TestLocation extends TestCase {
 		double qlon;
 		for (int i = -3; i <= 3; i++) {
             //int i = 0; {//lats
-			double phi = i * 30.0d; //latitude pole to pole
+			double phi = i * 30.0d; // + 0.001d; //latitude pole to pole
 			for (int j = 0; j <= 12; j++) {
 				//int j=6; {//lon
-				double lambda = j * 30.0d; //longitude 360
+				double lambda = j * 30.0d; // - 0.01d; //longitude 360
 				//for (int h = -1; h <= 2; h++) {
 					int h=2; {
 					double hgt = h * 1000.0d; //height above and below ellipsoid

@@ -1,5 +1,6 @@
 package tspi.model;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.io.BufferedReader;
 import java.io.File;
@@ -75,8 +76,8 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 		if( this.system == ELLIPSOIDAL ) {
 			switch(col) {
 			case ID: return "System";
-			case LAT: return "Latitude";
-			case LON: return "Longitude";
+			case LAT: return "North Latitude";
+			case LON: return "East Longitude";
 			case H: return "Height";
 			case AZ: return "Azimuth";
 			case EL: return "Elevation";
@@ -126,9 +127,15 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 			case LAT: return pedestal.getLatitude();
 			case LON: return pedestal.getLongitude();
 			case H: return pedestal.getHeight();
-			case AZ: return pedestal.getAzimuth().getDegrees();
-			case EL: return pedestal.getElevation().getDegrees();
-			case R: return pedestal.getRange();
+			case AZ:
+				Double az = pedestal.getAzimuth().getDegrees();
+				if( !az.isNaN() ) return az;
+			case EL:
+				Double el = pedestal.getElevation().getDegrees();
+				if( !el.isNaN() ) return el;
+			case R:
+				Double r = pedestal.getRange();
+				if( !r.isNaN() ) return r;
 			}
 		} else if( this.system == GEOCENTRIC ) {
 			switch(col) {
@@ -136,9 +143,15 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 			case LAT: return pedestal.getE();
 			case LON: return pedestal.getF();
 			case H: return pedestal.getG();
-			case AZ: return pedestal.getAzimuth().getDegrees();
-			case EL: return pedestal.getElevation().getDegrees();
-			case R: return pedestal.getRange();
+			case AZ:
+				Double az = pedestal.getAzimuth().getDegrees();
+				if( !az.isNaN() ) return az;
+			case EL:
+				Double el = pedestal.getElevation().getDegrees();
+				if( !el.isNaN() ) return el;
+			case R:
+				Double r = pedestal.getRange();
+				if( !r.isNaN() ) return r;
 			}
 		}
 		return null;
@@ -266,11 +279,13 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 //				cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 //			else cell = super.getTableCellRendererComponent(table, value, false, hasFocus, row, col);
 			
-			if(col==AZ || col==EL || col== R )
+			if(col==AZ || col==EL || col== R ){
 				cell.setEnabled(false);
-			else
+				cell.setForeground(Color.blue);
+			} else {
 				cell.setEnabled(true);
-						
+				cell.setForeground(Color.black);
+			}	
 			return cell;
 		}
 	}

@@ -35,7 +35,7 @@ import tspi.model.TargetModel;
  * to demonstrate the deliverables of Increment 1 of the Predictive TSPI 
  * project. */
 @SuppressWarnings("serial")
-public class Increment1 extends JFrame 
+public class Increment2 extends JFrame 
 implements ActionListener, ListSelectionListener, TableModelListener {
 	
 	protected PedestalModel pedestals;
@@ -52,10 +52,11 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 	protected JMenuItem saveTargets;
 	protected JMenuItem coordGeocentric;
 	protected JMenuItem coordEllipsoidal;
+	protected JMenuItem about;
 	protected DefaultTableCellRenderer cell;
 	
 	public static void main(String args[]) {
-		Increment1 frame = new Increment1();
+		Increment2 frame = new Increment2();
 		if(args.length==2) {
 			
 			// try to load a default pedestal file using the first argument as a path
@@ -75,7 +76,7 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 		frame.setVisible(true);
 	}
 	
-	public Increment1() {
+	public Increment2() {
 		
 		pedestals = new PedestalModel();
 		pedestals.addTableModelListener( this );
@@ -162,6 +163,9 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 		coordinates.add(coordEllipsoidal);
 		coordinates.add(coordGeocentric);
 		
+		about = new JMenuItem("About");
+		about.addActionListener(this);
+		
 		//TODO add or remove systems and targets
 		//JMenu edit = new JMenu("Edit");
 		
@@ -169,12 +173,13 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 		bar.add(file);
 		bar.add(edit);
 		bar.add(coordinates);
+		bar.add(about);
 		
 		this.setLayout( new BorderLayout() );
 		this.add(bar, BorderLayout.NORTH);
 		this.add(split, BorderLayout.CENTER);
-		this.setTitle("TSPI Predictor; Increment 1");
-		this.setBounds(100, 100, 600, 400);
+		this.setTitle("TSPI Predictor; Increment 1 & 2");
+		this.setBounds(100, 100, 1000, 400);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
@@ -187,13 +192,6 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 		}
 		for(Pedestal pedestal : pedestals)
 			pedestal.point( geo );
-		
-		// clear error info
-		this.targets.clearSolutions();
-		
-		// notify all listeners
-		this.targets.fireTableRowsUpdated(0, targets.getRowCount()-1);
-		this.pedestals.fireTableDataChanged(); // this listener update method also unselects previous selections
 	}
 	
 	/** Increment 1, usecase 2: Updates the error of all targets using the two pedestals. */
@@ -234,14 +232,6 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 //			target.setError(error);
 //			// TODO display more conditioning and error ellipse info, maybe even the calculated target location.
 		}
-		
-		// clear pedestal heading data
-		this.pedestals.clearOrientations();
-		
-		// notify listeners the data changed
-		this.targets.fireTableDataChanged(); // this listener update method also unselects previous selections
-		this.pedestals.fireTableRowsUpdated(0, pedestals.getRowCount()-1);
-
 	}
 	
 	/** Pedestal and Target table selection listener. */
@@ -263,14 +253,20 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 				list.add(pedestal);
 			}
 			
+			// deselect the target table, and clear the error deltas
+			//targetTable.getSelectionModel().clearSelection();
+			targets.clearSolutions();
+			
 			// make sure enough pedestals are selected for a solution
-			if(list.size() >= 2) {
-				// deselect the target table, and clear the error deltas
-				//targetTable.getSelectionModel().clearSelection();
-				targets.clearSolutions();
-
+			if(list.size() >= 2)
 				ComputeError(list, targets);
-			}
+			
+			// clear pedestal heading data
+			this.pedestals.clearOrientations();
+			
+			// notify listeners the data changed
+			this.targets.fireTableDataChanged(); // this listener update method also unselects previous selections
+			this.pedestals.fireTableRowsUpdated(0, pedestals.getRowCount()-1);
 
 		// a target was selected
 		} else if( event.getSource() == this.targetTable.getSelectionModel() ) {
@@ -288,6 +284,14 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 			
 			// point all pedestals to the selected target
 			ComputeDirections(target, pedestals);
+			
+			// clear error info
+			this.targets.clearSolutions();
+			
+			// notify all listeners
+			this.targets.fireTableRowsUpdated(0, targets.getRowCount()-1);
+			this.pedestals.fireTableDataChanged(); // this listener update method also unselects previous selections
+
 		}
 	}
 	
@@ -370,6 +374,19 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 			} else if( event.getSource()==this.coordGeocentric) {
 				this.pedestals.setCooordinateSystem(PedestalModel.GEOCENTRIC);
 				this.targets.setCoordinateSystem(TargetModel.GEOCENTRIC);
+			} else if( event.getSource()==this.about) {
+				JOptionPane.showMessageDialog(this, 
+						"TSPI Predictor Increment 1 & 2\n"
+						+ "Mike Shields : Quaternion Library, Regresion Design\n"
+						+ "CaseyShields : UI\n\n"
+						+ "Case 1 : Compute pedestals' reference azimuth, elevation and range from target location\n"
+						+ "   Select one target to aim all pedestals at it.\n\n"
+						+ "Case 2 : Compute targets' location from Pedestals' reference azimuth and elevation.\n"
+						+ "   Select two or more pedestals. Selected pedestals will be aimed at a target, \n"
+						+ "then the target will be re-derived solely from pedestals' location, azimuth and elevation.\n"
+						+ "The target solution's error magnitude and condition number is returned.\n"
+						+ "This process is repeated for every target in the target table.\n"
+						+ "Since no perturbations are introduced, error should only depend on conditioning and round-off errors.");
 			}
 		} catch(Exception exception) {
 			JOptionPane.showMessageDialog(this, exception.getMessage());

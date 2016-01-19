@@ -65,8 +65,8 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 		if(this.system==ELLIPSOIDAL) {
 			switch(col) {
 			case TIME: return "Time";
-			case LAT: return "Latitude";
-			case LON: return "Longitude";
+			case LAT: return "North Latitude";
+			case LON: return "East Longitude";
 			case H: return "Height";
 			case ERR: return "Error";
 			case COND: return "Condition";
@@ -107,11 +107,11 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 			case LON: return target.getLongitude();
 			case H: return target.getHeight();
 			case ERR:
-				if(target.solution!=null)
+				if(target.solution!=null && !Double.isNaN(target.solution.error))
 					return target.solution.error;
 				break;
 			case COND:
-				if(target.solution!=null)
+				if(target.solution!=null && !Double.isNaN(target.solution.condition))
 					return target.solution.condition;
 				break;
 			}
@@ -122,11 +122,11 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 			case LON: return target.getF();
 			case H: return target.getG();
 			case ERR:
-				if(target.solution!=null)
+				if(target.solution!=null && !Double.isNaN(target.solution.error))
 					return target.solution.error;
 				break;
 			case COND:
-				if(target.solution!=null)
+				if(target.solution!=null && !Double.isNaN(target.solution.condition))
 					return target.solution.condition;
 				break;
 			}
