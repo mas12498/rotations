@@ -25,6 +25,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import rotation.Angle;
 import rotation.Vector3;
+import tspi.model.Ellipsoid;
 import tspi.model.Pedestal;
 import tspi.model.PedestalModel;
 import tspi.model.Solution;
@@ -191,7 +192,7 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 			return;
 		}
 		for(Pedestal pedestal : pedestals)
-			pedestal.point( geo );
+			pedestal.pointGeocentric( geo );
 	}
 	
 	/** Increment 1, usecase 2: Updates the error of all targets using the two pedestals. */
@@ -203,19 +204,19 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 				//System.out.println("ComputeError(): Invalid Target Coordinates( "+target.getTime()+", "+target.getLatitude()+", "+target.getLongitude()+", "+target.getHeight()+")");
 				continue;
 			}
-			
+			Ellipsoid ellipsoid = target.getEllipsoidalCoordinates().getEllipsoid();
 			//Debug
 			System.out.println( "\nTarget "+target.getTime()+" : " 
-					+ " lon="+target.getEllipsoidalCoordinates().getEastLongitude().toDegrees(7)
-					+ " lat="+target.getEllipsoidalCoordinates().getNorthLatitude().toDegrees(7)
-					+ " h="+target.getHeight());
+					+ " lon="+ellipsoid.getEastLongitude().toDegrees(7)
+					+ " lat="+ellipsoid.getNorthLatitude().toDegrees(7)
+					+ " h="+ellipsoid.getEllipsoidHeight());
 			
 			// point pedestals to target
 			for(Pedestal pedestal : selected)
-				pedestal.point(geo);
+				pedestal.pointGeocentric(geo);
 			
 			// TODO obtain the origin from somewhere instead of just using the first pedestal!
-			Vector3 origin = new Vector3( selected.get(0).getGeocentricCartesianCoordinates() );
+			Vector3 origin = new Vector3( selected.get(0).getEFG() );
 			
 			// compute new target and measure error
 			Solution solution = new Solution( origin, selected );

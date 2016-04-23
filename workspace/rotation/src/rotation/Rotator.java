@@ -10,20 +10,20 @@ package rotation;
  * @author mike
  * 
  */
-public class Operator extends Quaternion {
+public class Rotator extends Quaternion {
 
 	/**
 	 * Constructor FastQuaternion:
 	 */
-	public Operator() {
-		super(Quaternion.NAN);
+	public Rotator() {
+		super(Quaternion.EMPTY);
 	}
 	
 	
 	/**
 	 * Constructor FastQuaternion:
 	 */
-	public Operator(Quaternion q) {
+	public Rotator(Quaternion q) {
 		super(q);
 	}
 
@@ -35,7 +35,7 @@ public class Operator extends Quaternion {
 	 * @param v
 	 *            (Vector3) -- Quaternion factor Vector part
 	 */
-	public Operator(double w, Vector3 v) {
+	public Rotator(double w, Vector3 v) {
 		super(w, v);
 	}
 
@@ -52,7 +52,7 @@ public class Operator extends Quaternion {
 	 * @param z
 	 *            (double) -- Quaternion factor Vector3 element
 	 */
-	public Operator(double w, double x, double y, double z) {
+	public Rotator(double w, double x, double y, double z) {
 		super(w, x, y, z);
 	}
 
@@ -115,10 +115,10 @@ public class Operator extends Quaternion {
 	public Principle getEuler_j_kji() {
 		double sj = (getW() * getY() - getZ() * getX()) 
 				/ StrictMath.scalb(getDeterminant(), -1);
-		double check = 1d-StrictMath.abs(sj);
 		
-		if (StrictMath.abs(check)<1e-15) { //TODO: Define real numerical limit to smallness. ... Euler numerical instability.
-			return new Principle(StrictMath.copySign(1d,sj));
+		//TODO: Define real numerical limit to smallness. ... Euler numerical instability.
+		if (StrictMath.abs(1d - StrictMath.abs(sj)) < 1e-15) { 
+			return new Principle(StrictMath.copySign(1d, sj));
 		}
 		
 		return new Principle(sj / (1 + StrictMath.sqrt(1 - sj * sj)));
@@ -400,17 +400,17 @@ public class Operator extends Quaternion {
 	 * per multiplication)
 	 * @param e BasisUnit imaginary axis to turn-about 90 degrees.
 	 */
-	public Operator preTurn(BasisUnit e){
+	public Rotator preTurn(BasisUnit e){
 		switch(e)
 		{
 		case I:			
-			return (Operator) this.addLeftI(new Quaternion(this));
+			return (Rotator) this.addLeftI(new Quaternion(this));
 			//break;
 		case J:
-			return (Operator) this.addLeftJ(new Quaternion(this));
+			return (Rotator) this.addLeftJ(new Quaternion(this));
 			//break;
 		case K:
-			return (Operator) this.addLeftK(new Quaternion(this));
+			return (Rotator) this.addLeftK(new Quaternion(this));
 			//break;
 		default:
 		//case S:
@@ -464,18 +464,18 @@ public class Operator extends Quaternion {
 		 * @param axis
 		 *            UnitBasis fixed for pre-flip
 		 */
-		public Operator preFlip(BasisUnit e){
+		public Rotator preFlip(BasisUnit e){
 			Quaternion t = new Quaternion(this);
 			switch(e)
 			{
 			case I:			
-				return (Operator) this.putLeftI(t);
+				return (Rotator) this.putLeftI(t);
 				//break;
 			case J:
-				return (Operator) this.putLeftJ(t);
+				return (Rotator) this.putLeftJ(t);
 				//break;
 			case K:
-				return (Operator) this.putLeftK(t);
+				return (Rotator) this.putLeftK(t);
 				//break;
 			default:
 				System.out.println("Error: not BasisAxis to pre-flip about...");
@@ -490,12 +490,12 @@ public class Operator extends Quaternion {
 	 * @param v
 	 *            Vector3 pre-turn-axis
 	 */
-	public Operator preTurn(Vector3 v) {
+	public Rotator preTurn(Vector3 v) {
 		if (v.getNormInf() == 0)
-			return new Operator(Quaternion.NAN); // ????
+			return new Rotator(Quaternion.EMPTY); // ????
 		Vector3 u = new Vector3(v).unit(); // vector magnitude...
 		Quaternion t = new Quaternion(this);
-		return (Operator) this
+		return (Rotator) this
 				.addMultiplyLeftI(u.getX(), t)
 				.addMultiplyLeftJ(u.getY(), t)
 				.addMultiplyLeftK(u.getZ(), t);
@@ -544,10 +544,10 @@ public class Operator extends Quaternion {
 		 * @param axis
 		 *            UnitBasis fixed {i}
 		 */
-		public Operator preFlip(Vector3 v) {
+		public Rotator preFlip(Vector3 v) {
 			Vector3 u = new Vector3(v).unit(); // vector magnitude...
 			Quaternion t = new Quaternion(this);
-			return (Operator) this.putLeftI(t).multiply(u.getX()).addMultiplyLeftJ(u.getY(), t)
+			return (Rotator) this.putLeftI(t).multiply(u.getX()).addMultiplyLeftJ(u.getY(), t)
 					.addMultiplyLeftK(u.getZ(), t);
 		}
 
@@ -556,17 +556,17 @@ public class Operator extends Quaternion {
 	 * per multiplication)
 	 * @param e BasisUnit imaginary axis to turn-about 90 degrees.
 	 */
-	public Operator turn(BasisUnit e){
+	public Rotator turn(BasisUnit e){
 		switch(e)
 		{
 		case I:			
-			return (Operator) this.addRightI(new Quaternion(this));
+			return (Rotator) this.addRightI(new Quaternion(this));
 			//break;
 		case J:
-			return (Operator) this.addRightJ(new Quaternion(this));
+			return (Rotator) this.addRightJ(new Quaternion(this));
 			//break;
 		case K:
-			return (Operator) this.addRightK(new Quaternion(this));
+			return (Rotator) this.addRightK(new Quaternion(this));
 			//break;
 		default:
 		//case S:
@@ -583,18 +583,18 @@ public class Operator extends Quaternion {
 	 * @param axis
 	 *            UnitBasis fixed for flip
 	 */
-	public Operator flip(BasisUnit e){
+	public Rotator flip(BasisUnit e){
 		Quaternion t = new Quaternion(this);
 		switch(e)
 		{
 		case I:			
-			return (Operator) this.putRightI(t);
+			return (Rotator) this.putRightI(t);
 			//break;
 		case J:
-			return (Operator) this.putRightJ(t);
+			return (Rotator) this.putRightJ(t);
 			//break;
 		case K:
-			return (Operator) this.putRightK(t);
+			return (Rotator) this.putRightK(t);
 			//break;
 		default:
 			System.out.println("Error: not BasisAxis to flip about...");
@@ -609,12 +609,12 @@ public class Operator extends Quaternion {
 	 * @param v
 	 *            Vector3 turn-axis
 	 */
-	public Operator turn(Vector3 v) {
+	public Rotator turn(Vector3 v) {
 		if (v.getNormInf() == 0)
-			return new Operator(Quaternion.NAN); // ????
+			return new Rotator(Quaternion.EMPTY); // ????
 		Vector3 u = new Vector3(v).unit(); // vector magnitude...
 		Quaternion t = new Quaternion(this);
-		return (Operator) this
+		return (Rotator) this
 				.addMultiplyRightI(u.getX(), t)
 				.addMultiplyRightJ(u.getY(), t)
 				.addMultiplyRightK(u.getZ(), t);
@@ -627,10 +627,10 @@ public class Operator extends Quaternion {
 	 * @param axis
 	 *            UnitBasis fixed {i}
 	 */
-	public Operator flip(Vector3 v) {
+	public Rotator flip(Vector3 v) {
 		Vector3 u = new Vector3(v).unit(); // vector magnitude...
 		Quaternion t = new Quaternion(this);
-		return (Operator) this.putRightI(t).multiply(u.getX()).addMultiplyRightJ(u.getY(), t)
+		return (Rotator) this.putRightI(t).multiply(u.getX()).addMultiplyRightJ(u.getY(), t)
 				.addMultiplyRightK(u.getZ(), t);
 //		return (Operator) this.putRightI(u.getX(), t).addMultiplyRightJ(u.getY(), t)
 //				.addMultiplyRightK(u.getZ(), t);
@@ -645,21 +645,21 @@ public class Operator extends Quaternion {
 	 * @param angle
 	 *            Principle rotation (halved per factor multiplication)
 	 */
-	public Operator preExp_i(Principle angle) {
+	public Rotator preExp_i(Principle angle) {
 		if (angle.isZero()) {
 			return this;
 		}
 		Quaternion clone = new Quaternion(this);
 		if (angle.isAcute()) {
 			// return preExp_iAcute(angle) ;
-			return (Operator) this.addMultiplyLeftI(angle.tanHalf(), clone);
+			return (Rotator) this.addMultiplyLeftI(angle.tanHalf(), clone);
 		}
 		if (angle.isStraight()) {
 			// return this.preFlip_i();
-			return (Operator) this.putLeftI(clone);
+			return (Rotator) this.putLeftI(clone);
 		}
 		// return preExp_iObtuse(angle) ;
-		return (Operator) this.multiply(angle.cotHalf()).addLeftI(clone);
+		return (Rotator) this.multiply(angle.cotHalf()).addLeftI(clone);
 	}
 
 	/**
@@ -670,21 +670,21 @@ public class Operator extends Quaternion {
 	 * @param Angle
 	 *            rotation (halved per factor multiplication)
 	 */
-	public Operator preExp_j(Principle angle) {		
+	public Rotator preExp_j(Principle angle) {		
 		if (angle.isZero()) {
 			return this;
 		}
 		Quaternion clone = new Quaternion(this);
 		if (angle.isAcute()) {
 			// return preExp_jAcute(angle) ;
-			return (Operator) this.addMultiplyLeftJ(angle.tanHalf(), clone);
+			return (Rotator) this.addMultiplyLeftJ(angle.tanHalf(), clone);
 		}
 		if (angle.isStraight()) {
 			// return this.preFlip_j();
-			return (Operator) this.putLeftJ(clone);
+			return (Rotator) this.putLeftJ(clone);
 		}
 		// return preExp_jObtuse(angle) ;
-		return (Operator) this.multiply(angle.cotHalf()).addLeftJ(clone);				
+		return (Rotator) this.multiply(angle.cotHalf()).addLeftJ(clone);				
 	}
 
 	/**
@@ -695,21 +695,21 @@ public class Operator extends Quaternion {
 	 * @param Angle
 	 *            rotation (halved per factor multiplication)
 	 */
-	public Operator preExp_k(Principle angle) {
+	public Rotator preExp_k(Principle angle) {
 		if (angle.isZero()) {
 			return this;
 		}
 		Quaternion clone = new Quaternion(this);
 		if (angle.isAcute()) {
 			// return preExp_kAcute(angle) ;
-			return (Operator) this.addMultiplyLeftK(angle.tanHalf(), clone);
+			return (Rotator) this.addMultiplyLeftK(angle.tanHalf(), clone);
 		}
 		if (angle.isStraight()) {
 			// return this.flip_k();
-			return (Operator) this.putLeftK(clone);
+			return (Rotator) this.putLeftK(clone);
 		}
 		// return preExp_kObtuse(angle) ;
-		return (Operator) this.multiply(angle.cotHalf()).addLeftK(clone);								
+		return (Rotator) this.multiply(angle.cotHalf()).addLeftK(clone);								
 	}
 
 	/**
@@ -720,21 +720,21 @@ public class Operator extends Quaternion {
 	 * @param angle
 	 *            Principle rotation (halved per factor multiplication)
 	 */
-	public Operator exp_i(Principle angle) {
+	public Rotator exp_i(Principle angle) {
 		if (angle.isZero()) {
 			return this;
 		}
 		Quaternion clone = new Quaternion(this);
 		if (angle.isAcute()) {
 			// return exp_iAcute(angle) ;
-			return (Operator) this.addMultiplyRightI(angle.tanHalf(), clone);
+			return (Rotator) this.addMultiplyRightI(angle.tanHalf(), clone);
 		}
 		if (angle.isStraight()) {
 			// return this.flip_i();
-			return (Operator) this.putRightI(clone);
+			return (Rotator) this.putRightI(clone);
 		}
 		// return exp_iObtuse(angle) ;
-		return (Operator) this.multiply(angle.cotHalf()).addRightI(clone);
+		return (Rotator) this.multiply(angle.cotHalf()).addRightI(clone);
 	}
 
 	/**
@@ -745,21 +745,21 @@ public class Operator extends Quaternion {
 	 * @param Angle
 	 *            rotation (halved per factor multiplication)
 	 */
-	public Operator exp_j(Principle angle) {		
+	public Rotator exp_j(Principle angle) {		
 		if (angle.isZero()) {
 			return this;
 		}
 		Quaternion clone = new Quaternion(this);
 		if (angle.isAcute()) {
 			// return exp_iAcute(angle) ;
-			return (Operator) this.addMultiplyRightJ(angle.tanHalf(), clone);
+			return (Rotator) this.addMultiplyRightJ(angle.tanHalf(), clone);
 		}
 		if (angle.isStraight()) {
 			// return this.flip_i();
-			return (Operator) this.putRightJ(clone);
+			return (Rotator) this.putRightJ(clone);
 		}
 		// return exp_iObtuse(angle) ;
-		return (Operator) this.multiply(angle.cotHalf()).addRightJ(clone);				
+		return (Rotator) this.multiply(angle.cotHalf()).addRightJ(clone);				
 	}
 
 	/**
@@ -770,21 +770,21 @@ public class Operator extends Quaternion {
 	 * @param Angle
 	 *            rotation (halved per factor multiplication)
 	 */
-	public Operator exp_k(Principle angle) {
+	public Rotator exp_k(Principle angle) {
 		if (angle.isZero()) {
 			return this;
 		}
 		Quaternion clone = new Quaternion(this);
 		if (angle.isAcute()) {
 			// return exp_iAcute(angle) ;
-			return (Operator) this.addMultiplyRightK(angle.tanHalf(), clone);
+			return (Rotator) this.addMultiplyRightK(angle.tanHalf(), clone);
 		}
 		if (angle.isStraight()) {
 			// return this.flip_i();
-			return (Operator) this.putRightK(clone);
+			return (Rotator) this.putRightK(clone);
 		}
 		// return exp_iObtuse(angle) ;
-		return (Operator) this.multiply(angle.cotHalf()).addRightK(clone);								
+		return (Rotator) this.multiply(angle.cotHalf()).addRightK(clone);								
 	}
 
 	/**
@@ -793,7 +793,7 @@ public class Operator extends Quaternion {
 	 * @param Angle
 	 *            rotation (halved per factor multiplication)
 	 */
-	public Operator exp(Principle angle, Vector3 v) {
+	public Rotator exp(Principle angle, Vector3 v) {
 		if (angle.isZero()) {
 			return this;
 		}
@@ -801,15 +801,15 @@ public class Operator extends Quaternion {
 		double m = clone.getAbs();
 		if (angle.isAcute()) {
 			clone.multiply(angle.tanHalf() / m);
-			return (Operator) this.rightMultiply(new Quaternion(1.d, clone.getX(), clone.getY(), clone.getZ()));
+			return (Rotator) this.rightMultiply(new Quaternion(1.d, clone.getX(), clone.getY(), clone.getZ()));
 		}
 		if (angle.isStraight()) {
 			clone.divide(m);
-			return (Operator) this.rightMultiply(clone);
+			return (Rotator) this.rightMultiply(clone);
 		}
 		// (angle.isObtuse())
 		clone.divide(m);
-		return (Operator) this.rightMultiply(new Quaternion(angle.cotHalf(), clone.getX(), clone.getY(), clone.getZ()));
+		return (Rotator) this.rightMultiply(new Quaternion(angle.cotHalf(), clone.getX(), clone.getY(), clone.getZ()));
 	}
 
 	/**
@@ -818,7 +818,7 @@ public class Operator extends Quaternion {
 	 * @param Angle
 	 *            rotation (halved per factor multiplication)
 	 */
-	public Operator exp(Vector3 v) {
+	public Rotator exp(Vector3 v) {
 		
 		Vector3 clone = new Vector3(v);
 		double m = clone.getAbs();
@@ -829,15 +829,15 @@ public class Operator extends Quaternion {
 		}
 		if (angle.isAcute()) {
 			clone.multiply(angle.tanHalf() / m);
-			return (Operator) this.rightMultiply(new Quaternion(1.d, clone.getX(),clone.getY(),clone.getZ()));
+			return (Rotator) this.rightMultiply(new Quaternion(1.d, clone.getX(),clone.getY(),clone.getZ()));
 		}
 		if (angle.isStraight()) {
 			clone.divide(m);
-			return (Operator) this.rightMultiply(clone);
+			return (Rotator) this.rightMultiply(clone);
 		}
 		// (angle.isObtuse())
 		clone.divide(m);
-		return (Operator) this.rightMultiply(new Quaternion(angle.cotHalf(), clone.getX(),clone.getY(),clone.getZ()));	
+		return (Rotator) this.rightMultiply(new Quaternion(angle.cotHalf(), clone.getX(),clone.getY(),clone.getZ()));	
 	}
 
 	/**
@@ -876,7 +876,7 @@ public class Operator extends Quaternion {
 	 * SLERP mutator:
 	 */
 	@Override
-	public Operator slerp(Quaternion p, double t) {
+	public Rotator slerp(Quaternion p, double t) {
 		set(QuaternionMath.slerp(this, p, t));
 		return this;
 	}
@@ -886,7 +886,7 @@ public class Operator extends Quaternion {
 	 * 
 	 * this image after operation by object:
 	 */
-	public Operator image(Quaternion object) {
+	public Rotator image(Quaternion object) {
 		this.set(QuaternionMath.multiply(QuaternionMath.multiply(this, object),
 				QuaternionMath.reciprocal(this)));
 		return this;
@@ -898,7 +898,7 @@ public class Operator extends Quaternion {
 	 * 
 	 * this pre-image before operation by object:
 	 */
-	public Operator preImage(Quaternion object) {
+	public Rotator preImage(Quaternion object) {
 		this.set(QuaternionMath.multiply(QuaternionMath.multiply(
 				QuaternionMath.reciprocal(this), object), this));
 		return this;

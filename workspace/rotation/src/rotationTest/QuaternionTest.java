@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import rotation.Angle;
-import rotation.Operator;
+import rotation.Rotator;
 import rotation.Principle;
 import rotation.Quaternion;
 import rotation.QuaternionMath;
@@ -222,11 +222,11 @@ public class QuaternionTest {
 			}
 
 		}
-		assertTrue(new Quaternion(Quaternion.ZERO).unit().equals(Quaternion.NAN));
+		assertTrue(new Quaternion(Quaternion.ZERO).unit().equals(Quaternion.EMPTY));
 		
 		t.set(Quaternion.ZERO);t.unit();
 //		System.out.println("t = NaN: "+t.toString());
-		t.set(Quaternion.NAN);t.unit();
+		t.set(Quaternion.EMPTY);t.unit();
 		assertTrue(t.hasNan());			
 		t.set(Quaternion.ZERO);t.divide(0);
 //		System.out.println("t = NaN: "+t.toString());
@@ -733,16 +733,16 @@ public class QuaternionTest {
 //		System.out.println("Slerp: p "+p.toString());
 //		System.out.println("Slerp: q "+q.toString());
 //		System.out.println("Slerp: t "+1/3d);
-		Operator t = new Operator(q).slerp(p, (1d/3d));
+		Rotator t = new Rotator(q).slerp(p, (1d/3d));
 //		System.out.println("Slerp 1/3: "+t.toString());
-		assertTrue(t.isEquivalent(new Operator(0, .5, StrictMath.sqrt(3) / 2d, 0),
+		assertTrue(t.isEquivalent(new Rotator(0, .5, StrictMath.sqrt(3) / 2d, 0),
 				1e-15));
 
 		p.set(0,1,0,0);
 		q.set(0,0,1,0);
 		t.set(q);t.slerp(p, (2d/3d));
 //		System.out.println("Slerp 2/3: "+t.toString());	
-		assertTrue(t.isEquivalent(new Operator(0, StrictMath.sqrt(3) / 2, .5, 0),
+		assertTrue(t.isEquivalent(new Rotator(0, StrictMath.sqrt(3) / 2, .5, 0),
 				1e-15));
 
 		Vector3 vp = new Vector3(1,0,0);

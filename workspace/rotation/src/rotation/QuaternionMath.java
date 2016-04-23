@@ -2,62 +2,62 @@ package rotation;
 
 public class QuaternionMath {
 	//public static functions:
-	public static Operator foldoverI(Vector3 direction) {
+	public static Rotator foldoverI(Vector3 direction) {
 		//I==0...
 		double w = direction.getAbs() + direction.getX();
 		if (w > direction.getY()) {
 			if (w > direction.getZ()) {
 				//I
-				return new Operator(1, 0, direction.getZ() / w, -direction.getY() / w);
+				return new Rotator(1, 0, direction.getZ() / w, -direction.getY() / w);
 			}
 		} else {
 			if (direction.getY() > direction.getZ()) {
 				//J
-				return new Operator(-w / direction.getY(), 0, -direction.getZ() / direction.getY(), 1);
+				return new Rotator(-w / direction.getY(), 0, -direction.getZ() / direction.getY(), 1);
 			}
 		}
 		//K
-		return new Operator(w / direction.getZ(), 0, 1, -direction.getY() / direction.getZ());
+		return new Rotator(w / direction.getZ(), 0, 1, -direction.getY() / direction.getZ());
 	}	
 	
 	
-	public static Operator foldoverJ(Vector3 direction) {
+	public static Rotator foldoverJ(Vector3 direction) {
 		//J==0...
 		double w = direction.getAbs() + direction.getY();
 		if (w > direction.getX()) {
 			if (w > direction.getZ()) {
 				//J
-				return new Operator(1, -direction.getZ() / w, 0, direction.getX() / w);
+				return new Rotator(1, -direction.getZ() / w, 0, direction.getX() / w);
 			}
 
 		} else {
 			if (direction.getX() > direction.getZ()) {
 				//I
-				return new Operator(w / direction.getX(), -direction.getZ() / direction.getX(), 0, 1);
+				return new Rotator(w / direction.getX(), -direction.getZ() / direction.getX(), 0, 1);
 			}
 		}
 		//K
-		return new Operator(-w / direction.getZ(), 1, 0, -direction.getX() / direction.getZ());
+		return new Rotator(-w / direction.getZ(), 1, 0, -direction.getX() / direction.getZ());
 	}	
 
 	
-	public static Operator foldoverK(Vector3 direction) {
+	public static Rotator foldoverK(Vector3 direction) {
 		//K==0...
 		double w = direction.getAbs() + direction.getZ();
 		if (w > direction.getX()) {
 			if (w > direction.getY()) {
 				//K
-				return new Operator(1, direction.getY() / w, -direction.getX() / w, 0);
+				return new Rotator(1, direction.getY() / w, -direction.getX() / w, 0);
 			}
 
 		} else {
 			if (direction.getY() > direction.getX()) {
 				//J
-				return new Operator(w / direction.getY(), 1, -direction.getX() / direction.getY(), 0);
+				return new Rotator(w / direction.getY(), 1, -direction.getX() / direction.getY(), 0);
 			}
 		}
 		//I
-		return new Operator(-w / direction.getX(), -direction.getY() / direction.getX(), 1 , 0 );
+		return new Rotator(-w / direction.getX(), -direction.getY() / direction.getX(), 1 , 0 );
 	}	
 	
 	
@@ -67,9 +67,9 @@ public class QuaternionMath {
 	 * @param pJ  (j-axis) Angle #2: pitch | el
 	 * @param pI  (i-axis) Angle #3: roll | twist
 	 * @return Quaternion body | centerline frame orientation */
-	public static Operator eulerRotate_kji(Principle pK, Principle pJ,
+	public static Rotator eulerRotate_kji(Principle pK, Principle pJ,
 			Principle pI) {
-		return (Operator) QuaternionMath.exp_k(pK).exp_j(pJ).exp_i(pI);
+		return (Rotator) QuaternionMath.exp_k(pK).exp_j(pJ).exp_i(pI);
 	}
 
 	/** 
@@ -78,8 +78,8 @@ public class QuaternionMath {
 	 * @param pK  (k-axis) Angle #1: yaw | az
 	 * @param pJ  (j-axis) Angle #2: pitch | el
 	 * @return Quaternion body | centerline frame orientation */
-	public static Operator eulerRotate_kj(Principle pK, Principle pJ) {
-		return (Operator) QuaternionMath.exp_k(pK).exp_j(pJ);
+	public static Rotator eulerRotate_kj(Principle pK, Principle pJ) {
+		return (Rotator) QuaternionMath.exp_k(pK).exp_j(pJ);
 	}
 
 	/** 
@@ -88,11 +88,11 @@ public class QuaternionMath {
 	 * @return factoredQuaternion Operator
 	 * @param theta Principle angle (right-handed rotation sense)  
 	 */
-	public static Operator exp_i(Principle theta) {
+	public static Rotator exp_i(Principle theta) {
 		if (theta.isAcute()) {
-			return new Operator(1d, theta.tanHalf(), 0, 0);
+			return new Rotator(1d, theta.tanHalf(), 0, 0);
 		}
-		return new Operator(theta.cotHalf(), 1d, 0, 0);		
+		return new Rotator(theta.cotHalf(), 1d, 0, 0);		
 	}
 
 	/** 
@@ -100,11 +100,11 @@ public class QuaternionMath {
 	 * [  exp(J*theta) ]
 	 * @return FactoredQuaternion operator
 	 * @param theta Principle angle (right-handed rotation sense)  */
-	public static Operator exp_j(Principle theta) {
+	public static Rotator exp_j(Principle theta) {
 		if (theta.isAcute()) {
-			return new Operator(1d, 0, theta.tanHalf(), 0);
+			return new Rotator(1d, 0, theta.tanHalf(), 0);
 		}
-		return new Operator(theta.cotHalf(), 0, 1d, 0);		
+		return new Rotator(theta.cotHalf(), 0, 1d, 0);		
 	}
 
 	/** 
@@ -112,11 +112,11 @@ public class QuaternionMath {
 	 * [  exp(K*theta) ]
 	 * @return FactoredQuaternion
 	 * @param theta Principle angle (right-handed rotation sense)  */
-	public static Operator exp_k(Principle theta) {
+	public static Rotator exp_k(Principle theta) {
 		if (theta.isAcute()) {
-			return new Operator(1d, 0, 0, theta.tanHalf());
+			return new Rotator(1d, 0, 0, theta.tanHalf());
 		}
-		return new Operator(theta.cotHalf(), 0, 0, 1d);
+		return new Rotator(theta.cotHalf(), 0, 0, 1d);
 		
 	}
 
@@ -125,17 +125,17 @@ public class QuaternionMath {
 	 * 
 	 * @return FactoredQuaternion
 	 */
-	public static Operator exp(Vector3 v) {
+	public static Rotator exp(Vector3 v) {
 		double m = v.getAbs();
 		if (m == 0) {
-			return new Operator(Quaternion.IDENTITY);
+			return new Rotator(Quaternion.IDENTITY);
 		}
 		double t = StrictMath.tan(m);
 //		double t = StrictMath.tan(StrictMath.IEEEremainder(m, StrictMath.PI));
 		if (StrictMath.abs(t) > 1) {
-			return new Operator(1.d / t, v.divide(m));
+			return new Rotator(1.d / t, v.divide(m));
 		}
-		return new Operator(1.d, v.multiply(t / m));
+		return new Rotator(1.d, v.multiply(t / m));
 	}
 	
 	/**
@@ -143,15 +143,15 @@ public class QuaternionMath {
 	 * 
 	 * @return FactoredQuaternion
 	 */
-	public static Operator exp(Principle theta, Vector3 v) {
+	public static Rotator exp(Principle theta, Vector3 v) {
 		double m = v.getAbs();
 		if (m == 0) {
-			return new Operator(Quaternion.IDENTITY);
+			return new Rotator(Quaternion.IDENTITY);
 		}
 		if (theta.isAcute()) {
-			return new Operator(1.d, v.multiply(theta.tanHalf() / m));
+			return new Rotator(1.d, v.multiply(theta.tanHalf() / m));
 		}
-		return new Operator(theta.cotHalf(), v.divide(m));
+		return new Rotator(theta.cotHalf(), v.divide(m));
 	}
 
 //	/** Angle-about-frame-axis rotation factory: 
@@ -173,12 +173,12 @@ public class QuaternionMath {
 //	}
 	
 	/** Conjugate static factory.	 */
-	public static Operator conjugate(Quaternion p) {
-		return new Operator(p.getW(), -p.getX(), -p.getY(), -p.getZ());
+	public static Rotator conjugate(Quaternion p) {
+		return new Rotator(p.getW(), -p.getX(), -p.getY(), -p.getZ());
 	}
 	
-	public static Operator slerp(Quaternion q0,Quaternion q1, double t )  {
-		return new Operator( multiply( multiply(q1,reciprocal(q0)).power(t) , q0 ));
+	public static Rotator slerp(Quaternion q0,Quaternion q1, double t )  {
+		return new Rotator( multiply( multiply(q1,reciprocal(q0)).power(t) , q0 ));
 	}
 	
 	
@@ -260,7 +260,7 @@ public class QuaternionMath {
 		// conjugate().divide(norm());
 		double negNormP = -1 / p.getDeterminant();
 		if (negNormP == 0 || Double.isNaN(negNormP)) {
-			return new Quaternion(Quaternion.NAN);
+			return new Quaternion(Quaternion.EMPTY);
 		}
 		return new Quaternion(-p.getW() * negNormP, p.getX() * negNormP, p.getY()
 				* negNormP, p.getZ() * negNormP);
@@ -272,7 +272,7 @@ public class QuaternionMath {
 	public static Quaternion adjoint(Quaternion p) {
 		double negNormP = -p.getDeterminant();
 		if (negNormP == 0 || Double.isNaN(negNormP)) {
-			return new Quaternion(Quaternion.NAN);
+			return new Quaternion(Quaternion.EMPTY);
 		}
 		return new Quaternion(-p.getW() * negNormP, p.getX() * negNormP, p.getY()
 				* negNormP, p.getZ() * negNormP);

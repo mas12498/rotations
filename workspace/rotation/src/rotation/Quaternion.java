@@ -12,7 +12,7 @@ public class Quaternion {
 	private double _y;
 	private double _z;
 	
-	public static final Quaternion NAN = new Quaternion(Double.NaN, Double.NaN,
+	public static final Quaternion EMPTY = new Quaternion(Double.NaN, Double.NaN,
 			Double.NaN, Double.NaN);
 
 	public static final Quaternion IDENTITY = new Quaternion(1d, 0d, 0d, 0d);
@@ -113,7 +113,7 @@ public class Quaternion {
 		if (obj == null) {
 			return false;
 		}
-		if (!((obj instanceof Quaternion) || (obj instanceof Operator))) {
+		if (!((obj instanceof Quaternion) || (obj instanceof Rotator))) {
 			return false;
 		}
 		final Quaternion other = (Quaternion) obj;
@@ -151,7 +151,7 @@ public class Quaternion {
 //		 if (getClass() != obj.getClass())
 //		 return false;
 		
-		if (!( (obj instanceof Quaternion) || (obj instanceof Operator) ))
+		if (!( (obj instanceof Quaternion) || (obj instanceof Rotator) ))
 			return false;
 		
 		final Quaternion other = ((Quaternion) obj);
@@ -380,7 +380,7 @@ public class Quaternion {
 		
 		double qMagnitude = getAbs();
 		
-		if(qMagnitude==0) return Quaternion.NAN;
+		if(qMagnitude==0) return Quaternion.EMPTY;
 		
 		if (_w<0){qMagnitude=-qMagnitude;}
 		
@@ -487,7 +487,7 @@ public class Quaternion {
 	 * */
 	public final Quaternion unit() {
 		final double abs = getAbs();
-		return (abs == 0 || Double.isNaN(abs)) ? Quaternion.NAN : this
+		return (abs == 0 || Double.isNaN(abs)) ? Quaternion.EMPTY : this
 				.divide(abs);
 	}
 
@@ -512,7 +512,7 @@ public class Quaternion {
 		// return conjugate().divide(determinant());
 		final double d = -(_w*_w + _x*_x + _y*_y + _z*_z);//-getDeterminant();
 		if (d == 0) {
-			set(Quaternion.NAN);
+			set(Quaternion.EMPTY);
 			return this;
 		}
 		_x /= d;
@@ -589,7 +589,7 @@ public class Quaternion {
 	 */
 	public final Quaternion divide(final double scalarDivisor) {
 		if (scalarDivisor == 0) {
-			set(Quaternion.NAN);
+			set(Quaternion.EMPTY);
 			return this;
 		}
 		_w /= scalarDivisor;
@@ -1811,13 +1811,13 @@ public class Quaternion {
 		final Quaternion clone = new Quaternion(this);
 		//clone.put(this);
 		if (angle.isAcute()) { // return exp_iAcute(angle) ;
-			return (Operator) this.addMultiplyLeftI(angle.tanHalf(), clone);
+			return (Rotator) this.addMultiplyLeftI(angle.tanHalf(), clone);
 		}
 		if (angle.isStraight()) { // return this.flip_i();
-			return (Operator) this.putLeftI(clone);
+			return (Rotator) this.putLeftI(clone);
 		}
 		// return exp_iObtuse(angle) ;
-		return (Operator) this.multiply(angle.cotHalf()).addLeftI(clone);
+		return (Rotator) this.multiply(angle.cotHalf()).addLeftI(clone);
 //		return (Operator) this.multiplyAddLeftI(angle.cotHalf(), clone);
 		
 	}
@@ -1829,13 +1829,13 @@ public class Quaternion {
 		final Quaternion clone = new Quaternion(this);
 		//clone.put(this);
 		if (angle.isAcute()) { // return exp_iAcute(angle) ;
-			return (Operator) this.addMultiplyLeftJ(angle.tanHalf(), clone);
+			return (Rotator) this.addMultiplyLeftJ(angle.tanHalf(), clone);
 		}
 		if (angle.isStraight()) { // return this.flip_i();
-			return (Operator) this.putLeftJ(clone);
+			return (Rotator) this.putLeftJ(clone);
 		}
 		// return exp_iObtuse(angle) ;
-		return (Operator) this.multiply(angle.cotHalf()).addLeftJ(clone);
+		return (Rotator) this.multiply(angle.cotHalf()).addLeftJ(clone);
 //		return (Operator) this.multiplyAddLeftJ(angle.cotHalf(),clone);
 		
 	}
@@ -1847,13 +1847,13 @@ public class Quaternion {
 		final Quaternion clone = new Quaternion(this);
 		//clone.put(this);
 		if (angle.isAcute()) { // return exp_iAcute(angle) ;
-			return (Operator) this.addMultiplyLeftK(angle.tanHalf(), clone);
+			return (Rotator) this.addMultiplyLeftK(angle.tanHalf(), clone);
 		}
 		if (angle.isStraight()) { // return this.flip_i();
-			return (Operator) this.putLeftK(clone);
+			return (Rotator) this.putLeftK(clone);
 		}
 		// return exp_iObtuse(angle) ;
-		return (Operator) this.multiply(angle.cotHalf()).addLeftK(clone);
+		return (Rotator) this.multiply(angle.cotHalf()).addLeftK(clone);
 //		return (Operator) this.multiplyAddLeftK(angle.cotHalf(), clone);
 	}
 	
@@ -1864,13 +1864,13 @@ public class Quaternion {
 		final Quaternion clone = new Quaternion(this);
 		//clone.put(this);
         if (thetaI.isAcute()) { // return exp_iAcute(angle) ;
-			return (Operator) this.addMultiplyRightI(thetaI.tanHalf(), clone);
+			return (Rotator) this.addMultiplyRightI(thetaI.tanHalf(), clone);
 		}
 		if (thetaI.isStraight()) { // return this.flip_i();
-			return (Operator) this.putRightI(clone);
+			return (Rotator) this.putRightI(clone);
 		}
 		// return exp_iObtuse(angle) ;
-		return (Operator) this.multiply(thetaI.cotHalf()).addRightI(clone);
+		return (Rotator) this.multiply(thetaI.cotHalf()).addRightI(clone);
 //		return (Operator) this.multiplyAddRightI(thetaI.cotHalf(),clone);
 	
 	}
@@ -1883,13 +1883,13 @@ public class Quaternion {
 		//clone.put(this);
 
 		if (thetaJ.isAcute()) { // return exp_iAcute(angle) ;
-			return (Operator) this.addMultiplyRightJ(thetaJ.tanHalf(), clone);
+			return (Rotator) this.addMultiplyRightJ(thetaJ.tanHalf(), clone);
 		}
 		if (thetaJ.isStraight()) { // return this.flip_i();
-			return (Operator) this.putRightJ(clone);
+			return (Rotator) this.putRightJ(clone);
 		}
 		// return exp_iObtuse(angle) ;
-		return (Operator) this.multiply(thetaJ.cotHalf()).addRightJ(clone);
+		return (Rotator) this.multiply(thetaJ.cotHalf()).addRightJ(clone);
 //		return (Operator) this.multiplyAddRightJ(thetaJ.cotHalf(), clone);
 	}
 
@@ -1900,13 +1900,13 @@ public class Quaternion {
 		final Quaternion clone = new Quaternion(this);
 		//clone.put(this);
 		if (thetaK.isAcute()) { // return exp_iAcute(angle) ;
-			return (Operator) this.addMultiplyRightK(thetaK.tanHalf(), clone);
+			return (Rotator) this.addMultiplyRightK(thetaK.tanHalf(), clone);
 		}
 		if (thetaK.isStraight()) { // return this.flip_i();
-			return (Operator) this.putRightK(clone);
+			return (Rotator) this.putRightK(clone);
 		}
 		// return exp_iObtuse(angle) ;
-		return (Operator) this.multiply(thetaK.cotHalf()).addRightK(clone);	
+		return (Rotator) this.multiply(thetaK.cotHalf()).addRightK(clone);	
 //		return (Operator) this.multiplyAddRightK(thetaK.cotHalf(), clone);	
 	}
 

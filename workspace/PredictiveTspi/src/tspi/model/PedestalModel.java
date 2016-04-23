@@ -35,7 +35,7 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 	
 	public Pedestal getPedestal(String systemId) {
 		for(Pedestal pedestal : this.pedestals)
-			if(pedestal.systemId.equals(systemId))
+			if(pedestal._systemId.equals(systemId))
 				return pedestal;
 		return null;
 	} // might want to index if this is a common operation...
@@ -52,7 +52,7 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 	
 	public void clearOrientations() {
 		for(Pedestal pedestal : pedestals)
-			pedestal.aer.clear(Double.NaN);
+			pedestal._plot.clear(Double.NaN);
 	}
 	
 	public void setCooordinateSystem(int system) {
@@ -250,7 +250,7 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 			writer.append(pedestal.getLongitude().toDegrees(7));
 			writer.append(",");
 			writer.append(Double.toString(pedestal.getHeight()));
-			if(pedestal.aer.getAzimuth()!=null && pedestal.aer.getElevation()!=null) {
+			if(pedestal._plot.getAzimuth()!=null && pedestal._plot.getElevation()!=null) {
 				writer.append(",");
 				writer.append(pedestal.getAzimuth().toDegrees(7));
 				writer.append(",");

@@ -10,12 +10,13 @@ import org.apache.commons.math3.linear.RealMatrix;
 
 import junit.framework.TestCase;
 import rotation.Angle;
-import rotation.Operator;
+import rotation.Rotator;
 import rotation.Principle;
 import rotation.Quaternion;
 import rotation.QuaternionMath;
 import rotation.Vector3;
-import tspi.model.Location;
+import tspi.model.Ellipsoid;
+import tspi.model.EFG_NED;
 
 
 
@@ -28,15 +29,20 @@ public class PedestalTest extends TestCase {
 		//Location temp = new Location(Angle.inDegrees(-30),Angle.inDegrees(-91),3000);		
 		//Vector3 result = temp.getGeocentric();
 		//temp.set(result);
-		Location temp = new Location();
-		temp.set(Angle.inDegrees(-30),Angle.inDegrees(-89),3000);		
-		  System.out.println("lat: "+temp.getNorthLatitude().getDegrees());
-		  System.out.println("lon: "+temp.getEastLongitude().getDegrees());
-		Angle theta = temp.getNorthLatitude().negate().subtract(Angle.QUARTER_REVOLUTION);
+		EFG_NED temp = new EFG_NED();
+		Ellipsoid wgs84 = new Ellipsoid();
+		wgs84.setNorthLatitude(Angle.inDegrees(-30));
+		wgs84.setEastLongitude(Angle.inDegrees(-89));
+		wgs84.setEllipsoidHeight(3000);	
+		  System.out.println("lat: "+wgs84.getNorthLatitude().getDegrees());
+		  System.out.println("lon: "+wgs84.getEastLongitude().getDegrees());
+		Angle theta = wgs84.getNorthLatitude().negate().subtract(Angle.QUARTER_REVOLUTION);
 //		  Principle ptheta =new Principle(theta);
 //		  System.out.println("ptheta: "+ptheta.signedAngle().getDegrees());	
 		  
-		Operator q =QuaternionMath.eulerRotate_kj(temp.getEastLongitude().getPrinciple(), theta.getPrinciple());
+		Rotator q =QuaternionMath.eulerRotate_kj(wgs84.getEastLongitude().getPrinciple(), theta.getPrinciple());
+
+		temp.set(wgs84);
 
 //		Principle pDump = q.getEuler_i_kji();
 //		System.out.println("is dump twist: "+pDump.signedAngle().getDegrees());
@@ -120,7 +126,7 @@ public class PedestalTest extends TestCase {
 			//Operator q_AN = QuaternionMath.exp_k(paz.put(az)).exp_j(pel.put(el));
 			paz.set(az); 
 			pel.set(el);
-			Operator q_AN = QuaternionMath.eulerRotate_kj(paz, pel);
+			Rotator q_AN = QuaternionMath.eulerRotate_kj(paz, pel);
 			
 			System.out.println("q_AN = "+q_AN.toString(10));
 			System.out.println("twist     q_AN = "+q_AN.getEuler_i_kji().signedAngle().getDegrees());
@@ -226,7 +232,7 @@ public class PedestalTest extends TestCase {
 			System.out.println("**************************************");
 			System.out.println("*************Rank-2*******************");
 			
-			Operator q_ANx = new Operator(Quaternion.NAN);
+			Rotator q_ANx = new Rotator(Quaternion.EMPTY);
 			q_ANx.set(QuaternionMath.foldoverI(d_AN).conjugate());
 //			q_ANw.putRightTiltI(d_AN).conjugate();
 //			q_ANw.put( new Quaternion(Quaternion.IDENTITY).rightMultiplyTiltI(d_AN).conjugate());

@@ -231,7 +231,7 @@ public class Vector3Test {
 		v4.put(new Vector3(0, 0, 0));
 		q3.set(v4.ln());
 		// System.out.println("ln(0,0,0) = " + q3.toString());
-		assertEquals(Boolean.TRUE, Quaternion.NAN.equals(q3));
+		assertEquals(Boolean.TRUE, Quaternion.EMPTY.equals(q3));
 
 		v3.put(new Vector3(0, Angle.inDegrees(30).getRadians(), 0));
 		q3.set(v3.exp());q3.ln().ln();

@@ -17,9 +17,29 @@ public class Vector3 {
 	public Vector3(double vi,double vj,double vk){ _x=vi; _y=vj; _z=vk; }
 	public Vector3(Vector3 v){ _x=v._x; _y=v._y; _z=v._z; }
 	
-	public double getX() { return _x; }
-	public double getY() { return _y; }
-	public double getZ() { return _z; }
+	public double getX() {
+		return _x;
+	}
+
+	public double getY() {
+		return _y;
+	}
+
+	public double getZ() {
+		return _z;
+	}
+
+	public void setX(double x) {
+		_x = x;
+	}
+
+	public void setY(double y) {
+		_y = y;
+	}
+
+	public void setZ(double z) {
+		_z = z;
+	}
 	
 	public double getNormInf() {
 		return StrictMath.max(StrictMath.abs(_x),
@@ -278,7 +298,7 @@ public class Vector3 {
 		double s = getAbs();
 		double a = StrictMath.scalb(StrictMath.PI,-1)/s;
 		return(s == 0) 
-		  ?  Quaternion.NAN
+		  ?  Quaternion.EMPTY
 		  :  new Quaternion( 
 				StrictMath.log(s),
 				_x*a,

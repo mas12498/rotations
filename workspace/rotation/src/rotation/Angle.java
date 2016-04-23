@@ -20,6 +20,8 @@ public class Angle //adapter class -- Angle
 	public final static double ARCSECONDS_PIRADIAN   = DEGREES_PIRADIAN*3600;
 		
 	//Stored Angles:
+	public final static Angle EMPTY = new Angle(Double.NaN);
+	
 	public final static Angle EIGHTH_REVOLUTION  = new Angle(1d/4);
 	public final static Angle QUARTER_REVOLUTION = new Angle(1d/2);
 	public final static Angle HALF_REVOLUTION    = new Angle(1d);
