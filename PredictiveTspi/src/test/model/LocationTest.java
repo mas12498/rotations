@@ -82,7 +82,7 @@ public class LocationTest extends TestCase {
 				}
 			}
 		}
-		System.out.println("Success of model.locationTest.java: Geo-location structures and earth coordinate transformations. Count = "+cnt);
+		System.out.println("***Success of model.locationTest.java: Geo-location structures and earth coordinate transformations. Count = "+cnt);
 	}
 
 
