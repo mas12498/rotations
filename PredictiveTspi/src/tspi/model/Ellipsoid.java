@@ -90,18 +90,18 @@ public class Ellipsoid {
 //	}
 	
 	public Vector3 getGeocentric(){
-		double latitudeRadians = this.getNorthLatitude().getRadians();
-		double sin_lat = StrictMath.sin(latitudeRadians);
-		double rPE = EFG_NED._a / StrictMath.sqrt(EFG_NED.ONE - EFG_NED.FLATFN * sin_lat * sin_lat);
-		double x = (rPE + this.getEllipsoidHeight()) * StrictMath.cos(latitudeRadians);
-		double longitudeRadians = this.getEastLongitude().getRadians();
-		return new Vector3(
-				x * StrictMath.cos(longitudeRadians), 
-				x * StrictMath.sin(longitudeRadians),
-				(rPE * EFG_NED.FUNSQ + this.getEllipsoidHeight()) * sin_lat
-		);
+		double ellipsoidLatitudeRadians = this.getNorthLatitude().getRadians();
+		double sinEllipsoidLatitude = StrictMath.sin(ellipsoidLatitudeRadians);
+		double radiusInflatedEllipsoid = EFG_NED._a
+				/ StrictMath.sqrt(EFG_NED.ONE - EFG_NED.FLATFN * sinEllipsoidLatitude * sinEllipsoidLatitude);
+		double rCosEllipsoidLatitiude = (radiusInflatedEllipsoid + this.getEllipsoidHeight())
+				* StrictMath.cos(ellipsoidLatitudeRadians);
+		double ellipsoidLongitudeRadians = this.getEastLongitude().getRadians();
+		return new Vector3( //Geocentric EFG
+				rCosEllipsoidLatitiude * StrictMath.cos(ellipsoidLongitudeRadians),
+				rCosEllipsoidLatitiude * StrictMath.sin(ellipsoidLongitudeRadians),
+				sinEllipsoidLatitude * (radiusInflatedEllipsoid * EFG_NED.FUNSQ + this.getEllipsoidHeight()));
 	}	
-	
 
 	public void setGeocentric(Vector3 geocentricEFG){	
 	

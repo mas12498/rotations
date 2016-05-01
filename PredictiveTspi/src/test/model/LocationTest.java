@@ -8,9 +8,9 @@ import rotation.Angle;
 //import rotation.BasisUnit;
 import rotation.Rotator;
 import rotation.Vector3;
-import tspi.model.Ellipsoid;
 //import rotation.Principle;
 import tspi.model.EFG_NED;
+import tspi.model.Ellipsoid;
 
 /**
  * @author mike
@@ -20,59 +20,69 @@ public class LocationTest extends TestCase {
 
 	public final void testWGS84WGS84() {
 		int cnt = 0;
-		Rotator nav2geoOp = new Rotator(Rotator.EMPTY);
-		Ellipsoid tmp2 = new Ellipsoid();
-		Ellipsoid tmp = new Ellipsoid();
+		Ellipsoid geodetic = new Ellipsoid();
+		Ellipsoid tgeodetic = new Ellipsoid();
 
 		Double qHeight = Double.NaN;
-		Rotator qloc = new Rotator();
-		Vector3 geoloc = new Vector3(Vector3.NAN);
-		EFG_NED loc = new EFG_NED();
-		EFG_NED loc2 = new EFG_NED();
+		Rotator q_EFG_NED = new Rotator(Rotator.EMPTY);
+		Vector3 efg = new Vector3(Vector3.NAN);
+		Vector3 tefg = new Vector3(Vector3.NAN);
+		EFG_NED tNavigation = new EFG_NED();
 		double qlat;
 		double qlon;
 		for (int i = -3; i <= 3; i++) {
             //int i = 1; {//lats
-			double phi = i * 30.0d; // + 0.001d; //latitude pole to pole
+			double phi = i * 30.0d; // + 0.001d; //deg latitude pole to pole
 			for (int j = 0; j <= 12; j++) {
 				//int j=2; {//lon
-				double lambda = j * 30.0d; // - 0.01d; //longitude 360
+				double lambda = j * 30.0d; // - 0.01d; //deg longitude 360
 				//for (int h = -1; h <= 2; h++) {
 					int h=2; {
-					double hgt = h * 1000.0d; //height above and below ellipsoid
+					double hgt = h * 1000.0d; //meters height above and below ellipsoid
 					
-					tmp2.setNorthLatitude(Angle.inDegrees(phi));
-					tmp2.setEastLongitude(Angle.inDegrees(lambda));
-					tmp2.setEllipsoidHeight(hgt);
-					loc2.set(tmp2);// = new Geodetic(tmp2);
-					nav2geoOp.set(loc2.getLocalHorizontal());
-					qloc = loc2.getLocalHorizontal();
-                    qHeight = loc2.getLocalVertical();
-					tmp = loc2.getEllipsoid();
+					//set Ellipsoid object..: geodetic
+//					geodetic.setNorthLatitude(Angle.inDegrees(phi));
+//					geodetic.setEastLongitude(Angle.inDegrees(lambda));
+//					geodetic.setEllipsoidHeight(hgt);
+					geodetic.set(Angle.inDegrees(phi),Angle.inDegrees(lambda),hgt);
 					
-					//System.out.print(String.format(" q = " + nav2geoOp.toString(15))); //tmp.axialOperator_NG().toString(15)));
-					System.out.print(String.format("max = %5f; ",qloc.getNormInf()));
-					System.out.print(String.format("abs = %5f; ",qloc.getAbs()));
-					System.out.print(String.format(" q = " + qloc.toString(15))); //tmp.axialOperator_NG().toString(15)));
-					//System.out.print(String.format(" phi = %8f" , phi)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
-					//System.out.print(String.format(" lambda = %8f" , lambda)); //tmp.getLatitude().addRight().negate().signedAngle().getDegrees()));
-					System.out.print(String.format(" latitude = %8f" , tmp.getNorthLatitude().getDegrees()));
-					System.out.print(String.format(" longitude = %.8f", tmp.getEastLongitude().getDegrees() ));
-						qlat = tmp.getNorthLatitude().getDegrees();						
-						qlon = tmp.getEastLongitude().getDegrees();												
-					System.out.print(String.format(" Qlat = %.8f", qlat ));
-					System.out.print(String.format(" Qlon = %.8f", qlon ));
-					System.out.println();
+					//set Geocentric with Ellipsoid object
+					efg.put(geodetic.getGeocentric());
 					
-					geoloc = loc.getGeocentric();
-					//System.out.println("q = " + qloc.toString(15) + " height = " + qHeight);
-						
+					//set transform to navigation object with Ellipsoid coordinate object
+					tNavigation.set(geodetic);
+					
+					tefg.put(tNavigation.getGeocentric());
+//					System.out.println(efg.toString(15)+tefg.toString(15)+"vector difference magnitude: " + new Vector3(efg).subtract(tefg).getAbs());
+					assertTrue(efg.isEquivalent(tefg,1e-8));//to the .01 micrometer!
+					
+					//get rotator and translation components from transform to navigation object
+					q_EFG_NED = tNavigation.getLocalHorizontal(); 	//geodetic-tangent "level"
+                    qHeight = tNavigation.getLocalVertical();		//geodetic-normal "vertical"
+                    
+					//output navigation transform's rotator norms and rotator
+//					System.out.print(String.format("max = %5f; ",q_EFG_NED.getNormInf()));
+//					System.out.print(String.format("abs = %5f; ",q_EFG_NED.getAbs()));
+//					System.out.print(String.format(" q = " + q_EFG_NED.toString(15))); 
+					assertTrue(1>=q_EFG_NED.getNormInf());
+					assertTrue(2>=q_EFG_NED.getAbs());
+					
+                    //set Ellipsoid coordinate object with transform to navigation object
+					tgeodetic.set(tNavigation.getEllipsoid());
+					qlat = tgeodetic.getNorthLatitude().getDegrees();						
+					qlon = tgeodetic.getEastLongitude().getDegrees();												
+//					System.out.print(String.format(" Qlat = %.8f", qlat ));
+//					System.out.print(String.format(" Qlon = %.8f", qlon ));
+					assertEquals(qlat,phi,1e-13);
+					assertEquals(qlon,lambda % 360.0,1e-13);
+					
+//					System.out.println();	
 					cnt = cnt+1;
 					
 				}
 			}
 		}
-		System.out.println("Success Constructor LLh and getters. Count = "+cnt);
+		System.out.println("Success of geo-location structures and earth coordinate transformations. Count = "+cnt);
 	}
 
 
