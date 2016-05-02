@@ -13,9 +13,7 @@ public class Target {
 	public Target(long time, double lat, double lon, double h) {
 		this.time = time;
 		this.wgs84 = new T_EFG_NED();
-		this.local.setNorthLatitude(Angle.inDegrees(lat));
-		this.local.setEastLongitude(Angle.inDegrees(lon));
-		this.local.setEllipsoidHeight(h);
+		this.local = new Ellipsoid(Angle.inDegrees(lat), Angle.inDegrees(lon), h);
 		this.wgs84.set(local);
 		
 		this.geo = wgs84.getGeocentric();
