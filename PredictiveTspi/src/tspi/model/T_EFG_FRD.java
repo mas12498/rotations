@@ -5,7 +5,7 @@ import rotation.Principle;
 import rotation.Rotator;
 import rotation.Vector3;
 
-public class EFG_FRD {
+public class T_EFG_FRD {
 	
 	protected final Rotator _direction; // = new Rotator(); //rotater
 	protected double _range; // = Double.NaN;  //translater		
@@ -15,7 +15,7 @@ public class EFG_FRD {
 	/**
 	 * Constructor: initialize 'Empty'.
 	 */
-	public EFG_FRD(){ //aperture
+	public T_EFG_FRD(){ //aperture emit {Forward,Right,Downward}
 		_range = Double.NaN;
 		_direction = new Rotator(Rotator.EMPTY);
 	}	
@@ -24,7 +24,7 @@ public class EFG_FRD {
 	/**
 	 * Geodetic local copy-constructor:
 	 */
-	public EFG_FRD(EFG_FRD aperture){
+	public T_EFG_FRD(T_EFG_FRD aperture){
 		_range = aperture._range;
 		_direction = new Rotator(aperture._direction);
 	}
@@ -39,7 +39,7 @@ public class EFG_FRD {
 	}
 
 	
-	public void set(RAE plot, Rotator localHorizontal) {
+	public void set(Mount plot, Rotator localHorizontal) {
 		_range = plot._range;
 		_direction.set(localHorizontal);
 		_direction.rightMultExpK(plot._azimuth.getPrinciple()).rightMultExpJ(plot._elevation.getPrinciple());
@@ -70,12 +70,12 @@ public class EFG_FRD {
 	}
 
 	public void pointEFG(Vector3 offsetEFG, Rotator localHorizon){	
-		Rotator pointTwisted = EFG_FRD.pointTwisted(offsetEFG,localHorizon); 
+		Rotator pointTwisted = T_EFG_FRD.pointTwisted(offsetEFG,localHorizon); 
 		Principle pAzimuth = pointTwisted.getEuler_k_kji(); 
 		Principle pElevation = pointTwisted.getEuler_j_kji();
 		//assume not interested in range here...
 		//_range = offsetEFG.getAbs(); //not meaningful if undefined or unit direction.
-		_direction.set(EFG_FRD.point(pAzimuth,pElevation,localHorizon));
+		_direction.set(T_EFG_FRD.point(pAzimuth,pElevation,localHorizon));
 	}
 
 	

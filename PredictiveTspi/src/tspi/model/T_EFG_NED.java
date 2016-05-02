@@ -19,7 +19,7 @@ import rotation.Vector3;
  * @author mike
  *
  */
-public class EFG_NED {	
+public class T_EFG_NED {	
 	
 	//Definition WGS84 ellipsoid.
 	public static final double _a = 6378137.0d; //WGS84 semi-major axis radius
@@ -51,7 +51,7 @@ public class EFG_NED {
 	/**
 	 * Geodetic local copy-constructor:
 	 */
-	public EFG_NED(EFG_NED wgs84){
+	public T_EFG_NED(T_EFG_NED wgs84){
 		_vertical = wgs84._vertical;
 		_horizontal = new Rotator(wgs84._horizontal);
 	}
@@ -68,7 +68,7 @@ public class EFG_NED {
 	/**
 	 * Constructor: initialize 'Empty'.
 	 */
-	public EFG_NED(){
+	public T_EFG_NED(){
 		_vertical = Double.NaN;
 		_horizontal = new Rotator(Rotator.EMPTY);
 	}	

@@ -16,7 +16,7 @@ import rotation.Quaternion;
 import rotation.QuaternionMath;
 import rotation.Vector3;
 import tspi.model.Ellipsoid;
-import tspi.model.EFG_NED;
+import tspi.model.T_EFG_NED;
 
 
 
@@ -29,7 +29,7 @@ public class PedestalTest extends TestCase {
 		//Location temp = new Location(Angle.inDegrees(-30),Angle.inDegrees(-91),3000);		
 		//Vector3 result = temp.getGeocentric();
 		//temp.set(result);
-		EFG_NED temp = new EFG_NED();
+		T_EFG_NED temp = new T_EFG_NED();
 		Ellipsoid wgs84 = new Ellipsoid();
 		wgs84.setNorthLatitude(Angle.inDegrees(-30));
 		wgs84.setEastLongitude(Angle.inDegrees(-89));

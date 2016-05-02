@@ -14,11 +14,11 @@ public class Pedestal {
 	//LOCATION:
 	protected final Vector3 _geocentric = new Vector3(Vector3.NAN); // geocentric position vector: EFG
 	protected final Ellipsoid _wgs84 = new Ellipsoid(); //lat, lon angles, h meters ellipsoid coordinates	
-	protected final EFG_NED _local = new EFG_NED(); // local NED navigation state from EFG and local vertical Ellipsoid displacement
+	protected final T_EFG_NED _local = new T_EFG_NED(); // local NED navigation state from EFG and local vertical Ellipsoid displacement
 	//POSITIONING:
 	protected final Vector3 _topocentric = new Vector3(Vector3.NAN); //local NED: North, East, Down
-	protected final RAE _plot = new RAE(); //local RAE: Range, Azimuth, Elevation 
-	protected final EFG_FRD _aperture = new EFG_FRD(); //aperture FRD measurement state from EFG and aperture ranging distance
+	protected final Mount _sensor = new Mount(); //local RAE: Range, Azimuth, Elevation 
+	protected final T_EFG_FRD _position = new T_EFG_FRD(); //aperture FRD measurement state from EFG and aperture ranging distance
 	
 
 	public Pedestal( String id, Angle lat, Angle lon, double h) {
@@ -41,12 +41,12 @@ public class Pedestal {
 	public double getEast() { return this._topocentric.getY(); }
 	public double getDown() { return this._topocentric.getZ(); }
 	
-	public RAE getPlot() { return this._plot; }
-	public Double getRange() { return this._plot.getRange(); }
-	public Angle getAzimuth() {	return this._plot.getAzimuth(); }
-	public Angle getElevation() { return this._plot.getElevation(); }
+	public Mount getPlot() { return this._sensor; }
+	public Double getRange() { return this._sensor.getRange(); }
+	public Angle getAzimuth() {	return this._sensor.getAzimuth(); }
+	public Angle getElevation() { return this._sensor.getElevation(); }
 	
-	public EFG_FRD getAperture() { return this._aperture; }
+	public T_EFG_FRD getAperture() { return this._position; }
 	
 	
 	
@@ -60,7 +60,7 @@ public class Pedestal {
 	public Angle getLongitude() { return this._wgs84.getEastLongitude(); }
 	public double getHeight() { return this._wgs84.getEllipsoidHeight(); }
 
-	public EFG_NED getWGS84() { return this._local; }
+	public T_EFG_NED getWGS84() { return this._local; }
 
 	public void clearPedestalLocation() {
 		_wgs84.set(Angle.EMPTY, Angle.EMPTY, Double.NaN);
@@ -69,9 +69,9 @@ public class Pedestal {
 	};
 	
 	public void clearPedestalPositioning(){
-		_plot.set(Double.NaN, Angle.EMPTY, Angle.EMPTY);
+		_sensor.set(Double.NaN, Angle.EMPTY, Angle.EMPTY);
 		_topocentric.put(Vector3.NAN);
-		_aperture.clear();
+		_position.clear();
 	};
 	
 	public void setSystemId(String id) { this._systemId = id; }
@@ -117,41 +117,41 @@ public class Pedestal {
 	
 	// After location is set... deal with pedestal rotator and range positioning...
 	
-	public void setRAE(RAE position) {
-		this._plot.set(position);
+	public void setRAE(Mount position) {
+		this._sensor.set(position);
 		
-		this._aperture.set(position, this._local._horizontal);
+		this._position.set(position, this._local._horizontal);
 	}
 
 	public void setRange( double meters ) {
-		this._plot.setRange(meters);
+		this._sensor.setRange(meters);
 		
-		this._aperture.setRange(meters);
+		this._position.setRange(meters);
 	}
 	
 	public void setAperturePosition(Angle azimuth, Angle elevation) {
-		this._plot.setAzimuth(azimuth);
-		this._plot.setElevation( elevation);
+		this._sensor.setAzimuth(azimuth);
+		this._sensor.setElevation( elevation);
 		
-		this._aperture.set(azimuth, elevation, this._local._horizontal);
+		this._position.set(azimuth, elevation, this._local._horizontal);
 	}
 	
 	public void setAperturePosition(double range, Angle azimuth, Angle elevation) {
-		this._plot.set(range, azimuth, elevation);
+		this._sensor.set(range, azimuth, elevation);
 		
-		this._aperture.set(range, azimuth, elevation, this._local._horizontal);
+		this._position.set(range, azimuth, elevation, this._local._horizontal);
 	}
 	
 	public void setAzimuth(Angle azimuth) {
-		this._plot.setAzimuth(azimuth);
+		this._sensor.setAzimuth(azimuth);
 		
-		this._aperture.set(azimuth, _plot._elevation, this._local._horizontal);
+		this._position.set(azimuth, _sensor._elevation, this._local._horizontal);
 	}
 	
 	public void setElevation(Angle elevation) {
-		this._plot.setElevation(elevation);
+		this._sensor.setElevation(elevation);
 		
-		this._aperture.set(_plot._azimuth, elevation, this._local._horizontal);
+		this._position.set(_sensor._azimuth, elevation, this._local._horizontal);
 	}
 	
 	
@@ -168,24 +168,24 @@ public class Pedestal {
 	
 	public void pointEFG(Vector3 offsetPedestalEFG){
 		
-		Rotator pointTwisted = EFG_FRD.pointTwisted(offsetPedestalEFG,this._local._horizontal); 
+		Rotator pointTwisted = T_EFG_FRD.pointTwisted(offsetPedestalEFG,this._local._horizontal); 
 		Principle pAzimuth = pointTwisted.getEuler_k_kji(); 
 		Principle pElevation = pointTwisted.getEuler_j_kji(); 	
-		this._plot.set(offsetPedestalEFG.getAbs(),pAzimuth.unsignedAngle() ,pElevation.signedAngle() );
+		this._sensor.set(offsetPedestalEFG.getAbs(),pAzimuth.unsignedAngle() ,pElevation.signedAngle() );
 		
-		this._aperture._direction.set(EFG_FRD.point(pAzimuth, pElevation,this._local._horizontal));
+		this._position._direction.set(T_EFG_FRD.point(pAzimuth, pElevation,this._local._horizontal));
 		//this._aperture.pointEFG(offsetEFG, this._local._horizontal);	// if do not need the above to get the _plot state...			
 	}
 	
 	public Vector3 directionEFG(){
-		return _aperture._direction.getImage_i().multiply(_plot.getRange());
+		return _position._direction.getImage_i().multiply(_sensor.getRange());
 	}
 
 	
 	public String toString() { 
 		return this._systemId 
 				+ "("+ this._wgs84.getNorthLatitude().toDegrees(8) +", "+ this._wgs84.getEastLongitude().toDegrees(8)+", "+this.getHeight()+")"
-				+"("+_plot.getAzimuth().toDegrees(4)+", "+_plot.getElevation().toDegrees(4)+")";
+				+"("+_sensor.getAzimuth().toDegrees(4)+", "+_sensor.getElevation().toDegrees(4)+")";
 	}
 
 }

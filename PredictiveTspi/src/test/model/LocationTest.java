@@ -9,7 +9,7 @@ import rotation.Angle;
 import rotation.Rotator;
 import rotation.Vector3;
 //import rotation.Principle;
-import tspi.model.EFG_NED;
+import tspi.model.T_EFG_NED;
 import tspi.model.Ellipsoid;
 
 /**
@@ -27,7 +27,7 @@ public class LocationTest extends TestCase {
 		Rotator q_EFG_NED = new Rotator(Rotator.EMPTY);
 		Vector3 efg = new Vector3(Vector3.NAN);
 		Vector3 tefg = new Vector3(Vector3.NAN);
-		EFG_NED tNavigation = new EFG_NED();
+		T_EFG_NED tNavigation = new T_EFG_NED();
 		double qlat;
 		double qlon;
 		for (int i = -3; i <= 3; i++) {
@@ -87,42 +87,42 @@ public class LocationTest extends TestCase {
 
 
 	/**
-	 * Test method for {@link tspi.model.EFG_NED#WGS84(rotation.Vector3)}.
+	 * Test method for {@link tspi.model.T_EFG_NED#WGS84(rotation.Vector3)}.
 	 */
 	public final void testWGS84Vector3() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.EFG_NED#WGS84(rotation.Rotator, double)}.
+	 * Test method for {@link tspi.model.T_EFG_NED#WGS84(rotation.Rotator, double)}.
 	 */
 	public final void testWGS84OperatorDouble() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.EFG_NED#WGS84(rotation.Rotator, rotation.Vector3)}.
+	 * Test method for {@link tspi.model.T_EFG_NED#WGS84(rotation.Rotator, rotation.Vector3)}.
 	 */
 	public final void testWGS84OperatorVector3() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.EFG_NED#getLocationXYZ()}.
+	 * Test method for {@link tspi.model.T_EFG_NED#getLocationXYZ()}.
 	 */
 	public final void testGetXYZ() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.EFG_NED#getFromNEDtoEFG()}.
+	 * Test method for {@link tspi.model.T_EFG_NED#getFromNEDtoEFG()}.
 	 */
 	public final void testGetFromNEDtoEFG() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.EFG_NED#getNorthLatitude()}.
+	 * Test method for {@link tspi.model.T_EFG_NED#getNorthLatitude()}.
 	 */
 	public final void testGetAngleLatitude() {
 		fail("Not yet implemented"); // TODO
@@ -130,49 +130,49 @@ public class LocationTest extends TestCase {
 
 
 	/**
-	 * Test method for {@link tspi.model.EFG_NED#putXYZ(rotation.Vector3)}.
+	 * Test method for {@link tspi.model.T_EFG_NED#putXYZ(rotation.Vector3)}.
 	 */
 	public final void testPutXYZ() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.EFG_NED#set(rotation.Rotator, double)}.
+	 * Test method for {@link tspi.model.T_EFG_NED#set(rotation.Rotator, double)}.
 	 */
 	public final void testPut() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.EFG_NED#putLatitude(rotation.Principle)}.
+	 * Test method for {@link tspi.model.T_EFG_NED#putLatitude(rotation.Principle)}.
 	 */
 	public final void testPutLatitudePrinciple() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.EFG_NED#putLatitude(rotation.Angle)}.
+	 * Test method for {@link tspi.model.T_EFG_NED#putLatitude(rotation.Angle)}.
 	 */
 	public final void testPutLatitudeAngle() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.EFG_NED#putLongitude(rotation.Principle)}.
+	 * Test method for {@link tspi.model.T_EFG_NED#putLongitude(rotation.Principle)}.
 	 */
 	public final void testPutLongitudePrinciple() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.EFG_NED#putLongitude(rotation.Angle)}.
+	 * Test method for {@link tspi.model.T_EFG_NED#putLongitude(rotation.Angle)}.
 	 */
 	public final void testPutLongitudeAngle() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.EFG_NED#putHeight(double)}.
+	 * Test method for {@link tspi.model.T_EFG_NED#putHeight(double)}.
 	 */
 	public final void testPutHeight() {
 		fail("Not yet implemented"); // TODO

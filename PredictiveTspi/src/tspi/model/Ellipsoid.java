@@ -92,15 +92,15 @@ public class Ellipsoid {
 	public Vector3 getGeocentric(){
 		double ellipsoidLatitudeRadians = this.getNorthLatitude().getRadians();
 		double sinEllipsoidLatitude = StrictMath.sin(ellipsoidLatitudeRadians);
-		double radiusInflatedEllipsoid = EFG_NED._a
-				/ StrictMath.sqrt(EFG_NED.ONE - EFG_NED.FLATFN * sinEllipsoidLatitude * sinEllipsoidLatitude);
+		double radiusInflatedEllipsoid = T_EFG_NED._a
+				/ StrictMath.sqrt(T_EFG_NED.ONE - T_EFG_NED.FLATFN * sinEllipsoidLatitude * sinEllipsoidLatitude);
 		double rCosEllipsoidLatitiude = (radiusInflatedEllipsoid + this.getEllipsoidHeight())
 				* StrictMath.cos(ellipsoidLatitudeRadians);
 		double ellipsoidLongitudeRadians = this.getEastLongitude().getRadians();
 		return new Vector3( //Geocentric EFG
 				rCosEllipsoidLatitiude * StrictMath.cos(ellipsoidLongitudeRadians),
 				rCosEllipsoidLatitiude * StrictMath.sin(ellipsoidLongitudeRadians),
-				sinEllipsoidLatitude * (radiusInflatedEllipsoid * EFG_NED.FUNSQ + this.getEllipsoidHeight()));
+				sinEllipsoidLatitude * (radiusInflatedEllipsoid * T_EFG_NED.FUNSQ + this.getEllipsoidHeight()));
 	}	
 
 	public void setGeocentric(Vector3 geocentricEFG){	
@@ -111,38 +111,38 @@ public class Ellipsoid {
 	
 	    /* 2.0 compute intermediate values for latitude */
 	    double r= StrictMath.sqrt( x*x + y*y );
-	    double e = (StrictMath.abs(z) / EFG_NED._a - EFG_NED.DIFFERENCE_AXES_RATIOS) / (r / EFG_NED._b);
-		double f = (StrictMath.abs(z) / EFG_NED._a + EFG_NED.DIFFERENCE_AXES_RATIOS) / (r / EFG_NED._b);
+	    double e = (StrictMath.abs(z) / T_EFG_NED._a - T_EFG_NED.DIFFERENCE_AXES_RATIOS) / (r / T_EFG_NED._b);
+		double f = (StrictMath.abs(z) / T_EFG_NED._a + T_EFG_NED.DIFFERENCE_AXES_RATIOS) / (r / T_EFG_NED._b);
 	    
 	    /* 3.0 Find solution to: t^4 + 2*E*t^3 + 2*F*t - 1 = 0  */
-	    double p= EFG_NED.FOUR_THIRDS * (e*f + EFG_NED.ONE);
-	    double q= EFG_NED.TWO * (e*e - f*f);
+	    double p= T_EFG_NED.FOUR_THIRDS * (e*f + T_EFG_NED.ONE);
+	    double q= T_EFG_NED.TWO * (e*e - f*f);
 	    
 	    double d = p*p*p + q*q;
 	    double v;
-	    if( d >= EFG_NED.ZERO ) {
-	            v= StrictMath.pow( (StrictMath.sqrt( d ) - q), EFG_NED.ONE_THIRD )
-	             - StrictMath.pow( (StrictMath.sqrt( d ) + q), EFG_NED.ONE_THIRD );
+	    if( d >= T_EFG_NED.ZERO ) {
+	            v= StrictMath.pow( (StrictMath.sqrt( d ) - q), T_EFG_NED.ONE_THIRD )
+	             - StrictMath.pow( (StrictMath.sqrt( d ) + q), T_EFG_NED.ONE_THIRD );
 	    } else {
-	            v= EFG_NED.TWO * StrictMath.sqrt( -p )
-	             * StrictMath.cos( StrictMath.acos( q/(p * StrictMath.sqrt( -p )) ) / EFG_NED.THREE );
+	            v= T_EFG_NED.TWO * StrictMath.sqrt( -p )
+	             * StrictMath.cos( StrictMath.acos( q/(p * StrictMath.sqrt( -p )) ) / T_EFG_NED.THREE );
 	    }
 	    
 	    /* 4.0 Improve v. NOTE: not really necessary unless point is near pole */
 	    if( v*v < StrictMath.abs(p) ) {
-	            v= -(v*v*v + EFG_NED.TWO*q) / (EFG_NED.THREE*p);
+	            v= -(v*v*v + T_EFG_NED.TWO*q) / (T_EFG_NED.THREE*p);
 	    }
-	    double g = (StrictMath.sqrt( e*e + v ) + e) / EFG_NED.TWO;
-	    double t = StrictMath.sqrt( g*g  + (f - v*g)/(EFG_NED.TWO*g - e) ) - g;
+	    double g = (StrictMath.sqrt( e*e + v ) + e) / T_EFG_NED.TWO;
+	    double t = StrictMath.sqrt( g*g  + (f - v*g)/(T_EFG_NED.TWO*g - e) ) - g;
 	
 	    /* 5.0 Set B sign to get sign of latitude and height correct */
-	    double B = (z<EFG_NED.ZERO)?-EFG_NED._b:EFG_NED._b;
+	    double B = (z<T_EFG_NED.ZERO)?-T_EFG_NED._b:T_EFG_NED._b;
 		    
 	    _longitude.setRadians(StrictMath.atan2( y, x ));
 	    
-	    _latitude.setRadians(StrictMath.atan( (EFG_NED._a*(EFG_NED.ONE - t*t)) / (EFG_NED.TWO*B*t) ));
+	    _latitude.setRadians(StrictMath.atan( (T_EFG_NED._a*(T_EFG_NED.ONE - t*t)) / (T_EFG_NED.TWO*B*t) ));
 	    
-	    _height = (r - EFG_NED._a*t)*StrictMath.cos(_latitude.getRadians()) + (z - B)*StrictMath.sin(_latitude.getRadians());
+	    _height = (r - T_EFG_NED._a*t)*StrictMath.cos(_latitude.getRadians()) + (z - B)*StrictMath.sin(_latitude.getRadians());
 	
 	}
 

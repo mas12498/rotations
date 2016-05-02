@@ -6,13 +6,13 @@ import rotation.Vector3;
 public class Target {
 	long time;
 	Ellipsoid local;
-	EFG_NED wgs84;
+	T_EFG_NED wgs84;
 	Vector3 geo;
 	Solution solution;
 	
 	public Target(long time, double lat, double lon, double h) {
 		this.time = time;
-		this.wgs84 = new EFG_NED();
+		this.wgs84 = new T_EFG_NED();
 		this.local.setNorthLatitude(Angle.inDegrees(lat));
 		this.local.setEastLongitude(Angle.inDegrees(lon));
 		this.local.setEllipsoidHeight(h);
@@ -22,7 +22,7 @@ public class Target {
 		this.solution = null;
 	}
 
-	public EFG_NED getEllipsoidalCoordinates() { return this.wgs84; }
+	public T_EFG_NED getEllipsoidalCoordinates() { return this.wgs84; }
 	public Vector3 getGeocentricCoordinates() { return this.geo; }
 	public long getTime() { return this.time; } 
 	public double getLatitude() { return local.getNorthLatitude().getDegrees(); }
@@ -45,7 +45,7 @@ public class Target {
 
 	public void setLatitude(double lat) {
 		if(wgs84.equals(null)){
-			wgs84 = new EFG_NED();
+			wgs84 = new T_EFG_NED();
 		}
 		this.local.setNorthLatitude(Angle.inDegrees(lat));
 		wgs84.set(local);
@@ -54,7 +54,7 @@ public class Target {
 
 	public void setLongitude(double lon) {
 		if(wgs84.equals(null)){
-			wgs84 = new EFG_NED();
+			wgs84 = new T_EFG_NED();
 		}
 		this.local.setEastLongitude(Angle.inDegrees(lon));
 		this.wgs84.set(local);
@@ -63,7 +63,7 @@ public class Target {
 
 	public void setHeight(double h) {
 		if(wgs84.equals(null)){
-			wgs84 = new EFG_NED();
+			wgs84 = new T_EFG_NED();
 		}
 		this.local.setEllipsoidHeight(h);
 		this.wgs84.set(local); 
@@ -73,7 +73,7 @@ public class Target {
 	public void setE(double E) {
 		this.geo.put(E, geo.getY(), geo.getZ());
 		if(wgs84.equals(null)){
-			wgs84 = new EFG_NED();
+			wgs84 = new T_EFG_NED();
 		}
 		this.wgs84.set( geo );
 	}
@@ -81,7 +81,7 @@ public class Target {
 	public void setF(double F) {
 		this.geo.put(geo.getX(), F, geo.getZ());
 		if(wgs84.equals(null)){
-			wgs84 = new EFG_NED();
+			wgs84 = new T_EFG_NED();
 		}
 		this.wgs84.set( geo );
 	}
@@ -89,7 +89,7 @@ public class Target {
 	public void setG(double G) {
 		this.geo.put(geo.getX(), geo.getY(), G);
 		if(wgs84.equals(null)){
-			wgs84 = new EFG_NED();
+			wgs84 = new T_EFG_NED();
 		}
 		this.wgs84.set( geo );
 	}
