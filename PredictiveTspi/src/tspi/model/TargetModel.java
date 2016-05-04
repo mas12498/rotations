@@ -12,6 +12,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import rotation.Angle;
+
 /** Represents a set of Targets and adapts them to a table view. Also provides a file load and save, as well as a CellRenderer appropriate for the model. */
 @SuppressWarnings("serial")
 public class TargetModel extends AbstractTableModel implements Iterable<Target> {
@@ -199,9 +201,9 @@ public class TargetModel extends AbstractTableModel implements Iterable<Target> 
 		for(Target target : targets) {
 			writer.append(Long.toString(target.getTime()));
 			writer.append(",");
-			writer.append(Double.toString(target.getLatitude()));
+			writer.append(target.getLatitude().toDegrees(Angle.DIGITS));
 			writer.append(",");
-			writer.append(Double.toString(target.getLongitude()));
+			writer.append(target.getLongitude().toDegrees(Angle.DIGITS));
 			writer.append(",");
 			writer.append(Double.toString(target.getHeight()));
 			

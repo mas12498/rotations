@@ -5,18 +5,18 @@ import rotation.QuaternionMath;
 import rotation.Rotator;
 import rotation.Vector3;
 
-public class Mount {
+public class Positioning {
 	protected Double _range;
 	protected final Angle _azimuth;
 	protected final Angle _elevation;
 
-	public Mount() {
+	public Positioning() {
 		_range = Double.NaN;
 		_azimuth = Angle.inPiRadians(Double.NaN);
 		_elevation = Angle.inPiRadians(Double.NaN);
 	}
 
-	public Mount(Mount template) {
+	public Positioning(Positioning template) {
 		_azimuth = new Angle(template._azimuth);
 		_elevation = new Angle(template._elevation);
 		_range = template._range;
@@ -56,7 +56,7 @@ public class Mount {
 		_elevation.set(Angle.inRadians(StrictMath.atan2(r_NED.getZ(), rg)));
 	}
 
-	public void set(Mount position) {
+	public void set(Positioning position) {
 		_range = position._range;
 		_azimuth.set(position._azimuth);
 		_elevation.set(position._elevation);

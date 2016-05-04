@@ -30,7 +30,8 @@ public class Angle //adapter class -- Angle
 
 	public final static double DEGREES_REVOLUTION    = 360d;
 	public final static double ARCMINUTES_REVOLUTION    = 360d*60;
-
+	
+	public final static int DIGITS  = 14;
 	
 	private double _piRadAngle; //internally stores PiRadian measure...
 
@@ -235,7 +236,7 @@ public class Angle //adapter class -- Angle
 	//Display help...
 	
 	public String toDegrees(int decimals) {
-		String fmt = "%."+decimals+"f";
+		String fmt = "%20."+decimals+"f";
 		//System.out.println("FORMAT STRING = "+fmt);
 		return String.format(fmt, getDegrees());
 	}
@@ -251,8 +252,8 @@ public class Angle //adapter class -- Angle
 	}
 	@Override
 	public String toString() {
-		int decimals=4;
-		return toDegrees(decimals)+"deg ";
+		int decimals=15;
+		return toDegrees(decimals);
 	}	
 
 		

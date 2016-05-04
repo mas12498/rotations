@@ -38,7 +38,8 @@ import tspi.model.TargetModel;
 @SuppressWarnings("serial")
 public class Increment2 extends JFrame 
 implements ActionListener, ListSelectionListener, TableModelListener {
-	
+	final protected int ANGLE_DIGITS = 10;
+	final protected int RANGE_DIGITS = 4;
 	protected PedestalModel pedestals;
 	protected TargetModel targets;
 	protected JTable pedestalTable;
@@ -192,7 +193,7 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 			return;
 		}
 		for(Pedestal pedestal : pedestals)
-			pedestal.pointGeocentric( geo );
+			pedestal.pointToLocation( geo );
 	}
 	
 	/** Increment 1, usecase 2: Updates the error of all targets using the two pedestals. */
@@ -207,13 +208,13 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 			Ellipsoid ellipsoid = target.getEllipsoidalCoordinates().getEllipsoid();
 			//Debug
 			System.out.println( "\nTarget "+target.getTime()+" : " 
-					+ " lon="+ellipsoid.getEastLongitude().toDegrees(7)
-					+ " lat="+ellipsoid.getNorthLatitude().toDegrees(7)
+					+ " lon="+ellipsoid.getEastLongitude().toDegrees(ANGLE_DIGITS)
+					+ " lat="+ellipsoid.getNorthLatitude().toDegrees(ANGLE_DIGITS)
 					+ " h="+ellipsoid.getEllipsoidHeight());
 			
 			// point pedestals to target
 			for(Pedestal pedestal : selected)
-				pedestal.pointGeocentric(geo);
+				pedestal.pointToLocation(geo);
 			
 			// TODO obtain the origin from somewhere instead of just using the first pedestal!
 			Vector3 origin = new Vector3( selected.get(0).getEFG() );

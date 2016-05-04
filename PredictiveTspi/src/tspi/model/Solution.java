@@ -25,36 +25,36 @@ public class Solution {
 		for(Pedestal pedestal : pedestals) {
 			// begin with case (by 2) for az,el of pedestal... need not always be 2...
 			pedSensorCnt += 2;
-			Ellipsoid ellipsoid = pedestal.getWGS84().getEllipsoid();
+			Ellipsoid ellipsoid = pedestal.getLLh(); //.getWGS84().getEllipsoid();
 			//Debug
 			System.out.println( "Pedestal "+pedestal.getSystemId()+" : "
 //					+ "EFG=" + pedestal.getGeocentricCoordinates().toString(5)
 					+ " lon="+ellipsoid.getEastLongitude().toDegrees(7)
 					+ " lat="+ellipsoid.getNorthLatitude().toDegrees(7)
 					+ " h="+ellipsoid.getEllipsoidHeight()
-					+ " az=" + pedestal._sensor.getAzimuth().toDegrees(4)
-					+ " el=" + pedestal._sensor.getElevation().toDegrees(4));
+					+ " az=" + pedestal._pedestal.getAzimuth().toDegrees(4)
+					+ " el=" + pedestal._pedestal.getElevation().toDegrees(4));
 		}		
 		Vector3 row = new Vector3(Double.NaN,Double.NaN,Double.NaN);
 		double [] rhs = new double [pedSensorCnt];
 		double [][] matrixData = new double [pedSensorCnt][3];
 		int i = 0; 
 		for(Pedestal pedestal : pedestals) {	
-			System.out.println("Pedestal "+pedestal.getSystemId()+": q_NG="+pedestal._local.getLocalHorizontal().toString(5)+"  q_AG = "+pedestal._position._direction.toString(5));
+			System.out.println("Pedestal "+pedestal.getSystemId()+": q_NG="+pedestal._localT.getLocalHorizontal().toString(5)+"  q_AG = "+pedestal._sensorT._direction.toString(5));
 			//Assuming two axial sensors per pedestal...			
-			row = pedestal._position._direction.getImage_k();//axial AZ
+			row = pedestal._sensorT._direction.getImage_k();//axial AZ
 			matrixData[i][0] = row.getX();
 			matrixData[i][1]= row.getY();
 			matrixData[i][2] = row.getZ();
 			
-			rhs[i] = new Vector3(origin).subtract(pedestal._geocentric).getDot(row);
+			rhs[i] = new Vector3(origin).subtract(pedestal._efg).getDot(row);
 			i+=1;
 			
-			row = pedestal._position._direction.getImage_j();//axial EL
+			row = pedestal._sensorT._direction.getImage_j();//axial EL
 			matrixData[i][0] = row.getX();
 			matrixData[i][1]= row.getY();
 			matrixData[i][2] = row.getZ();
-			rhs[i] = new Vector3(origin).subtract(pedestal._geocentric).getDot(row);
+			rhs[i] = new Vector3(origin).subtract(pedestal._efg).getDot(row);
 			i+=1;	
 		}
 		

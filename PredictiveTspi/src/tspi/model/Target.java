@@ -23,8 +23,8 @@ public class Target {
 	public T_EFG_NED getEllipsoidalCoordinates() { return this.wgs84; }
 	public Vector3 getGeocentricCoordinates() { return this.geo; }
 	public long getTime() { return this.time; } 
-	public double getLatitude() { return local.getNorthLatitude().getDegrees(); }
-	public double getLongitude() { return local.getEastLongitude().getDegrees(); }
+	public Angle getLatitude() { return local.getNorthLatitude(); }
+	public Angle getLongitude() { return local.getEastLongitude(); }
 	public double getHeight() { return this.local.getEllipsoidHeight(); }
 	public double getE() { return this.geo.getX(); }
 	public double getF() { return this.geo.getY(); }
@@ -98,7 +98,8 @@ public class Target {
 
 	public String toString() { 
 		return this.time 
-				+ "("+this.getLatitude()+", "+this.getLongitude()+", "+this.getHeight()+")";
+				+ "(" + this.getLatitude().toDegrees(Angle.DIGITS) + ", " + this.getLongitude().toDegrees(Angle.DIGITS)
+				+ ", " + this.getHeight() + ")";
 	}
 }
 
