@@ -8,6 +8,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.SingularValueDecomposition;
 
+import rotation.Angle;
 import rotation.Vector3;
 
 // TODO this needs to be fleshed out with system matrices, error models, etc.
@@ -29,8 +30,8 @@ public class Solution {
 			//Debug
 			System.out.println( "Pedestal "+pedestal.getSystemId()+" : "
 //					+ "EFG=" + pedestal.getGeocentricCoordinates().toString(5)
-					+ " lon="+ellipsoid.getEastLongitude().toDegrees(7)
-					+ " lat="+ellipsoid.getNorthLatitude().toDegrees(7)
+					+ " lon="+ellipsoid.getEastLongitude().signedPrincipleAngle().toDegrees(Angle.DIGITS)
+					+ " lat="+ellipsoid.getNorthLatitude().toDegrees(Angle.DIGITS)
 					+ " h="+ellipsoid.getEllipsoidHeight()
 					+ " az=" + pedestal._pedestal.getAzimuth().toDegrees(4)
 					+ " el=" + pedestal._pedestal.getElevation().toDegrees(4));

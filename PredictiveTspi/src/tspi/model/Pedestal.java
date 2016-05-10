@@ -62,7 +62,7 @@ public class Pedestal {
 	
 	public Ellipsoid getLLh() {return this._wgs84;}
 	public Angle getLatitude() { return this._wgs84.getNorthLatitude(); }
-	public Angle getLongitude() { return this._wgs84.getEastLongitude(); }
+	public Angle getLongitude() { return this._wgs84.getEastLongitude().signedPrincipleAngle(); }
 	public double getHeight() { return this._wgs84.getEllipsoidHeight(); }
 
 	public T_EFG_NED getLocalT

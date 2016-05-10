@@ -24,7 +24,7 @@ public class Target {
 	public Vector3 getGeocentricCoordinates() { return this.geo; }
 	public long getTime() { return this.time; } 
 	public Angle getLatitude() { return local.getNorthLatitude(); }
-	public Angle getLongitude() { return local.getEastLongitude(); }
+	public Angle getLongitude() { return local.getEastLongitude().signedPrincipleAngle(); }
 	public double getHeight() { return this.local.getEllipsoidHeight(); }
 	public double getE() { return this.geo.getX(); }
 	public double getF() { return this.geo.getY(); }
@@ -54,7 +54,7 @@ public class Target {
 		if(wgs84.equals(null)){
 			wgs84 = new T_EFG_NED();
 		}
-		this.local.setEastLongitude(Angle.inDegrees(lon));
+		this.local.setEastLongitude(Angle.inDegrees(lon).signedPrincipleAngle());
 		this.wgs84.set(local);
 		this.geo = wgs84.getGeocentric();
 	}
@@ -98,7 +98,7 @@ public class Target {
 
 	public String toString() { 
 		return this.time 
-				+ "(" + this.getLatitude().toDegrees(Angle.DIGITS) + ", " + this.getLongitude().toDegrees(Angle.DIGITS)
+				+ "(" + this.getLatitude().toDegrees(Angle.DIGITS) + ", " + this.getLongitude().signedPrincipleAngle().toDegrees(Angle.DIGITS)
 				+ ", " + this.getHeight() + ")";
 	}
 }

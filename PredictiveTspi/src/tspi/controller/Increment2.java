@@ -38,8 +38,6 @@ import tspi.model.TargetModel;
 @SuppressWarnings("serial")
 public class Increment2 extends JFrame 
 implements ActionListener, ListSelectionListener, TableModelListener {
-	final protected int ANGLE_DIGITS = 10;
-	final protected int RANGE_DIGITS = 4;
 	protected PedestalModel pedestals;
 	protected TargetModel targets;
 	protected JTable pedestalTable;
@@ -208,8 +206,8 @@ implements ActionListener, ListSelectionListener, TableModelListener {
 			Ellipsoid ellipsoid = target.getEllipsoidalCoordinates().getEllipsoid();
 			//Debug
 			System.out.println( "\nTarget "+target.getTime()+" : " 
-					+ " lon="+ellipsoid.getEastLongitude().toDegrees(ANGLE_DIGITS)
-					+ " lat="+ellipsoid.getNorthLatitude().toDegrees(ANGLE_DIGITS)
+					+ " lon="+ellipsoid.getEastLongitude().signedPrincipleAngle().toDegrees(Angle.DIGITS)
+					+ " lat="+ellipsoid.getNorthLatitude().toDegrees(Angle.DIGITS)
 					+ " h="+ellipsoid.getEllipsoidHeight());
 			
 			// point pedestals to target
