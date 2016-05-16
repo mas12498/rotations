@@ -39,7 +39,7 @@ public class T_EFG_FRD {
 	}
 
 	
-	public void set(Positioning plot, Rotator localHorizontal) {
+	public void set(Plot plot, Rotator localHorizontal) {
 		_range = plot._range;
 		_direction.set(localHorizontal);
 		_direction.rightMultExpK(plot._azimuth.getPrinciple()).rightMultExpJ(plot._elevation.getPrinciple());

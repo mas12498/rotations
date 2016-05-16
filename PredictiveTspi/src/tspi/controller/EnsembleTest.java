@@ -292,7 +292,7 @@ public class EnsembleTest {
 				Vector3 origin = pedestals.getPedestal(0).getEFG();
 				Solution solution = new Solution( origin, list );
 				Ellipsoid coordinate = new Ellipsoid();
-				coordinate.setGeocentric( solution.position_EFG );
+				coordinate.set( solution.position_EFG );
 				double condition = solution.condition;
 				
 				// write the solution coordinates

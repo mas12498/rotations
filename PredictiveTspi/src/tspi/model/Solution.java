@@ -33,17 +33,17 @@ public class Solution {
 					+ " lon="+ellipsoid.getEastLongitude().signedPrincipleAngle().toDegrees(Angle.DIGITS)
 					+ " lat="+ellipsoid.getNorthLatitude().toDegrees(Angle.DIGITS)
 					+ " h="+ellipsoid.getEllipsoidHeight()
-					+ " az=" + pedestal._pedestal.getAzimuth().toDegrees(4)
-					+ " el=" + pedestal._pedestal.getElevation().toDegrees(4));
+					+ " az=" + pedestal._topocentric.getAzimuth().toDegrees(4)
+					+ " el=" + pedestal._topocentric.getElevation().toDegrees(4));
 		}		
 		Vector3 row = new Vector3(Double.NaN,Double.NaN,Double.NaN);
 		double [] rhs = new double [pedSensorCnt];
 		double [][] matrixData = new double [pedSensorCnt][3];
 		int i = 0; 
 		for(Pedestal pedestal : pedestals) {	
-			System.out.println("Pedestal "+pedestal.getSystemId()+": q_NG="+pedestal._localT.getLocalHorizontal().toString(5)+"  q_AG = "+pedestal._sensorT._direction.toString(5));
+			System.out.println("Pedestal "+pedestal.getSystemId()+": q_NG="+pedestal._local.getLocalHorizontal().toString(5)+"  q_AG = "+pedestal._aperture._direction.toString(5));
 			//Assuming two axial sensors per pedestal...			
-			row = pedestal._sensorT._direction.getImage_k();//axial AZ
+			row = pedestal._aperture._direction.getImage_k();//axial AZ
 			matrixData[i][0] = row.getX();
 			matrixData[i][1]= row.getY();
 			matrixData[i][2] = row.getZ();
@@ -51,7 +51,7 @@ public class Solution {
 			rhs[i] = new Vector3(origin).subtract(pedestal._efg).getDot(row);
 			i+=1;
 			
-			row = pedestal._sensorT._direction.getImage_j();//axial EL
+			row = pedestal._aperture._direction.getImage_j();//axial EL
 			matrixData[i][0] = row.getX();
 			matrixData[i][1]= row.getY();
 			matrixData[i][2] = row.getZ();

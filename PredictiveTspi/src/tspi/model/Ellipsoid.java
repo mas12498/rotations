@@ -103,7 +103,7 @@ public class Ellipsoid {
 				sinEllipsoidLatitude * (radiusInflatedEllipsoid * T_EFG_NED.FUNSQ + this.getEllipsoidHeight()));
 	}	
 
-	public void setGeocentric(Vector3 geocentricEFG){	
+	public void set(Vector3 geocentricEFG){	
 	
 	    double x= geocentricEFG.getX(); //E
 	    double y= geocentricEFG.getY(); //F

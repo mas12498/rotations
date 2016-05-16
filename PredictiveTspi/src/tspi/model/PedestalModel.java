@@ -52,7 +52,7 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 	
 	public void clearOrientations() {
 		for(Pedestal pedestal : pedestals)
-			pedestal._pedestal.clear(Double.NaN);
+			pedestal._topocentric.clear(Double.NaN);
 	}
 	
 	public void setCooordinateSystem(int system) {
@@ -250,7 +250,7 @@ public class PedestalModel extends AbstractTableModel implements Iterable<Pedest
 			writer.append(pedestal.getLongitude().toDegrees(7));
 			writer.append(",");
 			writer.append(Double.toString(pedestal.getHeight()));
-			if(pedestal._pedestal.getAzimuth()!=null && pedestal._pedestal.getElevation()!=null) {
+			if(pedestal._topocentric.getAzimuth()!=null && pedestal._topocentric.getElevation()!=null) {
 				writer.append(",");
 				writer.append(pedestal.getAzimuth().toDegrees(7));
 				writer.append(",");
