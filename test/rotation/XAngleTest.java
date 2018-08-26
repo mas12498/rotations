@@ -12,7 +12,7 @@ import org.junit.Test;
  * @author mike
  *
  */
-class AngleTest {
+class XAngleTest {
 
 //	/**
 //	 * @throws java.lang.Exception
