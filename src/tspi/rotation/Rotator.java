@@ -1,7 +1,7 @@
 /**
  * 
  */
-package rotation;
+package tspi.rotation;
 
 /**
  * 
@@ -1036,8 +1036,8 @@ public class Rotator extends Quaternion {
 	 * 
 	 * SLERP mutator:
 	 */
-	public Rotator slerp(final Quaternion p, final double t) {
-		set(QuaternionMath.slerp(this, p, t));
+	public Rotator slerp(final Rotator p, final double t) {
+		set(RotatorMath.slerp( this, p, t));
 		return this;
 	}
 

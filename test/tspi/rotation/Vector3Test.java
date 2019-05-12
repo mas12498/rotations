@@ -1,14 +1,14 @@
-package rotation;
+package tspi.rotation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import rotation.Angle;
-import rotation.Quaternion;
-import rotation.QuaternionMath;
-import rotation.Vector3;
+import tspi.rotation.Angle;
+import tspi.rotation.Quaternion;
+import tspi.rotation.QuaternionMath;
+import tspi.rotation.Vector3;
 
 public class Vector3Test {
 

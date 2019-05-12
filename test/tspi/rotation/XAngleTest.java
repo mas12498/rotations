@@ -1,12 +1,14 @@
 /**
  * 
  */
-package rotation;
+package tspi.rotation;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+
+import tspi.rotation.Angle;
 
 /**
  * @author mike
@@ -127,7 +129,7 @@ class XAngleTest {
 //	}
 
 	/**
-	 * Test method for {@link rotation.Angle#signedPrinciple()}.
+	 * Test method for {@link tspi.rotation.Angle#signedPrinciple()}.
 	 */
 	@Test
 	void testSignedPrinciple() {
@@ -194,7 +196,7 @@ class XAngleTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Angle#unsignedPrinciple()}.
+	 * Test method for {@link tspi.rotation.Angle#unsignedPrinciple()}.
 	 */
 	@Test
 	void testUnsignedPrinciple() {

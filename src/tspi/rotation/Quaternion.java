@@ -1,4 +1,4 @@
-package rotation;
+package tspi.rotation;
 
 /**
  * @author mike
@@ -841,16 +841,16 @@ public class Quaternion {
 		_z = z;
 	}
 
-//	/**
-//	 * Mutator.
-//	 * 
-//	 * SLERP mutator:
-//	 */
-//	public Quaternion slerp(final Quaternion p, final double t) {
-//		set(QuaternionMath.slerp(this, p, t));
-//		return this;
-//	}
-//
+	/**
+	 * Mutator.
+	 * 
+	 * SLERP mutator:
+	 */
+	public Quaternion slerp(final Quaternion p, final double t) {
+		set(QuaternionMath.slerp(this, p, t));
+		return this;
+	}
+
 
 	/**
 	 * Mutator.

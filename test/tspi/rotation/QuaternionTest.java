@@ -1,7 +1,7 @@
 /**
  * 
  */
-package rotation;
+package tspi.rotation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -9,12 +9,13 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import rotation.Angle;
-import rotation.CodedPhase;
-import rotation.Quaternion;
-import rotation.QuaternionMath;
-import rotation.Rotator;
-import rotation.Vector3;
+import tspi.rotation.Angle;
+import tspi.rotation.CodedPhase;
+import tspi.rotation.Quaternion;
+import tspi.rotation.QuaternionMath;
+import tspi.rotation.Rotator;
+import tspi.rotation.RotatorMath;
+import tspi.rotation.Vector3;
 
 /**
  * @author mike
@@ -22,7 +23,7 @@ import rotation.Vector3;
 public class QuaternionTest {
 	                   
 	/**
-	 * Test method for {@link rotation.Quaternion#getAbs()}.
+	 * Test method for {@link tspi.rotation.Quaternion#getAbs()}.
 	 */
 	@Test
 	public void testAbs() {
@@ -58,7 +59,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#add(rotation.Quaternion)}.
+	 * Test method for {@link tspi.rotation.Quaternion#add(tspi.rotation.Quaternion)}.
 	 */
 	@Test
 	public void testAdd() {
@@ -70,7 +71,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#getArg()}.
+	 * Test method for {@link tspi.rotation.Quaternion#getArg()}.
 	 */
 	@Test
 	public void testArg() {
@@ -133,7 +134,7 @@ public class QuaternionTest {
 	
 	
 	/**
-	 * Test method for {@link rotation.Quaternion#conjugate()}.
+	 * Test method for {@link tspi.rotation.Quaternion#conjugate()}.
 	 */
 	@Test
 	public void testConjugate() {
@@ -145,7 +146,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#getDeterminant()}.
+	 * Test method for {@link tspi.rotation.Quaternion#getDeterminant()}.
 	 */
 	@Test
 	public void testDeterminant() {
@@ -164,7 +165,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#divide(double)}.
+	 * Test method for {@link tspi.rotation.Quaternion#divide(double)}.
 	 */
 	@Test
 	public void testDivide() {
@@ -180,7 +181,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#exp()}.
+	 * Test method for {@link tspi.rotation.Quaternion#exp()}.
 	 */
 	@Test
 	public void testExp() {
@@ -188,7 +189,7 @@ public class QuaternionTest {
 		
 		Quaternion p = new Quaternion(0,1,0,0); //i
 		
-		Quaternion t = QuaternionMath.rotate_j( theta.codedPhase()); //OP rotate about j: 2*30 degrees 		
+		Quaternion t = RotatorMath.rotate_j( theta.codedPhase()); //OP rotate about j: 2*30 degrees 		
 		Quaternion r = new Quaternion(t).reciprocal();  //OP rotate about j: -2*30 degrees 		
 		//System.out.println("t reciprocal r ="+r.toString());
 		
@@ -246,7 +247,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#hasNan()}.
+	 * Test method for {@link tspi.rotation.Quaternion#hasNan()}.
 	 */
 	@Test
 	public void testHasNan() {
@@ -270,7 +271,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#getV()}.
+	 * Test method for {@link tspi.rotation.Quaternion#getV()}.
 	 */
 	@Test
 	public void testImaginary() {
@@ -283,7 +284,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#reciprocal()}.
+	 * Test method for {@link tspi.rotation.Quaternion#reciprocal()}.
 	 */
 	@Test
 	public void testInvert() {
@@ -310,7 +311,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#ln()}.
+	 * Test method for {@link tspi.rotation.Quaternion#ln()}.
 	 */
 	@Test
 	public void testLn() {
@@ -351,7 +352,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#log10()}.
+	 * Test method for {@link tspi.rotation.Quaternion#log10()}.
 	 */
 	@Test
 	public void testLog10() {
@@ -386,7 +387,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#multiply(double)}.
+	 * Test method for {@link tspi.rotation.Quaternion#multiply(double)}.
 	 */
 	@Test
 	public void testMultiplyDouble() {
@@ -398,7 +399,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#rightMultiply(rotation.Quaternion)}.
+	 * Test method for {@link tspi.rotation.Quaternion#rightMultiply(tspi.rotation.Quaternion)}.
 	 */
 	@Test
 	public void testMultiplyQuaternion() {
@@ -433,7 +434,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#rightMultiply(rotation.Vector3)}.
+	 * Test method for {@link tspi.rotation.Quaternion#rightMultiply(tspi.rotation.Vector3)}.
 	 */
 	@Test
 	public void testMultiplyVector3() {
@@ -456,7 +457,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#negate()}.
+	 * Test method for {@link tspi.rotation.Quaternion#negate()}.
 	 */
 	@Test
 	public void testNegate() {
@@ -467,7 +468,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#getNorm1()}.
+	 * Test method for {@link tspi.rotation.Quaternion#getNorm1()}.
 	 */
 	@Test
 	public void testNorm1() {
@@ -481,7 +482,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#unit()}.
+	 * Test method for {@link tspi.rotation.Quaternion#unit()}.
 	 */
 	@Test
 	public void testNormalize() {
@@ -518,7 +519,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#getNormInf()}.
+	 * Test method for {@link tspi.rotation.Quaternion#getNormInf()}.
 	 */
 	@Test
 	public void testNormInf() {
@@ -532,7 +533,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#power(double)}.
+	 * Test method for {@link tspi.rotation.Quaternion#power(double)}.
 	 */
 	@Test
 	public void testPower() {
@@ -662,7 +663,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#leftMultiply(rotation.Quaternion)}.
+	 * Test method for {@link tspi.rotation.Quaternion#leftMultiply(tspi.rotation.Quaternion)}.
 	 */
 	@Test
 	public void testPreMultiplyQuaternion() {
@@ -695,7 +696,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#leftMultiply(rotation.Vector3)}.
+	 * Test method for {@link tspi.rotation.Quaternion#leftMultiply(tspi.rotation.Vector3)}.
 	 */
 	@Test
 	public void testPreMultiplyVector3() {
@@ -721,10 +722,10 @@ public class QuaternionTest {
 
 
 	/**
-	 * Test method for {@link rotation.Quaternion#getW()}.
-	 * Test method for {@link rotation.Quaternion#getX()}.
-	 * Test method for {@link rotation.Quaternion#getY()}.
-	 * Test method for {@link rotation.Quaternion#getZ()}.
+	 * Test method for {@link tspi.rotation.Quaternion#getW()}.
+	 * Test method for {@link tspi.rotation.Quaternion#getX()}.
+	 * Test method for {@link tspi.rotation.Quaternion#getY()}.
+	 * Test method for {@link tspi.rotation.Quaternion#getZ()}.
 	 */
 	@Test
 	public void testReal() {
@@ -742,7 +743,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#slerp(rotation.Quaternion, double)}.
+	 * Test method for {@link tspi.rotation.Quaternion#slerp(tspi.rotation.Quaternion, double)}.
 	 */
 	@Test
 	public void testSlerp() {
@@ -751,7 +752,7 @@ public class QuaternionTest {
 //		System.out.println("Slerp: p "+p.toString());
 //		System.out.println("Slerp: q "+q.toString());
 //		System.out.println("Slerp: t "+1/3d);
-		Rotator t = new Rotator(q).slerp(p, (1d/3d));
+		Quaternion t = new Quaternion(q).slerp(p, (1d/3d));
 //		System.out.println("Slerp 1/3: "+t.toString());
 		assertTrue(t.isEquivalent(new Rotator(0, .5, StrictMath.sqrt(3) / 2d, 0),
 				1e-15));
@@ -887,7 +888,7 @@ public class QuaternionTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Quaternion#subtract(rotation.Quaternion)}.
+	 * Test method for {@link tspi.rotation.Quaternion#subtract(tspi.rotation.Quaternion)}.
 	 */
 	@Test
 	public void testSubtract() {

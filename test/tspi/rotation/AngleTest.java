@@ -1,7 +1,7 @@
 /**
  * 
  */
-package rotation;
+package tspi.rotation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import rotation.Angle;
+import tspi.rotation.Angle;
 
 /**
  * Test rotation.Angle Adapter class for angle measure:
@@ -27,12 +27,12 @@ public class AngleTest {
 
 	/**
 	 * 
-	 * Test method for {@link rotation.Angle#hashcode()}. Test method for
-	 * {@link rotation.Angle#abs()}. Test method for
-	 * {@link rotation.Angle#negate()}. Test method for
-	 * {@link rotation.Angle#add(Angle)}. Test method for
-	 * {@link rotation.Angle#subtract(Angle)}. Test method for
-	 * {@link rotation.Angle#equal()}.
+	 * Test method for {@link tspi.rotation.Angle#hashcode()}. Test method for
+	 * {@link tspi.rotation.Angle#abs()}. Test method for
+	 * {@link tspi.rotation.Angle#negate()}. Test method for
+	 * {@link tspi.rotation.Angle#add(Angle)}. Test method for
+	 * {@link tspi.rotation.Angle#subtract(Angle)}. Test method for
+	 * {@link tspi.rotation.Angle#equal()}.
 	 */
 	@Test
 	public void testAlgebra() {
@@ -220,9 +220,9 @@ public class AngleTest {
 
 	/**
 	 * Input and output of arbitrary binary arc-circle Angle units.
-	 * <br>factory {@link rotation.Angle#inBinaryArc(int, byte)}. 
-	 * <br>getter {@link rotation.Angle#getBinaryArc(byte)}.
-	 * <br>setter {@link rotation.Angle#setBinaryArc(int, byte)}. 
+	 * <br>factory {@link tspi.rotation.Angle#inBinaryArc(int, byte)}. 
+	 * <br>getter {@link tspi.rotation.Angle#getBinaryArc(byte)}.
+	 * <br>setter {@link tspi.rotation.Angle#setBinaryArc(int, byte)}. 
 	 */
 	@Test
 	public void testGetSetInBinary() {
@@ -273,9 +273,9 @@ public class AngleTest {
 	/**
 	 * Protractor Angle units: Degrees.
 	 * 
-	 * <br>factory {@link rotation.Angle#inDegrees(double)}.
-	 * <br>getter {@link rotation.Angle#getDegrees()}. 
-	 * <br>setter {@link rotation.Angle#setDegrees(double)}. 
+	 * <br>factory {@link tspi.rotation.Angle#inDegrees(double)}.
+	 * <br>getter {@link tspi.rotation.Angle#getDegrees()}. 
+	 * <br>setter {@link tspi.rotation.Angle#setDegrees(double)}. 
 	 */
 	@Test
 	public void testGetSetInDegrees() {
@@ -301,9 +301,9 @@ public class AngleTest {
 	/**
 	 * Input and output of arbitrary Angle units.
 	 * 
-	 * <br>factory {@link rotation.Angle#inMeasure(double, double)}. 
-	 * <br>setter {@link rotation.Angle#set(double, double)}. 
-	 * <br>getter {@link rotation.Angle#get(double)}.
+	 * <br>factory {@link tspi.rotation.Angle#inMeasure(double, double)}. 
+	 * <br>setter {@link tspi.rotation.Angle#set(double, double)}. 
+	 * <br>getter {@link tspi.rotation.Angle#get(double)}.
 	 */
 	@Test
 	public void testGetSetInMeasure() {
@@ -371,9 +371,9 @@ public class AngleTest {
 	/**
 	 * PiRadians are internal class private units: Half-revolutions.
 	 * 
-	 * <br>factory {@link rotation.Angle#inPiRadians(double)}.
-	 * <br>getter {@link rotation.Angle#getPiRadians()}. 
-	 * <br>setter {@link rotation.Angle#setPiRadians(double)}. 
+	 * <br>factory {@link tspi.rotation.Angle#inPiRadians(double)}.
+	 * <br>getter {@link tspi.rotation.Angle#getPiRadians()}. 
+	 * <br>setter {@link tspi.rotation.Angle#setPiRadians(double)}. 
 	 */
 	@Test
 	public void testGetSetInPiRadians() {
@@ -401,9 +401,9 @@ public class AngleTest {
 	/**
 	 * Units for java math class trigonometry functions: Radians.
 	 * 
-	 * <br>factory {@link rotation.Angle#inRadians(double)}.
-	 * <br>getter {@link rotation.Angle#getRadians()}. 
-	 * <br>setter {@link rotation.Angle#setRadians(double)}. 
+	 * <br>factory {@link tspi.rotation.Angle#inRadians(double)}.
+	 * <br>getter {@link tspi.rotation.Angle#getRadians()}. 
+	 * <br>setter {@link tspi.rotation.Angle#setRadians(double)}. 
 	 */
 	@Test
 	public void testGetSetInRadians() {
@@ -521,9 +521,9 @@ public class AngleTest {
 	/**
 	 * Revolutions are whole arc-circle units.
 	 * 
-	 * <br>factory {@link rotation.Angle#inRevolutions(double)}.
-	 * <br>getter {@link rotation.Angle#getRevolutions()}. 
-	 * <br>setter {@link rotation.Angle#setRevolutions(double)}. 
+	 * <br>factory {@link tspi.rotation.Angle#inRevolutions(double)}.
+	 * <br>getter {@link tspi.rotation.Angle#getRevolutions()}. 
+	 * <br>setter {@link tspi.rotation.Angle#setRevolutions(double)}. 
 	 */
 	@Test
 	public void testGetSetInRevolutions() {

@@ -1,4 +1,4 @@
-package rotation;
+package tspi.rotation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import rotation.Angle;
-import rotation.CodedPhase;
+import tspi.rotation.Angle;
+import tspi.rotation.CodedPhase;
 
 public class CodedPhaseTest {
 

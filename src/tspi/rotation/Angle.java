@@ -1,4 +1,4 @@
-package rotation;
+package tspi.rotation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -1,19 +1,20 @@
 /**
  * 
  */
-package rotation;
+package tspi.rotation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import rotation.Angle;
-import rotation.CodedPhase;
-import rotation.Quaternion;
-import rotation.QuaternionMath;
-import rotation.Rotator;
-import rotation.Vector3;
+import tspi.rotation.Angle;
+import tspi.rotation.CodedPhase;
+import tspi.rotation.Quaternion;
+import tspi.rotation.QuaternionMath;
+import tspi.rotation.Rotator;
+import tspi.rotation.RotatorMath;
+import tspi.rotation.Vector3;
 
 /**
  * @author mike
@@ -60,7 +61,7 @@ public class RotatorTest {
 			{	
 				pitch = Angle.inPiRadians( j/16d  ); //heading
 
-				z = QuaternionMath.rotate_k(heading.codedPhase()) 
+				z = RotatorMath.rotate_k(heading.codedPhase()) 
 						.rotate_j(pitch.codedPhase())
 						.rotate_i(roll.codedPhase());
 				h = z.getEuler_k_kji();
@@ -106,7 +107,7 @@ public class RotatorTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Rotator#rotate_i(rotation.CodedPhase)}.
+	 * Test method for {@link tspi.rotation.Rotator#rotate_i(tspi.rotation.CodedPhase)}.
 	 */
 	@Test
 	public void testExp() {
@@ -399,7 +400,7 @@ public class RotatorTest {
 		System.out.println("\nimage ej0 = :"+Vector3.UNIT_J.toString());
 		
 		CodedPhase wi =  Angle.inDegrees(30).codedPhase();
-		Rotator pi = QuaternionMath.rotate_i(wi);
+		Rotator pi = RotatorMath.rotate_i(wi);
 		
 		int i;
 		for(i=1; i<=12; i+=1)
@@ -416,7 +417,7 @@ public class RotatorTest {
 		System.out.println("\nimage ek0 = :"+Vector3.UNIT_K.toString());
 		
 		CodedPhase wj =  Angle.inDegrees(60).codedPhase();
-		Rotator pj = QuaternionMath.rotate_j(wj);
+		Rotator pj = RotatorMath.rotate_j(wj);
 		
 		int j;
 		for(j=1; j<=6; j+=1)
@@ -432,7 +433,7 @@ public class RotatorTest {
 		System.out.println("\nimage ei0 = :"+Vector3.UNIT_I.toString());
 		
 		CodedPhase wk =  Angle.inDegrees(45).codedPhase();
-		Rotator pk = QuaternionMath.rotate_k(wk);
+		Rotator pk = RotatorMath.rotate_k(wk);
 		
 		int k;
 		for(k=1; k<=8; k+=1)
@@ -448,7 +449,7 @@ public class RotatorTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Rotator#flip_i()}.
+	 * Test method for {@link tspi.rotation.Rotator#flip_i()}.
 	 */
 	@Test
 	public void testFlip() {
@@ -506,7 +507,7 @@ public class RotatorTest {
 	
 	/**
 	 * Test method for constructing Operator from Euler angles
-	 * {@link rotation.Rotator#getEuler_k_kji()}.
+	 * {@link tspi.rotation.Rotator#getEuler_k_kji()}.
 	 */
 	@Test
 	public void testGetEuler() {
@@ -546,7 +547,7 @@ public class RotatorTest {
 				{
 					heading = Angle.inPiRadians(k/8d); 
 
-					z = QuaternionMath.rotate_k(heading.codedPhase()) 
+					z = RotatorMath.rotate_k(heading.codedPhase()) 
 							.rotate_j(pitch.codedPhase())
 							.rotate_i(roll.codedPhase());
 					h = z.getEuler_k_kji();
@@ -601,7 +602,7 @@ public class RotatorTest {
 				{
 					heading = Angle.inPiRadians(k/8d); 
 
-					z = QuaternionMath.rotate_k(heading.codedPhase()) 
+					z = RotatorMath.rotate_k(heading.codedPhase()) 
 							.rotate_j(pitch.codedPhase())
 							.rotate_i(roll.codedPhase());
 					h = z.getEuler_k_kji();
@@ -657,7 +658,7 @@ public class RotatorTest {
 				{
 					heading = Angle.inPiRadians(k/32d); //no heading restirction!
 
-					z = QuaternionMath.rotate_k(heading.codedPhase()) 
+					z = RotatorMath.rotate_k(heading.codedPhase()) 
 							.rotate_j(pitch.codedPhase())
 							.rotate_i(roll.codedPhase());
 					
@@ -712,7 +713,7 @@ public class RotatorTest {
 				{
 					heading = Angle.inPiRadians(k/32d); //no heading restirction!
 
-					z = QuaternionMath.rotate_k(heading.codedPhase()) 
+					z = RotatorMath.rotate_k(heading.codedPhase()) 
 							.rotate_j(pitch.codedPhase())
 							.rotate_i(roll.codedPhase());
 					
@@ -917,7 +918,7 @@ public class RotatorTest {
 
 	/**
 	 * Test method for magnification to re-scale Operator
-	 * {@link rotation.Rotator#getNormaliztionFactor()}.
+	 * {@link tspi.rotation.Rotator#getNormaliztionFactor()}.
 	 */
 	@Test
 	public void testGetScaleFactor() {
@@ -934,7 +935,7 @@ public class RotatorTest {
 	}
 
 	/**
-	 * Test method for {@link rotation.Rotator#getImage_i()}.
+	 * Test method for {@link tspi.rotation.Rotator#getImage_i()}.
 	 */
 	@Test
 	public final void testImagePreimage() {
@@ -999,7 +1000,7 @@ public class RotatorTest {
 
 	/**
 	 * Test method for constructing operator from scalar and vector components
-	 * {@link rotation.Rotator#Operator(double, rotation.Vector3)}.
+	 * {@link tspi.rotation.Rotator#Operator(double, tspi.rotation.Vector3)}.
 	 */
 	@Test
 	public void testOperatorDoubleVector3() {
@@ -1014,7 +1015,7 @@ public class RotatorTest {
 
 	/**
 	 * Test method for constructing Operator from Quaternion
-	 * {@link rotation.Rotator#Operator(rotation.Quaternion)}.
+	 * {@link tspi.rotation.Rotator#Operator(tspi.rotation.Quaternion)}.
 	 */
 	@Test
 	public void testOperatorQuaternion() {
@@ -1029,7 +1030,7 @@ public class RotatorTest {
 
 
 	/**
-	 * Test method for {@link rotation.Rotator#turn_i()}.
+	 * Test method for {@link tspi.rotation.Rotator#turn_i()}.
 	 */
 	@Test
 	public void testTurn() {
