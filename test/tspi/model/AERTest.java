@@ -14,10 +14,10 @@ import tspi.rotation.Vector3;
 public class AERTest extends TestCase {
 
 	/**
-	 * Test method for {@link tspi.model.AER#Polar()}.
+	 * Test method for {@link tspi.model.RAE#Polar()}.
 	 */
 	public final void testPolar() {
-		AER p = new AER();		
+		RAE p = new RAE();		
 		assertTrue(Double.isNaN(p.getRange()));
 		assertTrue(Double.isNaN(p.getUnsignedAzimuth().getPiRadians()));
 		assertTrue(Double.isNaN(p.getElevation().getPiRadians()));
@@ -25,10 +25,10 @@ public class AERTest extends TestCase {
 	}
 
 	/**
-	 * Test method for {@link tspi.model.AER#Polar(double, rotation.Angle, rotation.Angle)}.
+	 * Test method for {@link tspi.model.RAE#Polar(double, rotation.Angle, rotation.Angle)}.
 	 */
 	public final void testPolarDoubleAngleAngle() {
-		AER p = new AER(10000d,Angle.inDegrees(120d),Angle.inDegrees(30d));		
+		RAE p = new RAE(10000d,Angle.inDegrees(120d),Angle.inDegrees(30d));		
 		assertEquals(10000d,p.getRange(),0d);
 		assertEquals(120d,p.getUnsignedAzimuth().getDegrees(),0d);
 		assertEquals(30d,p.getElevation().getDegrees(),0d);
@@ -37,11 +37,11 @@ public class AERTest extends TestCase {
 	}
 
 	/**
-	 * Test method for {@link tspi.model.AER#Polar(tspi.model.AER)}.
+	 * Test method for {@link tspi.model.RAE#Polar(tspi.model.RAE)}.
 	 */
 	public final void testPolarPolar() {
-		AER q = new AER(10000d,Angle.inDegrees(120d),Angle.inDegrees(30d));		
-		AER p = new AER(q);		
+		RAE q = new RAE(10000d,Angle.inDegrees(120d),Angle.inDegrees(30d));		
+		RAE p = new RAE(q);		
 		assertEquals(10000d,p.getRange(),0d);
 		assertEquals(120d,p.getUnsignedAzimuth().getDegrees(),0d);
 		assertEquals(30d,p.getElevation().getDegrees(),0d);
@@ -49,11 +49,11 @@ public class AERTest extends TestCase {
 	}
 
 	/**
-	 * Test method for {@link tspi.model.AER#getUnsignedAzimuth()}.
+	 * Test method for {@link tspi.model.RAE#getUnsignedAzimuth()}.
 	 */
 	public final void testGetSetAzimuth() {
 		//Unsigned principle Angle Factory.class..
-		AER p = new AER(10000d,Angle.inDegrees(120d),Angle.inDegrees(30d));		
+		RAE p = new RAE(10000d,Angle.inDegrees(120d),Angle.inDegrees(30d));		
 		
 		//Angle factory:
 		Angle t = p.getUnsignedAzimuth();
@@ -79,11 +79,11 @@ public class AERTest extends TestCase {
 	}
 
 	/**
-	 * Test method for {@link tspi.model.AER#getElevation()}.
+	 * Test method for {@link tspi.model.RAE#getElevation()}.
 	 */
 	public final void testGetSetElevation() {
 		//Unsigned principle Angle Factory.class..
-		AER p = new AER(10000d,Angle.inDegrees(120d),Angle.inDegrees(30d));		
+		RAE p = new RAE(10000d,Angle.inDegrees(120d),Angle.inDegrees(30d));		
 		
 		//Angle factory test:
 		Angle t = p.getElevation();
@@ -124,11 +124,11 @@ public class AERTest extends TestCase {
 	}
 
 	/**
-	 * Test method for {@link tspi.model.AER#getRange()}.
+	 * Test method for {@link tspi.model.RAE#getRange()}.
 	 */
 	public final void testGetSetRange() {
 
-		AER p = new AER(10000d,Angle.inDegrees(120d),Angle.inDegrees(30d));		
+		RAE p = new RAE(10000d,Angle.inDegrees(120d),Angle.inDegrees(30d));		
 		//assertEquals(10000d,p._range,0d);
 		assertEquals(10000d,p.getRange(),0d);
 		assertEquals(120d,p.getUnsignedAzimuth().getDegrees(),0d);
@@ -150,22 +150,22 @@ public class AERTest extends TestCase {
 	}
 
 	/**
-	 * Test method for {@link tspi.model.AER#getTopocentric()}.
+	 * Test method for {@link tspi.model.RAE#getNED()}.
 	 */
 	public final void testGetSetTopocentric() {
-		AER r = new AER();
-		AER q = new AER();
+		RAE r = new RAE();
+		RAE q = new RAE();
 		Vector3 v = new Vector3(Vector3.EMPTY);
 		Vector3 w = new Vector3(Vector3.EMPTY);	
 		
-		AER p = new AER(10000d,Angle.inDegrees(120d),Angle.inDegrees(30d));		
+		RAE p = new RAE(10000d,Angle.inDegrees(120d),Angle.inDegrees(30d));		
 		
 		for ( int i = -8; i <= 8; i++){
 			for ( int j = -8; j <= 8; j++){
 				for ( int k = -8; k <= 8; k++){
 					
 					v.set(i,j,k);
-					p.setTopocentric(v);
+					p.setNED(v);
 					
 					System.out.println(
 						v.toString(5)+"  "
@@ -176,7 +176,7 @@ public class AERTest extends TestCase {
 					
 					q.set(p.getRange(), p.getUnsignedAzimuth(), p.getElevation());
 					r.set(p);
-					w.set(p.getTopocentric());
+					w.set(p.getNED());
 					//w.set(p.getTopocentric());
 					//w.set(v);
 					System.out.println(w.toString(5) );
@@ -184,7 +184,7 @@ public class AERTest extends TestCase {
 					assertTrue(v.isEquivalent(w,1e-14));	
 					q.clear(q.getRange());
 					q.clear();
-					q.set(new AER());
+					q.set(new RAE());
 				}
 				
 			}

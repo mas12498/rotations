@@ -39,7 +39,7 @@ public class T_EFG_FRD {
 	}
 
 	
-	public void set(AER plot, Rotator localHorizontal) {
+	public void set(RAE plot, Rotator localHorizontal) {
 		_range = plot._range;
 //		_orientation.set(localHorizontal);
 //		_orientation.rotate_k(plot._azimuth.codedPhase()).rotate_j(plot._elevation.codedPhase());
@@ -78,8 +78,21 @@ public class T_EFG_FRD {
 		return positionGeodetic;
 	}
 
+	
+	protected  static RAE commandLocal(Vector3 r_EFG, Rotator pedestalLocal){
+		Rotator los = (Rotator) new Rotator(pedestalLocal).preTilt_i(r_EFG).conjugate();
+		return new RAE(r_EFG.getAbs(), los.getEuler_k_kji().angle().signedPrinciple(), los.getEuler_j_kji().angle().signedPrinciple());
+	}
+
+//	public Rotator positionLocal() {
+//		// @MAS: Maybe this method should be removed from inside this class...
+//		return QuaternionMath.eulerRotate_kj(_azimuth.getPrinciple(), _elevation.getPrinciple());
+//	}
+
+	
+	
 	public void orient(Vector3 offsetEFG, Rotator localHorizon){	
-		AER localVector = AER.commandLocal(offsetEFG,localHorizon);
+		RAE localVector = commandLocal(offsetEFG,localHorizon);
 		_orientation.set(T_EFG_FRD.face(localVector.getUnsignedAzimuth().codedPhase()
 				,localVector.getElevation().codedPhase(),localHorizon));
 	}

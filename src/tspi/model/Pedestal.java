@@ -18,17 +18,17 @@ public class Pedestal {
 	final Boolean[] _mapSensors = new Boolean[3]; // == {hasRG,hasAZ,hasEL}
 
 	/** Angular bias of the pedestal's measurements. Supplies mean of the distribution in Angles and Meters. */
-	final AER _bias = new AER();
+	final RAE _bias = new RAE();
 	
 	/** Angular deviation of the pedestal's local.  Supplies deviation of the distribution in Angles and Meters. */
-	final AER _deviation = new AER();
+	final RAE _deviation = new RAE();
 	// TODO just slapping stuff together; feel free to revise this error model!
 
 	/** PEDESTAL GEODETIC LOCATION WGS 84 ELLIPSOID [LLh] in Angles and Meters.**/
 	final Ellipsoid _geodeticLocation = new Ellipsoid();
 
 	/** PEDESTAL LOCAL VECTOR [RAE: Range, Azimuth, Elevation -- NO ATMOSPHERE] **/
-	final AER _local = new AER();
+	final RAE _local = new RAE();
 
 	/** LOCAL SITE TRANSFORMATION defined from geocentric XYZ. **/
 	final T_EFG_NED _localFrame = new T_EFG_NED();
@@ -152,8 +152,8 @@ public class Pedestal {
 	public Vector3 getLocalCoordinates() { return new Vector3( _localCoordinates ); }
 
 	
-	public AER getBias() { return _bias; }
-	public void setBias(AER bias) { this._bias.set(bias); }
+	public RAE getBias() { return _bias; }
+	public void setBias(RAE bias) { this._bias.set(bias); }
 	
 	public double getBiasRG() { return this._bias.getRange(); }
 	public Angle getBiasAZ() { return this._bias.getSignedAzimuth(); }
@@ -162,8 +162,8 @@ public class Pedestal {
 	public void setBiasAZ(Angle DAZ) { this._bias.setAzimuth(DAZ); }
 	public void setBiasEL(Angle DEL) { this._bias.setElevation(DEL); }
 	
-	public AER getDeviation() { return _deviation; }
-	public void setDeviation(AER deviation) { this._deviation.set(deviation); }
+	public RAE getDeviation() { return _deviation; }
+	public void setDeviation(RAE deviation) { this._deviation.set(deviation); }
 	
 	public double getDeviationRG() { return this._deviation.getRange(); }
 	public Angle getDeviationAZ() { return this._deviation.getSignedAzimuth(); }
@@ -173,10 +173,10 @@ public class Pedestal {
 	public void setDeviationEL(Angle sdEL) { this._deviation.setElevation(sdEL); }
 
 	
-	public AER getPerturbedLocal(Random random) {
+	public RAE getPerturbedLocal(Random random) {
 		// add a normally distributed error to each of the polar coordinates 
 		// TODO There is another daz correcting term that has to be handled as elevation increases!!!	
-		AER perturbedLocal = new AER(
+		RAE perturbedLocal = new RAE(
 				_local.getRange() + _bias.getRange() + _deviation.getRange() * random.nextGaussian(),
 				Angle.inPiRadians(_local.getUnsignedAzimuth().getPiRadians() + _bias.getSignedAzimuth().getPiRadians()
 						+ _deviation.getSignedAzimuth().getPiRadians() * random.nextGaussian()).unsignedPrinciple(),
@@ -185,7 +185,7 @@ public class Pedestal {
 		return perturbedLocal;  
 	}
 	
-	public AER getBiasedLocal() {
+	public RAE getBiasedLocal() {
 		// add a normally distributed error to each of the polar coordinates 
 		// TODO There is another daz correcting term that has to be handled as elevation increases!!!
 		double biasRange = _bias.getRange();
@@ -196,7 +196,7 @@ public class Pedestal {
 		if(Double.isNaN(biasAz)) biasAz = 0d;
 		if(Double.isNaN(biasEl)) biasEl = 0d;
 
-		AER biasedLocal = new AER(
+		RAE biasedLocal = new RAE(
 				_local.getRange() + biasRange,
 				Angle.inPiRadians(_local.getSignedAzimuth().getPiRadians() + biasAz).unsignedPrinciple(),
 				Angle.inPiRadians(_local.getElevation().getPiRadians() + biasEl)
@@ -212,7 +212,7 @@ public class Pedestal {
 	/**
 	 * @return pedestal's vector in local geodetic topocentric frame (polar form): range, azimuth elevation.
 	 */
-	public AER getLocal() { return new AER(this._local); }
+	public RAE getLocal() { return new RAE(this._local); }
 
 	/**
 	 * @return model transform from geocentric frame coordinates to pedestal's aperture frame coordinates.
@@ -443,7 +443,7 @@ public class Pedestal {
 
 	// After location is set... deal with pedestal rotator and range positioning updates...
 	
-	public void point(AER position) {
+	public void point(RAE position) {
 		this._local.set(position);
 		this._apertureFrame.set(position, this._localFrame._local);
 		this._vector.set(_apertureFrame.getVector());
@@ -498,7 +498,7 @@ public class Pedestal {
 	 *  defined as Cartesian coordinate offset from pedestal's location
 	 * @param locationOffsetEFG Position of target.  */
 	public void pointToLocationOffset(Vector3 locationOffsetEFG){		
-		this._local.set( AER.commandLocal(locationOffsetEFG,this._localFrame._local)); 		
+		this._local.set( T_EFG_FRD.commandLocal(locationOffsetEFG,this._localFrame._local)); 		
 		this._apertureFrame.set(this._local, this._localFrame._local);		
 		this._apertureFrame._range = _local.getRange();		
 	}

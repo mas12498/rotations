@@ -4,24 +4,24 @@ import tspi.rotation.Angle;
 import tspi.rotation.Rotator;
 import tspi.rotation.Vector3;
 
-public class AER {
+public class RAE {
 	protected Double _range;
 	protected final Angle _azimuth;
 	protected final Angle _elevation;
 
-	public AER() {
+	public RAE() {
 		_range = Double.NaN;
 		_azimuth = new Angle();
 		_elevation = new Angle();
 	}
 	
-	public  AER(double range, Angle azimuth, Angle elevation) {
+	public  RAE(double range, Angle azimuth, Angle elevation) {
 		_range = range;
 		_azimuth = azimuth;
 		_elevation = elevation;
 	}
 
-	public AER(AER template) {
+	public RAE(RAE template) {
 		_azimuth = new Angle(template._azimuth);
 		_elevation = new Angle(template._elevation);
 		_range = template._range;
@@ -58,7 +58,7 @@ public class AER {
 		return _range;
 	}
 
-	public Vector3 getTopocentric() { // NED of navigation
+	public Vector3 getNED() { // NED of navigation
 		double RcosE = _range * StrictMath.cos(_elevation.getRadians());
 		return new Vector3(
 				RcosE * StrictMath.cos(_azimuth.getRadians())
@@ -67,7 +67,7 @@ public class AER {
 				);
 	}
 
-	public void setTopocentric(Vector3 r_NED) { // NED of navigation
+	public void setNED(Vector3 r_NED) { // NED of navigation
 		
 		_range = r_NED.getAbs(); //always positive in this construction!!!
 		
@@ -79,7 +79,7 @@ public class AER {
 		
 	}
 
-	public void set(AER position) {
+	public void set(RAE position) {
 		_range = position._range;
 		_azimuth.set(position._azimuth);
 		_elevation.set(position._elevation);
@@ -125,16 +125,5 @@ public class AER {
 		_elevation.set(Angle.EMPTY);
 		_range = Double.NaN;
 	}
-
-
-	protected  static AER commandLocal(Vector3 r_EFG, Rotator pedestalLocal){
-		Rotator los = (Rotator) new Rotator(pedestalLocal).preTilt_i(r_EFG).conjugate();
-		return new AER(r_EFG.getAbs(), los.getEuler_k_kji().angle().signedPrinciple(), los.getEuler_j_kji().angle().signedPrinciple());
-	}
-
-//	public Rotator positionLocal() {
-//		// @MAS: Maybe this method should be removed from inside this class...
-//		return QuaternionMath.eulerRotate_kj(_azimuth.getPrinciple(), _elevation.getPrinciple());
-//	}
 
 }
