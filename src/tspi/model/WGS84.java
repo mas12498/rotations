@@ -5,6 +5,8 @@ package tspi.model;
 
 import tspi.rotation.Angle;
 import tspi.rotation.CodedPhase;
+import tspi.rotation.Rotator;
+import tspi.rotation.RotatorMath;
 import tspi.rotation.Vector3;
 
 /**
@@ -15,28 +17,23 @@ public class WGS84 {
 	
 	protected CodedPhase _pLambda;
 	protected CodedPhase _pMu;
-	protected double _height;
+	protected double     _height;
 	
 	//Definition WGS84 ellipsoid.
 	public static final double _a = 6378137.0d;        //WGS84 semi-major ellipsoid radius meters
 	public static final double _f = 0.00335281068118d; //WGS84 flattening (unitless)
 
 	//Conversion algorithm constants.
-	protected static final double ZERO         = 0d;
-//	private static final double NEGATIVE_ZERO  = -ZERO;
-	
+	protected static final double ZERO         = 0d;	
 	protected static final double ONE          = 1d;
-//	private static final double NEGATIVE_ONE   = -ONE;
-	
 	protected static final double TWO          = 2d;
 	protected static final double THREE        = 3d;
 	protected static final double ONE_THIRD    = ONE/THREE;
 	protected static final double FOUR_THIRDS  = 4d/THREE;
 	
-	private static final double MIN_RATIO      = ONE -  _f; // = _b/_a 
+	private static final double MIN_RATIO      = ONE -  _f;               // = _b/_a 
     protected static final double MIN_RATIO_SQ = (MIN_RATIO)*(MIN_RATIO); // = (_b/_a)*(_b/_a)
-    protected static final double FLAT_FN      = (TWO - _f)*_f; //== 1-((1-f)^2) == 1 - MIN_RATIO_SQ
-//    public static final double _b              = _a * MIN_RATIO;     //WGS84 semi-minor axis radius
+    protected static final double FLAT_FN      = (TWO - _f)*_f;           // = 1-((1-f)^2) == 1 - MIN_RATIO_SQ
 
 	public void set(WGS84 p){
 		_pMu.set(p._pMu);
@@ -89,8 +86,7 @@ public class WGS84 {
 		
 	    /* 3.0 Find solution to: t^4 + 2*E*t^3 + 2*F*t - 1 = 0  */
 	    double p = FOUR_THIRDS * (e*f +  ONE);
-	    double q = TWO * (e*e - f*f);
-	    
+	    double q = TWO * (e*e - f*f);	    
 	    double d = p*p*p + q*q;
 	    double v;
 	    if( d >=  ZERO ) {
@@ -111,19 +107,16 @@ public class WGS84 {
 	
 	    /* 5.0 Set sign to get latitude and height correct */
 	    boolean isSouth =(z< ZERO);
-	    double b_a = isSouth?-MIN_RATIO:MIN_RATIO;
-	    
+	    double b_a = isSouth?-MIN_RATIO:MIN_RATIO;	    
 	    /*-- Lambda [Longitude] */
 	    double cLon = ( x/r );
 	    _pLambda = ( CodedPhase.encodes(  StrictMath.sqrt((1 - cLon)/(1 + cLon))  ) ) ;	 
-	    if(y<ZERO) _pLambda.negate();   
-	    
+	    if(y<ZERO) _pLambda.negate();   	    
 	    /*-- Mu */
 	    double y1 =  ONE - t*t;
 	    double x1 = ( TWO*b_a*t);
 	    _pMu.set( CodedPhase.encodes(  (y1 + StrictMath.hypot(x1, y1))/x1  ).negate() );
-	    if(isSouth) _pMu.addStraight();
-	    
+	    if(isSouth) _pMu.addStraight();	    
 	    /*-- Latitude and Height */
 	    double t_2 = _pMu.tanHalf()*_pMu.tanHalf();
 	    double secMu_2 = 1 + t_2;
@@ -255,6 +248,77 @@ public class WGS84 {
 		this._height = height;
 	}
 	    
+	/**
+	 * @return the coded geodetic Mu rotation
+	 */
+	public CodedPhase getMu() {
+		return _pMu;
+	}
+	/**
+	 * @param set lambda about K axis
+	 */
+	public void setMu(CodedPhase mu) {
+		this._pMu.set(mu);
+	}
+	
+	/**
+	 * @param get Ellipsoid
+	 */
+	public Ellipsoid getEllipsoid() {
+		return new Ellipsoid(this.getNorthLatitude(),this.getEastLongitude(),this.getEllipsoidHeight());
+	}
+	/**
+	 * @param set this to Ellipsoid coordinates
+	 */
+	public void setEllipsoid(Ellipsoid e) {
+		this.setNorthLatitude(e.getNorthLatitude());
+		this.setEastLongitude(e.getEastLongitude());
+		this.setEllipsoidHeight(e.getEllipsoidHeight());
+	}
+
+
+	
+	
+	/**
+	 * @return the coded geodetic Lambda rotation
+	 */
+	public CodedPhase getLambda() 
+	{
+		return _pLambda;
+	}
+	/**
+	 * @param set lambda about K axis
+	 */
+	public void setLambda(CodedPhase lambda) 
+	{
+		this._pLambda.set(lambda);
+	}
+	
+	public Rotator getGeodetic() //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
+	{
+		return RotatorMath.eulerRotate_kj(this.getLambda(),this.getMu());		
+	}
+
+	public void setGeodtic(Rotator q) //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
+	{
+		setLambda(q.getEuler_k_kj());		
+		setMu(q.getEuler_j_kj());
+	}
+		
+	public void setT_EFG_NED(Rotator q, double h) //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
+	{
+		setLambda(q.getEuler_k_kj());		
+		setMu(q.getEuler_j_kj());
+		setEllipsoidHeight(h);
+	}
+	
+	public T_EFG_NED getT_EFG_NED() //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
+	{
+		return new T_EFG_NED(this.getGeodetic(),this.getEllipsoidHeight());
+	}
+	
+	
+	
         
 	/**
 	 * @param args
@@ -262,10 +326,6 @@ public class WGS84 {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		
-		
-		
-
 	}
 
 }
