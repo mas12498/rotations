@@ -75,27 +75,26 @@ public class WGS84 {
 	public void setGeocentric(Vector3 geocentricEFG){	
 		
 	    /* 1.0 scale coordinates */
-	    double x= geocentricEFG.getX()/_a; //E/a
-	    double y= geocentricEFG.getY()/_a; //F/a
-	    double z= geocentricEFG.getZ()/_a; //G/a   
+		double x = geocentricEFG.getX() / _a; // E/a
+		double y = geocentricEFG.getY() / _a; // F/a
+		double z = geocentricEFG.getZ() / _a; // G/a
 	
 	    /* 2.0 compute intermediate values for latitude */
 		double r = StrictMath.hypot(x, y);
-		double e = (StrictMath.abs(z)*MIN_RATIO - FLAT_FN) / r;
-		double f = (StrictMath.abs(z)*MIN_RATIO + FLAT_FN) / r;
+		double e = (StrictMath.abs(z) * MIN_RATIO - FLAT_FN) / r;
+		double f = (StrictMath.abs(z) * MIN_RATIO + FLAT_FN) / r;
 		
 	    /* 3.0 Find solution to: t^4 + 2*E*t^3 + 2*F*t - 1 = 0  */
-	    double p = FOUR_THIRDS * (e*f +  ONE);
-	    double q = TWO * (e*e - f*f);	    
-	    double d = p*p*p + q*q;
-	    double v;
-	    if( d >=  ZERO ) {
-	            v = StrictMath.pow( (StrictMath.sqrt( d ) - q),  ONE_THIRD )
-	             - StrictMath.pow( (StrictMath.sqrt( d ) + q),  ONE_THIRD );
-	    } else {
-	            v =  TWO * StrictMath.sqrt( -p )
-	             * StrictMath.cos( StrictMath.acos( q/(p * StrictMath.sqrt( -p )) ) /  THREE );
-	    }
+		double p = FOUR_THIRDS * (e * f + ONE);
+		double q = TWO * (e * e - f * f);
+		double d = p * p * p + q * q;
+		double v;
+		if (d >= ZERO) {
+			v = StrictMath.pow((StrictMath.sqrt(d) - q), ONE_THIRD)
+					- StrictMath.pow((StrictMath.sqrt(d) + q), ONE_THIRD);
+		} else {
+			v = TWO * StrictMath.sqrt(-p) * StrictMath.cos(StrictMath.acos(q / (p * StrictMath.sqrt(-p))) / THREE);
+		}
 	    
 	    /* 4.0 Improve v. NOTE: not really necessary unless point is near pole */
 	    double vv = v*v;
@@ -107,21 +106,24 @@ public class WGS84 {
 	
 	    /* 5.0 Set sign to get latitude and height correct */
 	    boolean isSouth =(z< ZERO);
-	    double b_a = isSouth?-MIN_RATIO:MIN_RATIO;	    
+	    double b_a = isSouth?-MIN_RATIO:MIN_RATIO;	
+	    
 	    /*-- Lambda [Longitude] */
 	    double cLon = ( x/r );
 	    _pLambda = ( CodedPhase.encodes(  StrictMath.sqrt((1 - cLon)/(1 + cLon))  ) ) ;	 
-	    if(y<ZERO) _pLambda.negate();   	    
+	    if(y<ZERO) _pLambda.negate();  
+	    
 	    /*-- Mu */
 	    double y1 =  ONE - t*t;
 	    double x1 = ( TWO*b_a*t);
 	    _pMu.set( CodedPhase.encodes(  (y1 + StrictMath.hypot(x1, y1))/x1  ).negate() );
-	    if(isSouth) _pMu.addStraight();	    
+	    if(isSouth) _pMu.addStraight();	   
+	    
 	    /*-- Latitude and Height */
 	    double t_2 = _pMu.tanHalf()*_pMu.tanHalf();
-	    double secMu_2 = 1 + t_2;
-	    double cosLat = -(1 - t_2)/secMu_2;
-	    double sinLat = -(2 * _pMu.tanHalf()) / secMu_2;
+	    double secMu_2 = ONE + t_2;
+	    double cosLat =(t_2 - ONE)/secMu_2; // =-(1 - t_2)/secMu_2;
+	    double sinLat = -TWO * _pMu.tanHalf() / secMu_2;
 	    _height = ( Double.isInfinite(_pMu.tanHalf()) ) 
 	    		? _a * ((r - t) + (z - b_a))
 	    		: _a * ((r - t) * sinLat + (z - b_a) * cosLat);	
@@ -183,18 +185,15 @@ public class WGS84 {
 	 * Factory: Cartesian position coordinates of this GeodeticLocation, earth-centered and earth-fixed. 
 	 * @return Vector3 geocentric {E,F,G}
 	 */
-	public Vector3 getGeocentric(){
-		double ellipsoidLatitudeRadians = this.getNorthLatitude().getRadians();
-		double sinEllipsoidLatitude = StrictMath.sin(ellipsoidLatitudeRadians);
-		double radiusInflatedEllipsoid = Ellipsoid._a 
-				/ StrictMath.sqrt(ONE - FLAT_FN * sinEllipsoidLatitude * sinEllipsoidLatitude);
-		double rCosEllipsoidLatitiude = (radiusInflatedEllipsoid + this.getEllipsoidHeight())
-				* StrictMath.cos(ellipsoidLatitudeRadians);
-		double ellipsoidLongitudeRadians = this.getEastLongitude().getRadians();
-		return new Vector3( //Geocentric EFG
-				rCosEllipsoidLatitiude * StrictMath.cos(ellipsoidLongitudeRadians),
-				rCosEllipsoidLatitiude * StrictMath.sin(ellipsoidLongitudeRadians),
-				sinEllipsoidLatitude * (radiusInflatedEllipsoid * MIN_RATIO_SQ + this.getEllipsoidHeight()));
+	public Vector3 getGeocentric() {
+		double lat = this.getNorthLatitude().getRadians();
+		double sinLat = StrictMath.sin(lat);
+		double radiusInflate = Ellipsoid._a / StrictMath.sqrt(ONE - FLAT_FN * sinLat * sinLat);
+		double rCosLat = (radiusInflate + this.getEllipsoidHeight()) * StrictMath.cos(lat);
+		double lon = this.getEastLongitude().getRadians();
+		return new Vector3( // Geocentric EFG
+				rCosLat * StrictMath.cos(lon), rCosLat * StrictMath.sin(lon),
+				sinLat * (radiusInflate * MIN_RATIO_SQ + this.getEllipsoidHeight()));
 	}
 	
 	/** 
@@ -210,7 +209,7 @@ public class WGS84 {
 	 * @return the North latitude
 	 */
 	public Angle getNorthLatitude() {
-		return _pMu.angle().add(Angle.RIGHT).negate().signedPrinciple(); //.signedPrinciple();
+		return _pMu.angle().add(Angle.RIGHT).negate().signedPrinciple(); 
 	}
 	
 	/**

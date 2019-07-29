@@ -1,12 +1,10 @@
 package tspi.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.Test;
 
 import junit.framework.TestCase;
 import tspi.rotation.Angle;
+import tspi.rotation.Rotator;
 import tspi.rotation.Vector3;
 
 
@@ -88,15 +86,16 @@ public class WGS84Test extends TestCase{
 		int cnt = 0;
 		WGS84 geodetic = new WGS84();
 		WGS84 tgeodetic = new WGS84();
-
+		Rotator q = new Rotator();
 		Double qHeight = Double.NaN;
 		
 		//Note: efg cannot handle dumping: ambiguous Euler assignments!
 		
 		Vector3 efg = new Vector3(Vector3.EMPTY);
+		Vector3 qefg = new Vector3(Vector3.EMPTY);
 		Vector3 tefg = new Vector3(Vector3.EMPTY);
-		double qlat;
-		double qlon;
+		Angle qlat;
+		Angle qlon;
 		double qhgt;
 		for (int k = -1; k <= 1; k++) {
 			double fudge = k * 0.00d;
@@ -106,26 +105,51 @@ public class WGS84Test extends TestCase{
 					double lambda = j * 30.0d + fudge; // - 0.01d;
 					for (int h = -1; h <= 2; h++) { // heights meters above, on, and below WGS84
 						double hgt = h * 1000.0d + fudge; // - 0.1d;
+						
 //						System.out.println(phi+" "+lambda + " near rev = "
 //						 + StrictMath.round(Angle.inDegrees(j*30).getRevolutions()));
 						geodetic.set(Angle.inDegrees(phi), Angle.inDegrees(lambda), hgt);
 						
 						efg.set(geodetic.getGeocentric());
-						tgeodetic.setGeocentric(efg);
 						
-						qlat = tgeodetic.getNorthLatitude().getDegrees();
-						assertEquals(qlat, phi, 1e-13);
-						qlon = tgeodetic.getEastLongitude().unsignedPrinciple().getDegrees();
-						qhgt = tgeodetic.getEllipsoidHeight();
-						System.out.print(String.format(" Qlat = %14.10f", qlat));
+						tgeodetic.setGeocentric(efg);												
+						  qlat = tgeodetic.getNorthLatitude();						
+						  qlon = tgeodetic.getEastLongitude().unsignedPrinciple();
+						  qhgt = tgeodetic.getEllipsoidHeight();
+						  qefg = tgeodetic.getGeocentric();
+						  q    = tgeodetic.getGeodetic();
+						
+						System.out.print(String.format(" Mu= %14.10f", 
+								q.getEuler_j_kj().angle().signedPrinciple().getDegrees()));
+						System.out.print(String.format(" Lambda= %14.10f",
+								q.getEuler_k_kj().angle().unsignedPrinciple().getDegrees()));
+						System.out.print(String.format(" Qlat = %14.10f", qlat.getDegrees()));
 //						System.out.print(String.format(" phi = %14.10f", phi));
-						System.out.print(String.format(" Qlon = %15.10f", qlon));
+						System.out.print(String.format(" Qlon = %15.10f", qlon.getDegrees()));
 //						System.out.print(String.format(" lambda = %15.10f", lambda));
 //						System.out.print(String.format(" height = %8.3f", hgt));
 						System.out.print(String.format(" Qheight = %8.3f", qhgt));
-						assertEquals(Angle.inDegrees(qlon).unsignedPrinciple().getDegrees(),
-								Angle.inDegrees(lambda).unsignedPrinciple().getDegrees(), 1e-13);
-						        assertEquals(qhgt, hgt, 1e-8);
+						
+						assertEquals(qlat.getDegrees(), phi, 1e-13);
+						
+						assertEquals(qlon.getDegrees(),
+								     Angle.inDegrees(lambda).unsignedPrinciple().getDegrees(), 
+								     1e-13);
+						assertEquals(qhgt, hgt, 1e-8);
+						assertTrue(qefg.isEquivalent(efg, 1e-8));
+						
+						assertEquals(
+								tgeodetic.getMu().angle().signedPrinciple().getDegrees(), 
+								q.getEuler_j_kj().angle().signedPrinciple().getDegrees(), 
+								1e-13
+								);
+						assertEquals(
+								tgeodetic.getLambda().angle().unsignedPrinciple().getDegrees(), 
+								q.getEuler_k_kj().angle().unsignedPrinciple().getDegrees(), 
+								1e-13
+								);
+						
+						
 
 						System.out.println();
 						cnt = cnt + 1;
