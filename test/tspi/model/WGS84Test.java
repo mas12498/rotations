@@ -106,50 +106,75 @@ public class WGS84Test extends TestCase{
 					for (int h = -1; h <= 2; h++) { // heights meters above, on, and below WGS84
 						double hgt = h * 1000.0d + fudge; // - 0.1d;
 						
-//						System.out.println(phi+" "+lambda + " near rev = "
-//						 + StrictMath.round(Angle.inDegrees(j*30).getRevolutions()));
+						/*Test set Ellipsoid coordinate mappings.*/
+						
 						geodetic.set(Angle.inDegrees(phi), Angle.inDegrees(lambda), hgt);
+						  efg.set(geodetic.getGeocentric());
+						  qlat = geodetic.getNorthLatitude();						
+						  qlon = geodetic.getEastLongitude().unsignedPrinciple();
+						  qhgt = geodetic.getEllipsoidHeight();
+						  qefg = geodetic.getGeocentric();
+						  q    = geodetic.getGeodetic();						
+							System.out.print(String.format(" Mu= %14.10f", 
+									q.getEuler_j_kj().angle().signedPrinciple().getDegrees()));
+							System.out.print(String.format(" Lambda= %14.10f",
+									q.getEuler_k_kj().angle().unsignedPrinciple().getDegrees()));
+							System.out.print(String.format(" Qlat = %14.10f", qlat.getDegrees()));
+	//						System.out.print(String.format(" phi = %14.10f", phi));
+							System.out.print(String.format(" Qlon = %15.10f", qlon.getDegrees()));
+	//						System.out.print(String.format(" lambda = %15.10f", lambda));
+							System.out.print(String.format(" height = %8.3f", hgt));
+							System.out.print(String.format(" Qheight = %8.3f", qhgt));
 						
-						efg.set(geodetic.getGeocentric());
-						
-						tgeodetic.setGeocentric(efg);												
-						  qlat = tgeodetic.getNorthLatitude();						
-						  qlon = tgeodetic.getEastLongitude().unsignedPrinciple();
-						  qhgt = tgeodetic.getEllipsoidHeight();
-						  qefg = tgeodetic.getGeocentric();
-						  q    = tgeodetic.getGeodetic();
-						
-						System.out.print(String.format(" Mu= %14.10f", 
-								q.getEuler_j_kj().angle().signedPrinciple().getDegrees()));
-						System.out.print(String.format(" Lambda= %14.10f",
-								q.getEuler_k_kj().angle().unsignedPrinciple().getDegrees()));
-						System.out.print(String.format(" Qlat = %14.10f", qlat.getDegrees()));
-//						System.out.print(String.format(" phi = %14.10f", phi));
-						System.out.print(String.format(" Qlon = %15.10f", qlon.getDegrees()));
-//						System.out.print(String.format(" lambda = %15.10f", lambda));
-//						System.out.print(String.format(" height = %8.3f", hgt));
-						System.out.print(String.format(" Qheight = %8.3f", qhgt));
-						
-						assertEquals(qlat.getDegrees(), phi, 1e-13);
-						
+						assertEquals(qlat.getDegrees(), phi, 1e-13);						
 						assertEquals(qlon.getDegrees(),
 								     Angle.inDegrees(lambda).unsignedPrinciple().getDegrees(), 
 								     1e-13);
 						assertEquals(qhgt, hgt, 1e-8);
 						assertTrue(qefg.isEquivalent(efg, 1e-8));
 						
-						assertEquals(
-								tgeodetic.getMu().angle().signedPrinciple().getDegrees(), 
-								q.getEuler_j_kj().angle().signedPrinciple().getDegrees(), 
-								1e-13
-								);
-						assertEquals(
-								tgeodetic.getLambda().angle().unsignedPrinciple().getDegrees(), 
-								q.getEuler_k_kj().angle().unsignedPrinciple().getDegrees(), 
-								1e-13
-								);
+						/*Test set T_NED_EFG mappings.*/
 						
+						tgeodetic.setT_EFG_NED(q, hgt);
+						  qlat = tgeodetic.getNorthLatitude();
+						  qlon = tgeodetic.getEastLongitude().unsignedPrinciple(); //Not pole!
+						  qhgt = tgeodetic.getEllipsoidHeight();
+						  qefg = tgeodetic.getGeocentric();
+    					  q = tgeodetic.getGeodetic(); //Not pole!
+  						assertEquals(qlat.getDegrees(), phi, 1e-13);						
+  						assertEquals(qlon.getDegrees(),
+  								     Angle.inDegrees(lambda).unsignedPrinciple().getDegrees(), 
+  								     1e-13);
+  						assertEquals(qhgt, hgt, 1e-8);
+  						assertTrue(qefg.isEquivalent(efg, 1e-8));
+					
 						
+						/*Test set Cartesian vector coordinate mappings (pole singularities).*/
+						
+						tgeodetic.setGeocentric(efg);
+						  qlat = tgeodetic.getNorthLatitude();
+						  qlon = tgeodetic.getEastLongitude().unsignedPrinciple(); //Not pole!
+						  qhgt = tgeodetic.getEllipsoidHeight();
+						  qefg = tgeodetic.getGeocentric();
+    					  q = tgeodetic.getGeodetic(); //Not pole!
+
+
+
+						if ((phi == 90) || (phi == -90)) {
+							/*Assert not possible with singularity in vector set()*/
+						} else {
+							assertEquals(tgeodetic.getMu().angle().signedPrinciple().getDegrees(),
+									q.getEuler_j_kj().angle().signedPrinciple().getDegrees(), 
+									1e-13);
+						    assertEquals(tgeodetic.getLambda().angle().unsignedPrinciple().getDegrees(),
+								q.getEuler_k_kj().angle().unsignedPrinciple().getDegrees(), 1e-13);
+							assertEquals(qlon.getDegrees(), 
+								Angle.inDegrees(lambda).unsignedPrinciple().getDegrees(),
+								1e-13);
+				        }	
+						assertEquals(qlat.getDegrees(), phi, 1e-13);
+					    assertEquals(qhgt, hgt, 1e-8);
+						assertTrue(qefg.isEquivalent(efg, 1e-8));
 
 						System.out.println();
 						cnt = cnt + 1;

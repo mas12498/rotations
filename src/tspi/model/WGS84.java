@@ -81,6 +81,15 @@ public class WGS84 {
 	
 	    /* 2.0 compute intermediate values for latitude */
 		double r = StrictMath.hypot(x, y);
+		
+		if(r==0) { //Pole singularity of Vector3 subspace mapping: cannot determine _pLambda
+			_pMu.set((z < 0) ?  CodedPhase.ZERO  :  CodedPhase.STRAIGHT  );
+			_pLambda.set(CodedPhase.EMPTY ); //Mark that longitude (_pLambda) is undetermined.
+			double h = _a * (z - StrictMath.copySign(MIN_RATIO,z ));
+			_height = StrictMath.signum(z) * h;
+			return;
+		}
+		
 		double e = (StrictMath.abs(z) * MIN_RATIO - FLAT_FN) / r;
 		double f = (StrictMath.abs(z) * MIN_RATIO + FLAT_FN) / r;
 		
@@ -186,10 +195,11 @@ public class WGS84 {
 	 * @return Vector3 geocentric {E,F,G}
 	 */
 	public Vector3 getGeocentric() {
-		double lat = this.getNorthLatitude().getRadians();
-		double sinLat = StrictMath.sin(lat);
+		CodedPhase lat = new CodedPhase(_pMu).negate().subtractRight();
+		//double lat = this.getNorthLatitude().getRadians();
+		double sinLat = lat.sin(); //StrictMath.sin(lat);
 		double radiusInflate = Ellipsoid._a / StrictMath.sqrt(ONE - FLAT_FN * sinLat * sinLat);
-		double rCosLat = (radiusInflate + this.getEllipsoidHeight()) * StrictMath.cos(lat);
+		double rCosLat = (radiusInflate + this.getEllipsoidHeight()) * lat.cos(); // StrictMath.cos(lat);
 		double lon = this.getEastLongitude().getRadians();
 		return new Vector3( // Geocentric EFG
 				rCosLat * StrictMath.cos(lon), rCosLat * StrictMath.sin(lon),
