@@ -115,13 +115,13 @@ public class WGS84Test extends TestCase{
 						  qhgt = geodetic.getEllipsoidHeight();
 						  qefg = geodetic.getGeocentric();
 						  q    = geodetic.getGeodetic();						
-							System.out.print(String.format(" Mu= %14.10f", 
+							System.out.print(String.format(" Mu= %16.12f", 
 									q.getEuler_j_kj().angle().signedPrinciple().getDegrees()));
-							System.out.print(String.format(" Lambda= %14.10f",
+							System.out.print(String.format(" Lambda= %16.12f",
 									q.getEuler_k_kj().angle().unsignedPrinciple().getDegrees()));
-							System.out.print(String.format(" Qlat = %14.10f", qlat.getDegrees()));
+							System.out.print(String.format(" Qlat = %16.12f", qlat.getDegrees()));
 	//						System.out.print(String.format(" phi = %14.10f", phi));
-							System.out.print(String.format(" Qlon = %15.10f", qlon.getDegrees()));
+							System.out.print(String.format(" Qlon = %17.12f", qlon.getDegrees()));
 	//						System.out.print(String.format(" lambda = %15.10f", lambda));
 							System.out.print(String.format(" height = %8.3f", hgt));
 							System.out.print(String.format(" Qheight = %8.3f", qhgt));

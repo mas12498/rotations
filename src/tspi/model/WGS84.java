@@ -15,8 +15,8 @@ import tspi.rotation.Vector3;
  */
 public class WGS84 {
 	
-	protected CodedPhase _pLambda;
-	protected CodedPhase _pMu;
+	protected CodedPhase _lambda;
+	protected CodedPhase _mu;
 	protected double     _height;
 	
 	//Definition WGS84 ellipsoid.
@@ -31,41 +31,42 @@ public class WGS84 {
 	protected static final double ONE_THIRD    = ONE/THREE;
 	protected static final double FOUR_THIRDS  = 4d/THREE;
 	
-	private static final double MIN_RATIO      = ONE -  _f;               // = _b/_a 
-    protected static final double MIN_RATIO_SQ = (MIN_RATIO)*(MIN_RATIO); // = (_b/_a)*(_b/_a)
-    protected static final double FLAT_FN      = (TWO - _f)*_f;           // = 1-((1-f)^2) == 1 - MIN_RATIO_SQ
+	protected static final double DEFLATE      = ONE -  _f;               // = _b/_a 
+    protected static final double DEFLATE_SQ   = (DEFLATE)*(DEFLATE); // = (_b/_a)*(_b/_a)
+    protected static final double FLAT_FN      = (TWO - _f)*_f;           // = 1-((1-f)^2) == 1 - DEFLATE_SQ
 
 	public void set(WGS84 p){
-		_pMu.set(p._pMu);
-		_pLambda.set(p._pLambda);
+		_mu.set(p._mu);
+		_lambda.set(p._lambda);
 		_height = p._height;
 	}
 
 	public WGS84(WGS84 p){
-		_pMu = new CodedPhase(p._pMu);
-		_pLambda = new CodedPhase(p._pLambda);
+		_mu = new CodedPhase(p._mu);
+		_lambda = new CodedPhase(p._lambda);
 		_height = p._height;
 	}
  
 	protected WGS84(Angle latitude, Angle longitude, double height){
-		_pMu = new Angle(latitude).add(Angle.RIGHT).negate().codedPhase();
-		_pLambda = longitude.codedPhase();
+		_mu = new Angle(latitude).add(Angle.RIGHT).negate().codedPhase();
+		_lambda = longitude.codedPhase();
 		_height = height;
 	}
     	
 	protected WGS84(CodedPhase latitude, CodedPhase longitude, double height){
-		_pMu = new CodedPhase(latitude).addRight().negate();
-		_pLambda = new CodedPhase(longitude);
+		_mu = new CodedPhase(latitude).addRight().negate();
+		_lambda = new CodedPhase(longitude);
 		_height = height;
 	}
 
 	protected WGS84(){
+		// latitude, longitude, height
 		this(CodedPhase.EMPTY, CodedPhase.EMPTY, Double.NaN);
 	}
 	
 	public void set(Angle latitude, Angle longitude, double height){
-		_pMu = new Angle(latitude).add(Angle.RIGHT).negate().codedPhase();
-		_pLambda = longitude.codedPhase();
+		_mu = new Angle(latitude).add(Angle.RIGHT).negate().codedPhase();
+		_lambda = longitude.codedPhase();
 		_height = height;
 	}
            
@@ -80,18 +81,17 @@ public class WGS84 {
 		double z = geocentricEFG.getZ() / _a; // G/a
 	
 	    /* 2.0 compute intermediate values for latitude */
-		double r = StrictMath.hypot(x, y);
-		
+		double r = StrictMath.hypot(x, y);		
 		if(r==0) { //Pole singularity of Vector3 subspace mapping: cannot determine _pLambda
-			_pMu.set((z < 0) ?  CodedPhase.ZERO  :  CodedPhase.STRAIGHT  );
-			_pLambda.set(CodedPhase.EMPTY ); //Mark that longitude (_pLambda) is undetermined.
-			double h = _a * (z - StrictMath.copySign(MIN_RATIO,z ));
+			_mu.set((z < 0) ?  CodedPhase.ZERO  :  CodedPhase.STRAIGHT  );
+			_lambda.set(CodedPhase.EMPTY ); //Mark that longitude (_pLambda) is undetermined.
+			double h = _a * (z - StrictMath.copySign(DEFLATE,z ));
 			_height = StrictMath.signum(z) * h;
+//		    System.out.println("\nraw mu: "+_mu.tanHalf());			    	    		
 			return;
 		}
-		
-		double e = (StrictMath.abs(z) * MIN_RATIO - FLAT_FN) / r;
-		double f = (StrictMath.abs(z) * MIN_RATIO + FLAT_FN) / r;
+		double e = (StrictMath.abs(z) * DEFLATE - FLAT_FN) / r;
+		double f = (StrictMath.abs(z) * DEFLATE + FLAT_FN) / r;
 		
 	    /* 3.0 Find solution to: t^4 + 2*E*t^3 + 2*F*t - 1 = 0  */
 		double p = FOUR_THIRDS * (e * f + ONE);
@@ -107,86 +107,35 @@ public class WGS84 {
 	    
 	    /* 4.0 Improve v. NOTE: not really necessary unless point is near pole */
 	    double vv = v*v;
-	    if( vv < StrictMath.abs(p) ) {
+	    if( vv < StrictMath.abs(p) ){
 	            v= -(vv*v +  TWO*q) / ( THREE*p);
 	    }
 	    double g = (StrictMath.sqrt( e*e + v ) + e) /  TWO;
 	    double t = StrictMath.sqrt( g*g  + (f - v*g)/( TWO*g - e) ) - g;
-	
+	    
 	    /* 5.0 Set sign to get latitude and height correct */
 	    boolean isSouth =(z< ZERO);
-	    double b_a = isSouth?-MIN_RATIO:MIN_RATIO;	
+	    double deflation = isSouth?-DEFLATE:DEFLATE;	
 	    
 	    /*-- Lambda [Longitude] */
 	    double cLon = ( x/r );
-	    _pLambda = ( CodedPhase.encodes(  StrictMath.sqrt((1 - cLon)/(1 + cLon))  ) ) ;	 
-	    if(y<ZERO) _pLambda.negate();  
+	    _lambda = ( CodedPhase.encodes(  StrictMath.sqrt((ONE - cLon)/(ONE + cLon))  ) ) ;	 
+	    if(y<ZERO) _lambda.negate();  
 	    
 	    /*-- Mu */
 	    double y1 =  ONE - t*t;
-	    double x1 = ( TWO*b_a*t);
-	    _pMu.set( CodedPhase.encodes(  (y1 + StrictMath.hypot(x1, y1))/x1  ).negate() );
-	    if(isSouth) _pMu.addStraight();	   
+	    double x1 = ( TWO*deflation*t);
+	    _mu.set( CodedPhase.encodes(  (y1 + StrictMath.hypot(x1, y1))/x1  ).negate() );
+	    if(isSouth) _mu.addStraight();	   
 	    
 	    /*-- Latitude and Height */
-	    double t_2 = _pMu.tanHalf()*_pMu.tanHalf();
-	    double secMu_2 = ONE + t_2;
-	    double cosLat =(t_2 - ONE)/secMu_2; // =-(1 - t_2)/secMu_2;
-	    double sinLat = -TWO * _pMu.tanHalf() / secMu_2;
-	    _height = ( Double.isInfinite(_pMu.tanHalf()) ) 
-	    		? _a * ((r - t) + (z - b_a))
-	    		: _a * ((r - t) * sinLat + (z - b_a) * cosLat);	
-	    			    	    		
-		return;	
-	    /* done */		
-
-//	    Angle latitude = Angle.inRadians(StrictMath.atan( (_a*( ONE - t*t)) / ( TWO*B*t) ));
-//	    Angle longitude = Angle.inRadians(StrictMath.atan2( y, x ));
-//	    _height = (r - _a*t)*StrictMath.cos(latitude.getRadians()) + (z - B)*StrictMath.sin(latitude.getRadians());
-////	    _pLambda.set(longitude.codedPhase());    
-////	    _pMu.set(new Angle(latitude).add(Angle.RIGHT).negate().codedPhase());
-
-//		//_localHorizontal 	
-//		if (plon.isAcute()) {
-//			if (ptheta.isAcute()) { //acute lon, acute theta
-//				if (ptheta.isZero()) {
-//					_local.set(ONE, ZERO, ZERO, plon.tanHalf());
-//					//_localHorizontal.unit();
-//					return;
-//				}
-//				_local.set(ONE, -ptheta.tanHalf() * plon.tanHalf(), ptheta.tanHalf(), plon.tanHalf());
-//				//_localHorizontal.unit();
-//				return;
-//			} //acute lon, obtuse theta
-//			if (ptheta.isStraight()) {
-//				_local.set(0, -plon.tanHalf(), ONE, ZERO);
-//				//_localHorizontal.unit();
-//				return;
-//			}
-//			_local.set(ONE / ptheta.tanHalf(), -plon.tanHalf(), ONE, plon.tanHalf() / ptheta.tanHalf());
-//			//_localHorizontal.unit();
-//			return;
-//		} //obtuse lon, acute theta
-//		if (ptheta.isAcute()) {
-//			if (ptheta.isZero()) {
-//				_local.set(ONE / plon.tanHalf(), ZERO, ZERO, ONE);
-//				//_localHorizontal.unit();
-//				return;
-//			}
-//			_local.set(ONE / plon.tanHalf(), -ptheta.tanHalf(), ptheta.tanHalf() / plon.tanHalf(), ONE);
-//			//_localHorizontal.unit();
-//			return;
-//		} //obtuse lon, obtuse theta
-//		if (ptheta.isStraight()) {
-//			_local.set(ZERO, NEGATIVE_ONE, ONE / plon.tanHalf(), ZERO);
-//			//_localHorizontal.unit();
-//			return;
-//		}
-//		double cotHalfTheta = ONE / ptheta.tanHalf();
-//		_local.set(cotHalfTheta / plon.tanHalf(), NEGATIVE_ONE, ONE / plon.tanHalf(), cotHalfTheta);
-//		//_localHorizontal.unit();
-
-	
+	    double tan2 = _mu.tanHalf()*_mu.tanHalf();
+	    double sec2 = ONE + tan2;
+	    double	sinLat = -TWO * _mu.tanHalf() / sec2;
+	    double	cosLat = (tan2 - ONE)/sec2;
+	    _height = _a * ((r - t) * sinLat + (z - deflation) * cosLat);
+		
+	    return;	
 	
 	}
 
@@ -195,52 +144,51 @@ public class WGS84 {
 	 * @return Vector3 geocentric {E,F,G}
 	 */
 	public Vector3 getGeocentric() {
-		CodedPhase lat = new CodedPhase(_pMu).negate().subtractRight();
-		//double lat = this.getNorthLatitude().getRadians();
-		double sinLat = lat.sin(); //StrictMath.sin(lat);
-		double radiusInflate = Ellipsoid._a / StrictMath.sqrt(ONE - FLAT_FN * sinLat * sinLat);
-		double rCosLat = (radiusInflate + this.getEllipsoidHeight()) * lat.cos(); // StrictMath.cos(lat);
-		double lon = this.getEastLongitude().getRadians();
-		return new Vector3( // Geocentric EFG
-				rCosLat * StrictMath.cos(lon), rCosLat * StrictMath.sin(lon),
-				sinLat * (radiusInflate * MIN_RATIO_SQ + this.getEllipsoidHeight()));
+		Vector3 up = this.getGeodetic().getImage_k().unit().negate();
+		double radiusInflate = Ellipsoid._a / StrictMath.sqrt(ONE - FLAT_FN * up.getZ() * up.getZ());
+		double re = radiusInflate + this.getEllipsoidHeight();
+		return new Vector3(re * up.getX(), re * up.getY(),
+				(radiusInflate * DEFLATE_SQ + this.getEllipsoidHeight()) * up.getZ());
 	}
-	
+
 	/** 
 	 * Clears this Geodetic location -- re-initializes as empty.
 	 */
 	public void clear(){			
 		_height = Double.NaN;
-		_pLambda = CodedPhase.EMPTY;
-		_pMu = CodedPhase.EMPTY;
+		_lambda = CodedPhase.EMPTY;
+		_mu = CodedPhase.EMPTY;
 	}
 	    
 	/**
 	 * @return the North latitude
 	 */
 	public Angle getNorthLatitude() {
-		return _pMu.angle().add(Angle.RIGHT).negate().signedPrinciple(); 
+		return _mu.angle().add(Angle.RIGHT).negate().signedPrinciple(); 
+		//return _mu.angle().negate().subtract(Angle.RIGHT).signedPrinciple(); //equivalent...
+		//return new CodedPhase(_mu).addRight().negate().angle().signedPrinciple(); //equivalent...
+		//return new CodedPhase(_mu).negate().subtractRight().angle().signedPrinciple(); //equivalent...
 	}
 	
 	/**
 	 * @param set North latitude.
 	 */
 	public void setNorthLatitude(Angle latitude) {
-		_pMu.set(new Angle(latitude).add(Angle.RIGHT).negate().codedPhase());
+		_mu.set(new Angle(latitude).add(Angle.RIGHT).negate().codedPhase());
 	}
 	
 	/**
 	 * @return the East longitude
 	 */
 	public Angle getEastLongitude() {
-		return _pLambda.angle().unsignedPrinciple();
+		return _lambda.angle().unsignedPrinciple();
 	}
 	
 	/**
 	 * @param set East longitude
 	 */
 	public void setEastLongitude(Angle longitude) {
-		this._pLambda.set(longitude.codedPhase());
+		this._lambda.set(longitude.codedPhase());
 	}
 	
 	/**
@@ -261,13 +209,13 @@ public class WGS84 {
 	 * @return the coded geodetic Mu rotation
 	 */
 	public CodedPhase getMu() {
-		return _pMu;
+		return _mu;
 	}
 	/**
 	 * @param set lambda about K axis
 	 */
 	public void setMu(CodedPhase mu) {
-		this._pMu.set(mu);
+		this._mu.set(mu);
 	}
 	
 	/**
@@ -293,14 +241,23 @@ public class WGS84 {
 	 */
 	public CodedPhase getLambda() 
 	{
-		return _pLambda;
+		return _lambda;
 	}
+	
+	/**
+	 * @return the coded geodetic latitude rotation
+	 */
+	public CodedPhase getTheta() 
+	{
+		return new CodedPhase(_mu).negate().subtractRight();
+	}
+	
 	/**
 	 * @param set lambda about K axis
 	 */
 	public void setLambda(CodedPhase lambda) 
 	{
-		this._pLambda.set(lambda);
+		this._lambda.set(lambda);
 	}
 	
 	public Rotator getGeodetic() //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
@@ -316,8 +273,7 @@ public class WGS84 {
 		
 	public void setT_EFG_NED(Rotator q, double h) //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
 	{
-		setLambda(q.getEuler_k_kj());		
-		setMu(q.getEuler_j_kj());
+		setGeodtic(q);
 		setEllipsoidHeight(h);
 	}
 	
@@ -325,8 +281,6 @@ public class WGS84 {
 	{
 		return new T_EFG_NED(this.getGeodetic(),this.getEllipsoidHeight());
 	}
-	
-	
 	
         
 	/**
@@ -336,5 +290,51 @@ public class WGS84 {
 		// TODO Auto-generated method stub
 		
 	}
+
+//    Angle latitude = Angle.inRadians(StrictMath.atan( (_a*( ONE - t*t)) / ( TWO*B*t) ));
+//    Angle longitude = Angle.inRadians(StrictMath.atan2( y, x ));
+//    _height = (r - _a*t)*StrictMath.cos(latitude.getRadians()) + (z - B)*StrictMath.sin(latitude.getRadians());
+////    _pLambda.set(longitude.codedPhase());    
+////    _pMu.set(new Angle(latitude).add(Angle.RIGHT).negate().codedPhase());
+
+//	//_localHorizontal 	
+//	if (plon.isAcute()) {
+//		if (ptheta.isAcute()) { //acute lon, acute theta
+//			if (ptheta.isZero()) {
+//				_local.set(ONE, ZERO, ZERO, plon.tanHalf());
+//				//_localHorizontal.unit();
+//				return;
+//			}
+//			_local.set(ONE, -ptheta.tanHalf() * plon.tanHalf(), ptheta.tanHalf(), plon.tanHalf());
+//			//_localHorizontal.unit();
+//			return;
+//		} //acute lon, obtuse theta
+//		if (ptheta.isStraight()) {
+//			_local.set(0, -plon.tanHalf(), ONE, ZERO);
+//			//_localHorizontal.unit();
+//			return;
+//		}
+//		_local.set(ONE / ptheta.tanHalf(), -plon.tanHalf(), ONE, plon.tanHalf() / ptheta.tanHalf());
+//		//_localHorizontal.unit();
+//		return;
+//	} //obtuse lon, acute theta
+//	if (ptheta.isAcute()) {
+//		if (ptheta.isZero()) {
+//			_local.set(ONE / plon.tanHalf(), ZERO, ZERO, ONE);
+//			//_localHorizontal.unit();
+//			return;
+//		}
+//		_local.set(ONE / plon.tanHalf(), -ptheta.tanHalf(), ptheta.tanHalf() / plon.tanHalf(), ONE);
+//		//_localHorizontal.unit();
+//		return;
+//	} //obtuse lon, obtuse theta
+//	if (ptheta.isStraight()) {
+//		_local.set(ZERO, NEGATIVE_ONE, ONE / plon.tanHalf(), ZERO);
+//		//_localHorizontal.unit();
+//		return;
+//	}
+//	double cotHalfTheta = ONE / ptheta.tanHalf();
+//	_local.set(cotHalfTheta / plon.tanHalf(), NEGATIVE_ONE, ONE / plon.tanHalf(), cotHalfTheta);
+//	//_localHorizontal.unit();
 
 }
