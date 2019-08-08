@@ -25,26 +25,34 @@ public class EllipsoidTest extends TestCase {
 		p.set(lat, lon, h);
 		Ellipsoid q = new Ellipsoid();
 		Ellipsoid t = new Ellipsoid(p);
-		assertTrue(p.getNorthLatitude().equals(lat));
-		assertTrue(p.getEastLongitude().equals(lon));
+		//assertTrue(p.getNorthLatitude().equals(lat));
+		assertEquals(p.getNorthLatitude().getPiRadians(),lat.getPiRadians(),1e-13);
+		//assertTrue(p.getEastLongitude().equals(lon));
+		assertEquals(p.getEastLongitude().unsignedPrinciple().getPiRadians(),lon.unsignedPrinciple().getPiRadians(),1e-13);
 		assertEquals(p.getEllipsoidHeight(), 2000, 0);
 		t.set(q);
 		assertTrue(t.getNorthLatitude().equals(Angle.EMPTY));
 		assertTrue(t.getEastLongitude().equals(Angle.EMPTY));
 		assertTrue(Double.isNaN(t.getEllipsoidHeight()));
 		t.set(p.getNorthLatitude(), p.getEastLongitude(), p.getEllipsoidHeight());
-		assertTrue(t.getNorthLatitude().equals(lat));
-		assertTrue(t.getEastLongitude().equals(lon));
+		//assertTrue(t.getNorthLatitude().equals(lat));
+		assertEquals(t.getNorthLatitude().getPiRadians(),lat.getPiRadians(),1e-13);
+		//assertTrue(t.getEastLongitude().equals(lon));
+		assertEquals(t.getEastLongitude().unsignedPrinciple().getPiRadians(),lon.unsignedPrinciple().getPiRadians(),1e-13);
 		assertEquals(t.getEllipsoidHeight(), 2000, 0);
 		q.set(p);
-		assertTrue(q.getNorthLatitude().equals(lat));
-		assertTrue(q.getEastLongitude().equals(lon));
+		//assertTrue(q.getNorthLatitude().equals(lat));
+		assertEquals(q.getNorthLatitude().getPiRadians(),lat.getPiRadians(),1e-13);
+		//assertTrue(q.getEastLongitude().equals(lon));
+		assertEquals(q.getEastLongitude().unsignedPrinciple().getPiRadians(),lon.unsignedPrinciple().getPiRadians(),1e-13);
 		assertEquals(q.getEllipsoidHeight(), 2000, 0);
 		q.setNorthLatitude(Angle.inDegrees(40));
 		q.setEastLongitude(Angle.inDegrees(240));
 		q.setEllipsoidHeight(1000);
-		assertTrue(q.getNorthLatitude().equals(Angle.inDegrees(40)));
-		assertTrue(q.getEastLongitude().equals(Angle.inDegrees(240)));
+		//assertTrue(q.getNorthLatitude().equals(Angle.inDegrees(40)));
+		assertEquals(q.getNorthLatitude().getPiRadians(),Angle.inDegrees(40).getPiRadians(),1e-13);
+		//assertTrue(q.getEastLongitude().equals(Angle.inDegrees(240)));
+		assertEquals(q.getEastLongitude().unsignedPrinciple().getPiRadians(),lon.unsignedPrinciple().getPiRadians(),1e-13);
 		assertEquals(q.getEllipsoidHeight(), 1000, 0);
 		Vector3 x = p.getGeocentric();
 		q.setGeocentric(x);
@@ -84,7 +92,7 @@ public class EllipsoidTest extends TestCase {
 						geodetic.set(Angle.inDegrees(phi), Angle.inDegrees(lambda), hgt);
 						
 						efg.set(geodetic.getGeocentric());
-						tgeodetic.setGeocentric(efg);
+						tgeodetic.setGeocentric(efg); //has poles...
 						
 						qlat = tgeodetic.getNorthLatitude().getDegrees();
 						assertEquals(qlat, phi, 1e-13);
@@ -96,8 +104,17 @@ public class EllipsoidTest extends TestCase {
 //						System.out.print(String.format(" lambda = %15.10f", lambda));
 //						System.out.print(String.format(" height = %8.3f", hgt));
 						System.out.print(String.format(" Qheight = %8.3f", qhgt));
-						assertEquals(Angle.inDegrees(qlon).unsignedPrinciple().getDegrees(),
-								Angle.inDegrees(lambda).unsignedPrinciple().getDegrees(), 1e-13);
+						
+						if(StrictMath.abs(phi) == 90) {
+							assertTrue(Double.isNaN(qlon));
+							assertTrue((Double.isNaN(Angle.inDegrees(qlon).unsignedPrinciple().getDegrees())));								
+						} else {
+						assertEquals(
+								Angle.inDegrees(qlon).unsignedPrinciple().getDegrees(),
+								Angle.inDegrees(lambda).unsignedPrinciple().getDegrees(),
+								1e-10);
+						}
+///						assertTrue((Double.isNaN(Angle.inDegrees(qlon).unsignedPrinciple().getDegrees())));
 						assertEquals(qhgt, hgt, 1e-8);
 
 						System.out.println();

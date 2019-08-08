@@ -53,15 +53,15 @@ public class WGS84 {
 		_height = height;
 	}
     	
-	protected WGS84(CodedPhase latitude, CodedPhase longitude, double height){
-		_mu = new CodedPhase(latitude).addRight().negate();
-		_lambda = new CodedPhase(longitude);
-		_height = height;
-	}
+//	private WGS84(CodedPhase latitude, CodedPhase longitude, double height){
+//		_mu = new CodedPhase(latitude).addRight().negate();
+//		_lambda = new CodedPhase(longitude);
+//		_height = height;
+//	}
 
 	protected WGS84(){
 		// latitude, longitude, height
-		this(CodedPhase.EMPTY, CodedPhase.EMPTY, Double.NaN);
+		this(Angle.EMPTY, Angle.EMPTY, Double.NaN);
 	}
 	
 	public void set(Angle latitude, Angle longitude, double height){
@@ -95,23 +95,23 @@ public class WGS84 {
 		
 	    /* 3.0 Find solution to: t^4 + 2*E*t^3 + 2*F*t - 1 = 0  */
 		double p = FOUR_THIRDS * (e * f + ONE);
-		double q = TWO * (e * e - f * f);
+		double q = StrictMath.scalb((e * e - f * f),1);
 		double d = p * p * p + q * q;
 		double v;
 		if (d >= ZERO) {
 			v = StrictMath.pow((StrictMath.sqrt(d) - q), ONE_THIRD)
 					- StrictMath.pow((StrictMath.sqrt(d) + q), ONE_THIRD);
 		} else {
-			v = TWO * StrictMath.sqrt(-p) * StrictMath.cos(StrictMath.acos(q / (p * StrictMath.sqrt(-p))) / THREE);
+			v = StrictMath.scalb(StrictMath.sqrt(-p),1) * StrictMath.cos(StrictMath.acos(q / (p * StrictMath.sqrt(-p))) / THREE);
 		}
 	    
 	    /* 4.0 Improve v. NOTE: not really necessary unless point is near pole */
 	    double vv = v*v;
 	    if( vv < StrictMath.abs(p) ){
-	            v= -(vv*v +  TWO*q) / ( THREE*p);
+	            v= -(vv*v +  StrictMath.scalb(q,1)) / ( THREE*p);
 	    }
-	    double g = (StrictMath.sqrt( e*e + v ) + e) /  TWO;
-	    double t = StrictMath.sqrt( g*g  + (f - v*g)/( TWO*g - e) ) - g;
+	    double g = StrictMath.scalb((StrictMath.sqrt( e*e + v ) + e),-1);
+	    double t = StrictMath.sqrt( g*g  + (f - v*g)/( StrictMath.scalb(g,1) - e) ) - g;
 	    
 	    /* 5.0 Set sign to get latitude and height correct */
 	    boolean isSouth =(z< ZERO);
@@ -124,18 +124,37 @@ public class WGS84 {
 	    
 	    /*-- Mu */
 	    double y1 =  ONE - t*t;
-	    double x1 = ( TWO*deflation*t);
+	    double x1 = ( StrictMath.scalb(deflation,1) * t);
 	    _mu.set( CodedPhase.encodes(  (y1 + StrictMath.hypot(x1, y1))/x1  ).negate() );
 	    if(isSouth) _mu.addStraight();	   
 	    
-	    /*-- Latitude and Height */
-	    double tan2 = _mu.tanHalf()*_mu.tanHalf();
-	    double sec2 = ONE + tan2;
-	    double	sinLat = -TWO * _mu.tanHalf() / sec2;
-	    double	cosLat = (tan2 - ONE)/sec2;
-	    _height = _a * ((r - t) * sinLat + (z - deflation) * cosLat);
-		
-	    return;	
+	    /*-- Latitude and Height as f(_mu)*/
+	    double tanSq = _mu.tanHalf() * _mu.tanHalf();
+	    double z_deflation = z - deflation;
+	    _height = (z<0) //(StrictMath.abs(_mu.tanHalf())<1)
+			?( _a / (ONE + tanSq) )     * ( StrictMath.scalb((t - r), 1) * _mu.tanHalf() + z_deflation * (tanSq - ONE) )
+			:( _a / (ONE + ONE/tanSq) ) * ( StrictMath.scalb((t - r), 1) / _mu.tanHalf() + (z_deflation - z_deflation/tanSq) )	
+		;		
+
+//	    double secSq = ONE + tanSq;
+//	    double	sinLat = -StrictMath.scalb(_mu.tanHalf(), 1) / secSq;
+//	    double	cosLat = (tanSq - ONE) / secSq;
+//	    _height = _a * ((r - t) * sinLat + (z - deflation) * cosLat);
+
+////
+//		double tanMu = (z<0)?_mu.tanHalf() :ONE / _mu.tanHalf() ;
+//		double tanMuSq = tanMu*tanMu;
+//		_height = (_a / (ONE + tanMuSq)) * (StrictMath.scalb((t - r), 1) * tanMu + (z - deflation) * (ONE - tanMuSq)*StrictMath.signum(z));		
+////
+			
+//		//assume |_mu| < 1: South
+//		double _height1=    (_a / (ONE + tanSq))     * (StrictMath.scalb( (t - r), 1)* _mu.tanHalf()  + z_deflation * (tanSq - ONE));
+//		//assume |_mu| > 1: North
+//		double _height2=    (_a / (ONE + ONE/tanSq)) * (StrictMath.scalb((t - r), 1)/ _mu.tanHalf()  + (z_deflation - z_deflation/tanSq));
+//		
+//		System.out.println( "\n\nCompare: "+_height+" south "+_height1 +" north "+_height2+" G "+z);
+	    
+		return;	
 	
 	}
 

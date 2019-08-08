@@ -29,7 +29,7 @@ public class T_EFG_NEDTest extends TestCase {
 		s1.setEastLongitude(Angle.inDegrees(240));
 		s1.setEllipsoidHeight(1000d);
           assertEquals(s1.getEastLongitude().getDegrees(),240d,1e-13);
-          assertEquals(s1.getNorthLatitude().getDegrees(),30,0d);
+          assertEquals(s1.getNorthLatitude().getDegrees(),30,1e-13);
           assertEquals(s1.getEllipsoidHeight(),1000d,0);
   		
           Vector3 v2 = s1.getGeocentric(); //new Vector3(Vector3.EMPTY);
