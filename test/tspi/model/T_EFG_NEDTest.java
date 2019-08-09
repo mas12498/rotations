@@ -3,6 +3,7 @@
  */
 package tspi.model;
 
+import excess.T_EFG_NED;
 import junit.framework.TestCase;
 import tspi.rotation.Angle;
 import tspi.rotation.CodedPhase;
@@ -16,7 +17,7 @@ import tspi.rotation.Vector3;
 public class T_EFG_NEDTest extends TestCase {
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#T_EFG_NED(tspi.model.T_EFG_NED)}.
+	 * Test method for {@link excess.T_EFG_NED#T_EFG_NED(excess.T_EFG_NED)}.
 	 * Class that converts EFG geocentric to NED topocentric...
 	 */
 	public final void testT_EFG_NEDT_EFG_NED() {
@@ -27,10 +28,10 @@ public class T_EFG_NEDTest extends TestCase {
 		Ellipsoid s1 = new Ellipsoid();
 		s1.setNorthLatitude(Angle.inDegrees(30));
 		s1.setEastLongitude(Angle.inDegrees(240));
-		s1.setEllipsoidHeight(1000d);
+		s1.setHeight(1000d);
           assertEquals(s1.getEastLongitude().getDegrees(),240d,1e-13);
           assertEquals(s1.getNorthLatitude().getDegrees(),30,1e-13);
-          assertEquals(s1.getEllipsoidHeight(),1000d,0);
+          assertEquals(s1.getHeight(),1000d,0);
   		
           Vector3 v2 = s1.getGeocentric(); //new Vector3(Vector3.EMPTY);
           System.out.println("Geocentric:"+v2.toString(8)); //verified s1 XYZ coordinates
@@ -57,27 +58,27 @@ public class T_EFG_NEDTest extends TestCase {
 		System.out.println("z:"+CodedPhase.encodes(geodeticEuler.getZ()).angle().toDegreesString(8));
 		
 		//create with Roator and double: T_EFG_NED p1
-		T_EFG_NED p1 = new T_EFG_NED(q1,s1.getEllipsoidHeight());				
-		     assertEquals(s1.getEllipsoidHeight(),p1.getLocalHeight(),0);
+		T_EFG_NED p1 = new T_EFG_NED(q1,s1.getHeight());				
+		     assertEquals(s1.getHeight(),p1.getLocalHeight(),0);
 		     assertTrue(p1.getLocal().isEquivalent(q1,1e-20));
 				
 		//construct with static factory: Rotator q1
 		q1 = T_EFG_NED.local(s1.getNorthLatitude().codedPhase(),s1.getEastLongitude().codedPhase());
 		
 		//create with Roator and double: T_EFG_NED p1
-		p1 = new T_EFG_NED(q1,s1.getEllipsoidHeight());				
-		     assertEquals(s1.getEllipsoidHeight(),p1.getLocalHeight(),0);
+		p1 = new T_EFG_NED(q1,s1.getHeight());				
+		     assertEquals(s1.getHeight(),p1.getLocalHeight(),0);
 		     assertTrue(p1.getLocal().isEquivalent(q1,1e-20));
 
 		//Extract Ellipsoid perspective and check member components for later comparisons:
 		s1 = p1.getEllipsoid();
 		    System.out.println("East : "+s1.getEastLongitude().toDegreesString(8));
 		    System.out.println("North: "+s1.getNorthLatitude().toDegreesString(8));
-		    System.out.println("height: "+s1.getEllipsoidHeight());
+		    System.out.println("height: "+s1.getHeight());
 		
 			 assertEquals(s1.getEastLongitude().getPiRadians(),4/3d,1e-13);
 			 assertEquals(s1.getNorthLatitude().getPiRadians(),1/6d,1e-15);
-			 assertEquals(s1.getEllipsoidHeight(),1000d,0);
+			 assertEquals(s1.getHeight(),1000d,0);
 		//Extract geocentric perspective for later comparisons:
 		    v1 = p1.getGeocentric();
 		     assertTrue(v1.isEquivalent(v2,1e-8));
@@ -90,7 +91,7 @@ public class T_EFG_NEDTest extends TestCase {
 			assertTrue(v1.equals(v2));
 			assertEquals(s2.getEastLongitude().getPiRadians(),s1.getEastLongitude().getPiRadians(),1e-13);
 			assertEquals(s2.getNorthLatitude().getPiRadians(),s1.getNorthLatitude().getPiRadians(),1e-17);
-			assertEquals(s2.getEllipsoidHeight(),s1.getEllipsoidHeight(),0);
+			assertEquals(s2.getHeight(),s1.getHeight(),0);
 			assertEquals(h1,h2,0d);
 
         //set with p1: T_EFG_NED p2
@@ -101,7 +102,7 @@ public class T_EFG_NEDTest extends TestCase {
 			assertTrue(v1.equals(v2));
 			assertEquals(s2.getEastLongitude().getPiRadians(),s1.getEastLongitude().getPiRadians(),1e-13);
 			assertEquals(s2.getNorthLatitude().getPiRadians(),s1.getNorthLatitude().getPiRadians(),1e-17);
-			assertEquals(s2.getEllipsoidHeight(),s1.getEllipsoidHeight(),0);
+			assertEquals(s2.getHeight(),s1.getHeight(),0);
 			assertEquals(h1,h2,0d);
 		
 		//clear
@@ -115,7 +116,7 @@ public class T_EFG_NEDTest extends TestCase {
 			assertTrue(v1.equals(v2));
 			assertEquals(s2.getEastLongitude().getPiRadians(),s1.getEastLongitude().getPiRadians(),1e-13);
 			assertEquals(s2.getNorthLatitude().getPiRadians(),s1.getNorthLatitude().getPiRadians(),1e-17);
-			assertEquals(s2.getEllipsoidHeight(),s1.getEllipsoidHeight(),0);
+			assertEquals(s2.getHeight(),s1.getHeight(),0);
 			assertEquals(h1,h2,0d);
 
 		//clear
@@ -134,7 +135,7 @@ public class T_EFG_NEDTest extends TestCase {
     		assertTrue(v2.isEquivalent(v1, 1e-8));    		
 			assertEquals(s2.getEastLongitude().getPiRadians(),s1.getEastLongitude().getPiRadians(),1e-13);
 			assertEquals(s2.getNorthLatitude().getPiRadians(),s1.getNorthLatitude().getPiRadians(),1e-13);
-			assertEquals(s2.getEllipsoidHeight(),s1.getEllipsoidHeight(),1e-8);
+			assertEquals(s2.getHeight(),s1.getHeight(),1e-8);
 			assertEquals(h2,h1,1e-8);
 		
 		p1.clear();
@@ -147,7 +148,7 @@ public class T_EFG_NEDTest extends TestCase {
 		assertTrue(v2.isEquivalent(v1,1e-8));
 		assertEquals(s2.getEastLongitude().getPiRadians(),s1.getEastLongitude().getPiRadians(),1e-13);
 		assertEquals(s2.getNorthLatitude().getPiRadians(),s1.getNorthLatitude().getPiRadians(),1e-15);
-		assertEquals(s2.getEllipsoidHeight(),s1.getEllipsoidHeight(),0);
+		assertEquals(s2.getHeight(),s1.getHeight(),0);
 		assertEquals(h2,h1,0d);
 		
 		
@@ -184,14 +185,14 @@ public class T_EFG_NEDTest extends TestCase {
 						geodetic.set(p1.getEllipsoid());	
 //						System.out.print(p1.getEllipsoid().getNorthLatitude()+" "+p1.getEllipsoid().getEastLongitude()+" "+p1.getLocalHeight());
 
-						System.out.print(geodetic.getNorthLatitude().toDegreesString(8)+" "+geodetic.getEastLongitude().toDegreesString(8)+" "+geodetic.getEllipsoidHeight());
+						System.out.print(geodetic.getNorthLatitude().toDegreesString(8)+" "+geodetic.getEastLongitude().toDegreesString(8)+" "+geodetic.getHeight());
 						
 						tgeodetic.setGeocentric(p1.getGeocentric());
 
 						qlat = tgeodetic.getNorthLatitude().getDegrees();
 //						assertEquals(qlat, phi, 1e-13);
 						qlon = tgeodetic.getEastLongitude().unsignedPrinciple().getDegrees();
-						qhgt = tgeodetic.getEllipsoidHeight();
+						qhgt = tgeodetic.getHeight();
 //						System.out.print(String.format(" Qlat = %14.10f", qlat));
 ////						System.out.print(String.format(" phi = %14.10f", phi));
 //						System.out.print(String.format(" Qlon = %15.10f", qlon));
@@ -219,7 +220,7 @@ public class T_EFG_NEDTest extends TestCase {
 
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#getEllipsoid()}.
+	 * Test method for {@link excess.T_EFG_NED#getEllipsoid()}.
 	 */
 	public final void testGetEllipsoid() {
 		fail("Not yet implemented"); // TODO
@@ -227,7 +228,7 @@ public class T_EFG_NEDTest extends TestCase {
 
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#getGeocentric()}.
+	 * Test method for {@link excess.T_EFG_NED#getGeocentric()}.
 	 */
 	public final void testGetGeocentric() {
 		fail("Not yet implemented"); // TODO

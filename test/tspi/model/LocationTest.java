@@ -3,6 +3,7 @@
  */
 package tspi.model;
 
+//import excess.T_EFG_NED;
 import junit.framework.TestCase;
 import tspi.rotation.Angle;
 import tspi.rotation.CodedPhase;
@@ -24,7 +25,7 @@ public class LocationTest extends TestCase {
 		Rotator q_EFG_NED = new Rotator(Rotator.EMPTY);
 		Vector3 efg = new Vector3(Vector3.EMPTY);
 		Vector3 tefg = new Vector3(Vector3.EMPTY);
-		T_EFG_NED tNavigation = new T_EFG_NED();
+		Ellipsoid tNavigation = new Ellipsoid();
 		double qlat;
 		double qlon;
 		for (int i = 1; i <= 3; i++) { //lat seed -- phi	
@@ -53,14 +54,14 @@ public class LocationTest extends TestCase {
 					tNavigation.set(geodetic);
 					
 					tefg.set(tNavigation.getGeocentric());
-					System.out.println("  geodetic lat"+ geodetic.getNorthLatitude().getDegrees() + "  lon " + geodetic.getEastLongitude().getDegrees() + " hgt " + geodetic.getEllipsoidHeight() );
+					System.out.println("  geodetic lat"+ geodetic.getNorthLatitude().getDegrees() + "  lon " + geodetic.getEastLongitude().getDegrees() + " hgt " + geodetic.getHeight() );
 					
-					CodedPhase dumperi = tNavigation.getLocal().getEuler_i_kji();
-					CodedPhase dumperj = tNavigation.getLocal().getEuler_j_kji();
-					CodedPhase dumperk = tNavigation.getLocal().getEuler_k_kji();
+					CodedPhase dumperi = tNavigation.getGeodetic().getEuler_i_kji();
+					CodedPhase dumperj = tNavigation.getGeodetic().getEuler_j_kji();
+					CodedPhase dumperk = tNavigation.getGeodetic().getEuler_k_kji();
 					
-					CodedPhase dumperjd = tNavigation.getLocal().getEuler_j_kj();
-					CodedPhase dumperkd = tNavigation.getLocal().getEuler_k_kj();
+					CodedPhase dumperjd = tNavigation.getGeodetic().getEuler_j_kj();
+					CodedPhase dumperkd = tNavigation.getGeodetic().getEuler_k_kj();
 					
 System.out.println("J = "+ dumperj.angle().toDegreesString(10));					
 System.out.println("K = "+ dumperk.angle().toDegreesString(10));					
@@ -68,14 +69,14 @@ System.out.println("dumper J = "+ dumperjd.angle().toDegreesString(10));
 System.out.println("dumper K = "+ dumperkd.angle().toDegreesString(10));					
 					
 					
-					System.out.println("  navigation lat"+ tNavigation.getEllipsoid().getNorthLatitude().getDegrees() + "  lon " +  tNavigation.getEllipsoid().getEastLongitude().getDegrees() + " hgt " +  tNavigation.getEllipsoid().getEllipsoidHeight() );
+					System.out.println("  navigation lat"+ tNavigation.copy().getNorthLatitude().getDegrees() + "  lon " +  tNavigation.copy().getEastLongitude().getDegrees() + " hgt " +  tNavigation.copy().getHeight() );
 					
 					System.out.println(efg.toString(15)+tefg.toString(15)+"vector difference magnitude: " + new Vector3(efg).subtract(tefg).getAbs());
 					assertTrue(efg.isEquivalent(tefg,1e-7));//to the .01 micrometer!
 					
 					//get rotator and translation components from transform to navigation object
-					q_EFG_NED = tNavigation.getLocal(); 	//geodetic-tangent "level"
-                    qHeight = tNavigation.getLocalHeight();		//geodetic-normal "vertical"
+					q_EFG_NED = tNavigation.getGeodetic(); 	//geodetic-tangent "level"
+                    qHeight = tNavigation.getHeight();		//geodetic-normal "vertical"
                     
 					//output navigation transform's rotator norms and rotator
 //					System.out.print(String.format("max = %5f; ",q_EFG_NED.getNormInf()));
@@ -85,7 +86,7 @@ System.out.println("dumper K = "+ dumperkd.angle().toDegreesString(10));
 					assertTrue(2>=q_EFG_NED.getAbs());
 					
                     //set Ellipsoid coordinate object with transform to navigation object
-					tgeodetic.set(tNavigation.getEllipsoid());
+					tgeodetic.set(tNavigation.copy());
 					qlat = tgeodetic.getNorthLatitude().getDegrees();						
 					qlon = tgeodetic.getEastLongitude().getDegrees();												
 					System.out.print(String.format(" Qlat = %.10f", qlat ));
@@ -109,42 +110,42 @@ System.out.println("dumper K = "+ dumperkd.angle().toDegreesString(10));
 
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#WGS84(rotation.Vector3)}.
+	 * Test method for {@link excess.Ellipsoid#WGS84(rotation.Vector3)}.
 	 */
 	public final void testWGS84Vector3() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#WGS84(rotation.Rotator, double)}.
+	 * Test method for {@link excess.Ellipsoid#WGS84(rotation.Rotator, double)}.
 	 */
 	public final void testWGS84OperatorDouble() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#WGS84(rotation.Rotator, rotation.Vector3)}.
+	 * Test method for {@link excess.Ellipsoid#WGS84(rotation.Rotator, rotation.Vector3)}.
 	 */
 	public final void testWGS84OperatorVector3() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#getLocationXYZ()}.
+	 * Test method for {@link excess.Ellipsoid#getLocationXYZ()}.
 	 */
 	public final void testGetXYZ() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#getFromNEDtoEFG()}.
+	 * Test method for {@link excess.Ellipsoid#getFromNEDtoEFG()}.
 	 */
 	public final void testGetFromNEDtoEFG() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#getNorthLatitude()}.
+	 * Test method for {@link excess.Ellipsoid#getNorthLatitude()}.
 	 */
 	public final void testGetAngleLatitude() {
 		fail("Not yet implemented"); // TODO
@@ -152,49 +153,49 @@ System.out.println("dumper K = "+ dumperkd.angle().toDegreesString(10));
 
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#putXYZ(rotation.Vector3)}.
+	 * Test method for {@link excess.Ellipsoid#putXYZ(rotation.Vector3)}.
 	 */
 	public final void testPutXYZ() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#set(rotation.Rotator, double)}.
+	 * Test method for {@link excess.Ellipsoid#set(rotation.Rotator, double)}.
 	 */
 	public final void testPut() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#putLatitude(rotation.Principle)}.
+	 * Test method for {@link excess.Ellipsoid#putLatitude(rotation.Principle)}.
 	 */
 	public final void testPutLatitudePrinciple() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#putLatitude(rotation.Angle)}.
+	 * Test method for {@link excess.Ellipsoid#putLatitude(rotation.Angle)}.
 	 */
 	public final void testPutLatitudeAngle() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#putLongitude(rotation.Principle)}.
+	 * Test method for {@link excess.Ellipsoid#putLongitude(rotation.Principle)}.
 	 */
 	public final void testPutLongitudePrinciple() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#putLongitude(rotation.Angle)}.
+	 * Test method for {@link excess.Ellipsoid#putLongitude(rotation.Angle)}.
 	 */
 	public final void testPutLongitudeAngle() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link tspi.model.T_EFG_NED#putHeight(double)}.
+	 * Test method for {@link excess.Ellipsoid#putHeight(double)}.
 	 */
 	public final void testPutHeight() {
 		fail("Not yet implemented"); // TODO

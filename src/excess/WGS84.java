@@ -1,8 +1,9 @@
 /**
  * 
  */
-package tspi.model;
+package excess;
 
+import tspi.model.Ellipsoid;
 import tspi.rotation.Angle;
 import tspi.rotation.CodedPhase;
 import tspi.rotation.Rotator;
@@ -225,36 +226,41 @@ public class WGS84 {
 	}
 	    
 	/**
+	 * @param get Ellipsoid
+	 */
+	public Ellipsoid getEllipsoid() {
+		Ellipsoid e = new Ellipsoid();
+		e.setMu(this.getMu());
+		e.setLambda(this.getLambda());
+		e.setHeight(this.getEllipsoidHeight());
+		return e;
+	}
+	/**
+	 * @param set this to Ellipsoid coordinates
+	 */
+	public void setEllipsoid(Ellipsoid e) {
+		this.setMu(e.getMu());
+		this.setLambda(e.getLambda());
+		this.setEllipsoidHeight(e.getHeight());
+	}
+
+
+	
+	
+	/**
 	 * @return the coded geodetic Mu rotation
 	 */
 	public CodedPhase getMu() {
 		return _mu;
 	}
+
 	/**
 	 * @param set lambda about K axis
 	 */
 	public void setMu(CodedPhase mu) {
 		this._mu.set(mu);
 	}
-	
-	/**
-	 * @param get Ellipsoid
-	 */
-	public Ellipsoid getEllipsoid() {
-		return new Ellipsoid(this.getNorthLatitude(),this.getEastLongitude(),this.getEllipsoidHeight());
-	}
-	/**
-	 * @param set this to Ellipsoid coordinates
-	 */
-	public void setEllipsoid(Ellipsoid e) {
-		this.setNorthLatitude(e.getNorthLatitude());
-		this.setEastLongitude(e.getEastLongitude());
-		this.setEllipsoidHeight(e.getEllipsoidHeight());
-	}
 
-
-	
-	
 	/**
 	 * @return the coded geodetic Lambda rotation
 	 */
@@ -264,19 +270,19 @@ public class WGS84 {
 	}
 	
 	/**
-	 * @return the coded geodetic latitude rotation
-	 */
-	public CodedPhase getTheta() 
-	{
-		return new CodedPhase(_mu).negate().subtractRight();
-	}
-	
-	/**
 	 * @param set lambda about K axis
 	 */
 	public void setLambda(CodedPhase lambda) 
 	{
 		this._lambda.set(lambda);
+	}
+
+	/**
+	 * @return the coded geodetic latitude rotation
+	 */
+	public CodedPhase getTheta() 
+	{
+		return new CodedPhase(_mu).negate().subtractRight();
 	}
 	
 	public Rotator getGeodetic() //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
@@ -290,16 +296,16 @@ public class WGS84 {
 		setMu(q.getEuler_j_kj());
 	}
 		
-	public void setT_EFG_NED(Rotator q, double h) //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
-	{
-		setGeodtic(q);
-		setEllipsoidHeight(h);
-	}
-	
-	public T_EFG_NED getT_EFG_NED() //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
-	{
-		return new T_EFG_NED(this.getGeodetic(),this.getEllipsoidHeight());
-	}
+//	public void setT_EFG_NED(Rotator q, double h) //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
+//	{
+//		setGeodtic(q);
+//		setEllipsoidHeight(h);
+//	}
+//	
+//	public T_EFG_NED getT_EFG_NED() //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
+//	{
+//		return new T_EFG_NED(this.getGeodetic(),this.getEllipsoidHeight());
+//	}
 	
         
 	/**

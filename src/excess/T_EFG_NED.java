@@ -1,4 +1,5 @@
-package tspi.model;
+package excess;
+import tspi.model.Ellipsoid;
 import tspi.rotation.Angle;
 import tspi.rotation.CodedPhase;
 import tspi.rotation.Rotator;
@@ -117,7 +118,7 @@ public class T_EFG_NED {
 	public Ellipsoid getEllipsoid(){ //Operator q_NG) { 
 		Ellipsoid wgs84 = new Ellipsoid();
 		wgs84.setGeodtic(_local);
-		wgs84.setEllipsoidHeight(_height);
+		wgs84.setHeight(_height);
 		return wgs84;
 	
 	}
@@ -152,7 +153,7 @@ public class T_EFG_NED {
 		Ellipsoid wgs84 = new Ellipsoid();
 		wgs84.setGeocentric(geocentricEFG);
         this.setLocal(wgs84.getGeodetic());
-		this.setLocalHeight(wgs84.getEllipsoidHeight());
+		this.setLocalHeight(wgs84.getHeight());
 		return;
 	}
 
@@ -189,7 +190,7 @@ public class T_EFG_NED {
 	public Vector3 getGeocentric(){
 		Ellipsoid wgs84 = new Ellipsoid();		
 		wgs84.setGeodtic(_local);
-		wgs84.setEllipsoidHeight(_height);
+		wgs84.setHeight(_height);
 		return wgs84.getGeocentric();		
 	}
 

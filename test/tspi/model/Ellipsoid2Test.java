@@ -10,7 +10,7 @@ import tspi.rotation.Vector3;
 
 
 
-public class WGS84Test extends TestCase{
+public class Ellipsoid2Test extends TestCase{
 
 //	@Test
 //	void test() {
@@ -38,19 +38,19 @@ public class WGS84Test extends TestCase{
 		//assertTrue(p.getNorthLatitude().equals(lat));
 		//assertTrue(p.getEastLongitude().equals(lon));
 		
-		assertEquals(p.getEllipsoidHeight(), 2000, 0);
+		assertEquals(p.getHeight(), 2000, 0);
 		t.set(q);
 		assertTrue(t.getNorthLatitude().equals(Angle.EMPTY));
 		assertTrue(t.getEastLongitude().equals(Angle.EMPTY));
-		assertTrue(Double.isNaN(t.getEllipsoidHeight()));
-		t.set(p.getNorthLatitude(), p.getEastLongitude(), p.getEllipsoidHeight());
+		assertTrue(Double.isNaN(t.getHeight()));
+		t.set(p.getNorthLatitude(), p.getEastLongitude(), p.getHeight());
 		
 		 assertEquals(t.getNorthLatitude().getPiRadians(), lat.getPiRadians(), 1e-10);
 		 assertEquals(t.getEastLongitude().unsignedPrinciple().getPiRadians(), lon.unsignedPrinciple().getPiRadians(), 1e-10);
 //		assertTrue(t.getNorthLatitude().equals(lat));
 //		assertTrue(t.getEastLongitude().equals(lon));
 		
-		assertEquals(t.getEllipsoidHeight(), 2000, 0);
+		assertEquals(t.getHeight(), 2000, 0);
 		q.set(p);
 		
 		 assertEquals(q.getNorthLatitude().getPiRadians(), lat.getPiRadians(), 1e-10);
@@ -58,17 +58,17 @@ public class WGS84Test extends TestCase{
 //		assertTrue(q.getNorthLatitude().equals(lat));
 //		assertTrue(q.getEastLongitude().equals(lon));
 		
-		assertEquals(q.getEllipsoidHeight(), 2000, 0);
+		assertEquals(q.getHeight(), 2000, 0);
 		q.setNorthLatitude(Angle.inDegrees(40));
 		q.setEastLongitude(Angle.inDegrees(240));
-		q.setEllipsoidHeight(1000);
+		q.setHeight(1000);
 
 		 assertEquals(q.getNorthLatitude().getPiRadians(), Angle.inDegrees(40).getPiRadians(), 1e-10);
 		 assertEquals(q.getEastLongitude().unsignedPrinciple().getPiRadians(), Angle.inDegrees(240).getPiRadians(), 1e-10);
 //		assertTrue(q.getNorthLatitude().equals(Angle.inDegrees(40)));
 //		assertTrue(q.getEastLongitude().equals(Angle.inDegrees(240)));
 		
-		assertEquals(q.getEllipsoidHeight(), 1000, 0);
+		assertEquals(q.getHeight(), 1000, 0);
 		Vector3 x = p.getGeocentric();
 		
 		q.setGeocentric(x);
@@ -112,7 +112,7 @@ public class WGS84Test extends TestCase{
 						  efg.set(geodetic.getGeocentric());
 						  qlat = geodetic.getNorthLatitude();						
 						  qlon = geodetic.getEastLongitude().unsignedPrinciple();
-						  qhgt = geodetic.getEllipsoidHeight();
+						  qhgt = geodetic.getHeight();
 						  qefg = geodetic.getGeocentric();
 						  q    = geodetic.getGeodetic();						
 							System.out.print(String.format(" Mu= %16.12f", 
@@ -154,7 +154,7 @@ public class WGS84Test extends TestCase{
 						tgeodetic.setGeocentric(efg);
 						  qlat = tgeodetic.getNorthLatitude();
 						  qlon = tgeodetic.getEastLongitude().unsignedPrinciple(); //Not pole!
-						  qhgt = tgeodetic.getEllipsoidHeight();
+						  qhgt = tgeodetic.getHeight();
 						  qefg = tgeodetic.getGeocentric();
     					  q = tgeodetic.getGeodetic(); //Not pole!
 

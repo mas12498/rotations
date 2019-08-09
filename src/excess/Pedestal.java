@@ -1,7 +1,10 @@
-package tspi.model;
+package excess;
 
 import java.util.Random;
 
+import tspi.model.Ellipsoid;
+import tspi.model.RAE;
+import tspi.model.T_EFG_FRD;
 import tspi.rotation.Angle;
 import tspi.rotation.Rotator;
 import tspi.rotation.Vector3;
@@ -366,7 +369,7 @@ public class Pedestal {
 	//lossy mutator...
 	
 	public void locateEllipsoidHeight(double meters) {
-		this._geodeticLocation.setEllipsoidHeight(meters);
+		this._geodeticLocation.setHeight(meters);
 		
 		this._location.set(_geodeticLocation.getGeocentric());	
 		this.setLocalOriginCoordinates();		
@@ -505,7 +508,7 @@ public class Pedestal {
 	
 	public String toString() { 
 		return this._systemId 
-				+ "("+ this._geodeticLocation.getNorthLatitude().toDegreesString(DIGITS) +", "+ this._geodeticLocation.getEastLongitude().toDegreesString(DIGITS)+", "+this.getLocationEllipsoid().getEllipsoidHeight()+")"
+				+ "("+ this._geodeticLocation.getNorthLatitude().toDegreesString(DIGITS) +", "+ this._geodeticLocation.getEastLongitude().toDegreesString(DIGITS)+", "+this.getLocationEllipsoid().getHeight()+")"
 				+"("+_local.getUnsignedAzimuth().toDegreesString(DIGITS)+", "+_local.getElevation().toDegreesString(DIGITS)+")";
 	}
 

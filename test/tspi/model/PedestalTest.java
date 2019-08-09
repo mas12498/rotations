@@ -3,6 +3,8 @@
  */
 package tspi.model;
 
+import excess.T_EFG_NED;
+
 //import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 //import org.apache.commons.math3.linear.LUDecomposition;
 //import org.apache.commons.math3.linear.MatrixUtils;
@@ -32,7 +34,7 @@ public class PedestalTest extends TestCase {
 		Ellipsoid wgs84 = new Ellipsoid();
 		wgs84.setNorthLatitude(Angle.inDegrees(-30));
 		wgs84.setEastLongitude(Angle.inDegrees(-89));
-		wgs84.setEllipsoidHeight(3000);	
+		wgs84.setHeight(3000);	
 		  System.out.println("lat: "+wgs84.getNorthLatitude().getDegrees());
 		  System.out.println("lon: "+wgs84.getEastLongitude().getDegrees());
 		Angle theta = wgs84.getNorthLatitude().negate().subtract(Angle.RIGHT);
