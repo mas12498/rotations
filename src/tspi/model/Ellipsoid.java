@@ -178,25 +178,33 @@ public Ellipsoid copy() {
 	 */
 	public void setGeocentric(Vector3 geocentricEFG){	
 		
-		/*-- Lambda [Longitude] */
-		double r = StrictMath.hypot(geocentricEFG.getX(), geocentricEFG.getY());
-	    double cLon = ( geocentricEFG.getX() / r );
-	    _lambda = ( CodedPhase.encodes(  StrictMath.sqrt((ONE - cLon)/(ONE + cLon))  ) ) ;	 
-	    if(geocentricEFG.getY()<ZERO) _lambda.negate();  
+		double x = geocentricEFG.getX();
+		double y = geocentricEFG.getY();
+		double z = geocentricEFG.getZ();
+	    boolean isWest =(y < ZERO);
+	    boolean isSouth =(z < ZERO);
 	    
-	    
-	    /* 1.0 scale coordinates */
-		double z = geocentricEFG.getZ() / _a; 
-		if(r==0) { //Pole singularity of Vector3 subspace mapping: cannot determine _pLambda
-			_mu.set((z < 0) ?  CodedPhase.ZERO  :  CodedPhase.STRAIGHT  );
+		double r = StrictMath.hypot(x, y);
+		if(r==0) 
+		{ //Pole singularity of Vector3 subspace mapping: cannot determine _pLambda
+			_mu.set(isSouth ?  CodedPhase.ZERO  :  CodedPhase.STRAIGHT  );
 			_lambda.set(CodedPhase.EMPTY ); //Mark that longitude (_pLambda) is undetermined.
-			_height = StrictMath.signum(z) * _a * (z - StrictMath.copySign(DEFLATE,z ));
+			_height = StrictMath.signum(z) * ( z - _a * StrictMath.copySign(DEFLATE,z) );
 			return;
 		}
+			
+		
+		/* 1.0 Lambda [Coded geodetic rotation derived from Longitude] */
+	    double cLon = ( x / r );
+	    _lambda = ( CodedPhase.encodes(  StrictMath.sqrt((ONE - cLon)/(ONE + cLon))  ) ) ;	 
+		if (isWest) 
+		{
+			_lambda.negate();
+		}	    
+
+	    /* 2.0 intermediate values for normalized latitude rotations */
+		z /= _a; 
 	    r /= _a;		
-		
-		
-	    /* 2.0 compute intermediate values for latitude */
 		double e = (StrictMath.abs(z) * DEFLATE - FLAT_FN) / r;
 		double f = (StrictMath.abs(z) * DEFLATE + FLAT_FN) / r;
 		
@@ -205,38 +213,35 @@ public Ellipsoid copy() {
 		double p = FOUR_THIRDS * (e * f + ONE);
 		double q = StrictMath.scalb((e * e - f * f),1);
 		double d = p * p * p + q * q;
-		double v;
-		if (d >= ZERO) {
-			v = StrictMath.pow((StrictMath.sqrt(d) - q), ONE_THIRD)
-					- StrictMath.pow((StrictMath.sqrt(d) + q), ONE_THIRD);
-		} else {
-			v = StrictMath.scalb(StrictMath.sqrt(-p),1) 
-					* StrictMath.cos(StrictMath.acos(q / (p * StrictMath.sqrt(-p))) / THREE);
-		}
-	    
+		double v = (d >= ZERO)
+				? StrictMath.pow((StrictMath.sqrt(d) - q), ONE_THIRD)
+						- StrictMath.pow((StrictMath.sqrt(d) + q), ONE_THIRD)
+				: StrictMath.scalb(StrictMath.sqrt(-p), 1)
+						* StrictMath.cos(StrictMath.acos(q / (p * StrictMath.sqrt(-p))) / THREE);
 		
-	    /* 4.0 Improve v. NOTE: not really necessary unless point is near pole */
+	    /* 4.0 Improve v. NOTE: Not too necessary unless point is near pole */
 	    double vv = v * v;
-	    if( vv < StrictMath.abs(p) ){
+	    if( vv < StrictMath.abs(p) )
+	    {
 	            v= -(vv * v +  StrictMath.scalb(q,1)) / ( THREE * p);
 	    }
 	    double g = StrictMath.scalb((StrictMath.sqrt( e * e + v ) + e),-1);
 	    double t = StrictMath.sqrt( g * g  + (f - v * g) / ( StrictMath.scalb(g,1) - e) ) - g;
 	    
 	    
-	    /* 5.0 Set sign to get latitude and height correct */
-	    boolean isSouth =(z < ZERO);
+	    /* 5.0 Set to get latitude rotations and height translation correct */
 	    double deflation = isSouth ?-DEFLATE :DEFLATE;	
 	    
-	    
-	    /*-- Mu */
+	    /*-- Mu [Coded rotation derived from latitude] */
 		double u = ONE - t * t;
 	    double w = ( StrictMath.scalb(deflation,1) * t);
 	    _mu.set( CodedPhase.encodes(  (u + StrictMath.hypot(w, u)) / w  ).negate() );
-	    if(isSouth) _mu.addStraight();	   
+	    if(isSouth) 
+	    {
+	    	_mu.addStraight();	   
+	    }
 	    
-	    
-	    /*-- Latitude and Height as f(_mu,z)*/
+	    /*-- Height as f(_mu,z)*/
 	    double t2 = _mu.tanHalf() * _mu.tanHalf();
 	    _height = _a * ( isSouth
 			?  ( StrictMath.scalb((t - r), 1) * _mu.tanHalf() + (z - deflation) * (t2 - ONE)       ) / (ONE + t2)    
