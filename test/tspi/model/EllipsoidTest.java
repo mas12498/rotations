@@ -50,14 +50,14 @@ public class EllipsoidTest extends TestCase {
 		q.setEastLongitude(Angle.inDegrees(240));
 		q.setHeight(1000);
 		//assertTrue(q.getNorthLatitude().equals(Angle.inDegrees(40)));
-		assertEquals(q.getNorthLatitude().getPiRadians(),Angle.inDegrees(40).getPiRadians(),1e-13);
+		assertEquals(q.getNorthLatitude().getPiRadians(),Angle.inDegrees(40).getPiRadians(),1e-15);
 		//assertTrue(q.getEastLongitude().equals(Angle.inDegrees(240)));
 		assertEquals(q.getEastLongitude().unsignedPrinciple().getPiRadians(),lon.unsignedPrinciple().getPiRadians(),1e-13);
 		assertEquals(q.getHeight(), 1000, 0);
 		Vector3 x = p.getGeocentric();
 		q.setGeocentric(x);
 		assertEquals(q.getNorthLatitude().getDegrees(), p.getNorthLatitude().getDegrees(), 1e-14);
-		assertEquals(q.getEastLongitude().getDegrees(), p.getEastLongitude().getDegrees(), 1e-13);
+		assertEquals(q.getEastLongitude().getDegrees(), p.getEastLongitude().getDegrees(), 1e-15);
 		// fail("Not yet implemented"); // TODO
 	}
 

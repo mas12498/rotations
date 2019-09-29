@@ -64,7 +64,8 @@ public class Ellipsoid {
 	 */
 	public static Rotator geodetic(Angle northGeodeticLatitude, Angle eastGeodeticLongitude)
 	{
-		Angle mu = new Angle(northGeodeticLatitude).add(Angle.RIGHT).negate();
+//		return RotatorMath.eulerRotate_kj(eastGeodeticLongitude.codedPhase(),northGeodeticLatitude.codedPhase().addRight().negate());		
+		Angle mu = new Angle(northGeodeticLatitude).add(Angle.RIGHT).negate();		
 		return RotatorMath.eulerRotate_kj(eastGeodeticLongitude.codedPhase(),mu.codedPhase());		
 	}
 
@@ -294,17 +295,20 @@ public Ellipsoid copy() {
 	 */
 	public CodedPhase getTheta() 
 	{
-		return new CodedPhase(_mu).negate().subtractRight();
+		//return new CodedPhase(_mu).negate().subtractRight();
+		return new CodedPhase(_mu).addRight().negate(); //equivalent...
+		//return _mu.angle().add(Angle.RIGHT).negate().codedPhase(); 
 	}
 
 	/**
 	 * @return the North latitude
 	 */
 	public Angle getNorthLatitude() {
-		return _mu.angle().add(Angle.RIGHT).negate().signedPrinciple(); 
+		//return _mu.angle().add(Angle.RIGHT).negate().signedPrinciple(); 
 		//return _mu.angle().negate().subtract(Angle.RIGHT).signedPrinciple(); //equivalent...
-		//return new CodedPhase(_mu).addRight().negate().angle().signedPrinciple(); //equivalent...
-		//return new CodedPhase(_mu).negate().subtractRight().angle().signedPrinciple(); //equivalent...
+				
+		return new CodedPhase(_mu).addRight().negate().angle(); //fast equivalent...less precision?
+		//return new CodedPhase(_mu).negate().subtractRight().angle(); //fast equivalent...less precision?
 	}
 	
 	/**

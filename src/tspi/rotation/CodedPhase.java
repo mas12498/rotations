@@ -193,9 +193,38 @@ public class CodedPhase {
 	 * use Mutator -- sum with right angle.
 	 * tan  + sec = _ta + sqrt(1+_ta*ta)
 	 */
-	public CodedPhase addRight() {
-		_ta = (isAcute()) ? (_ta + 1d) / (1d - _ta) : (1d + 1d / _ta) / (1d / _ta - 1d);
+	public CodedPhase addRight() { //improve for case _ta close to +1(+/-epsilon) ???
+		//_ta = (isAcute()) ? (_ta + 1d) / (1d - _ta) : (1d + 1d / _ta) / (1d / _ta - 1d);
+//		_ta = (isAcute()) ? _ta/ (1d - _ta) + 1d/ (1d - _ta)  
+//				: 1d/ (1d / _ta - 1d) + (1d / _ta) / (1d / _ta - 1d);
+
+		final double one = 1d;	
+	
+////		
+//		boolean test = isAcute();
+//		double ta = test ? _ta : one / _ta;
+//		double d = test ?  one - ta : ta - one;
+//		_ta = ta / d + one / d;
+//		return this;
+////
+//		double d;
+//		if(isAcute()) {
+//			d = one - _ta; 	
+//		} else {
+//			_ta = one / _ta;
+//			d = _ta - one;			
+//		}	
+//		_ta /= d;
+//		_ta += (one / d);
+//		return this;
+////
+		boolean test = !isAcute();
+		if(test) _ta = one / _ta;
+		double d = test ?   _ta - one : one - _ta ;
+		_ta /= d;
+		_ta += (one / d);
 		return this;
+////
 	}
 
 	/**
