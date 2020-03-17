@@ -14,29 +14,63 @@ import tspi.rotation.Vector3;
  */
 public class Ellipsoid {
 	
+	protected double     _height;
 	protected CodedPhase _lambda;
 	protected CodedPhase _mu;
-	protected double     _height;
-	
 	//Definition WGS84 ellipsoid.
 	public static final double _a = 6378137.0d;        //WGS84 semi-major ellipsoid radius meters
 	public static final double _f = 0.00335281068118d; //WGS84 flattening (unitless)
 
 	//Conversion algorithm constants.
-	protected static final double ZERO         = 0d;	
-	protected static final double ONE          = 1d;
-	protected static final double TWO          = 2d;
-	protected static final double THREE        = 3d;
-	protected static final double ONE_THIRD    = ONE/THREE;
-	protected static final double FOUR_THIRDS  = 4d/THREE;
+	private static final double ZERO         = 0d;	
+	private static final double ONE          = 1d;
+	private static final double TWO          = 2d;
+	private static final double THREE        = 3d;
+	private static final double ONE_THIRD    = ONE/THREE;
+	private static final double FOUR_THIRDS  = 4d/THREE;
 	
 	protected static final double DEFLATE      = ONE -  _f;           // = _b/_a 
     protected static final double DEFLATE_SQ   = (DEFLATE)*(DEFLATE); // = (_b/_a)*(_b/_a)
     protected static final double FLAT_FN      = (TWO - _f)*_f;       // = 1-((1-f)^2)     == 1 - DEFLATE_SQ
 
+	//	/**
+	//	 * @param location geodetic ellipsoid
+	//	 * @return Vector3 geocentric XYZ Cartesian coordinates
+	//	 */
+	//	public static Vector3 geocentric(Ellipsoid location)
+	//	{
+	//		return location.getGeocentric();		
+	//	}
+	
+	
+		public static Vector3 getGeocentric(Vector3 upDirCos,double ellipsoidHeight) {
+			final double ONE = 1;
+			double radiusInflate = Ellipsoid._a / StrictMath.sqrt(ONE - Ellipsoid.FLAT_FN * upDirCos.getZ() * upDirCos.getZ());
+			double re = radiusInflate + ellipsoidHeight;
+			return new Vector3(re * upDirCos.getX(), re * upDirCos.getY(),
+					(radiusInflate * Ellipsoid.DEFLATE_SQ + ellipsoidHeight) * upDirCos.getZ());
+		}
+
+	/** 
+		 * Clears this Geodetic location -- re-initializes as empty.
+		 */
+		public void clear(){			
+			_height = Double.NaN;
+			_lambda = CodedPhase.EMPTY;
+			_mu = CodedPhase.EMPTY;
+		}
+
+	/** 
+	 * Constructor Ellipsoid empty location
+	 */
+	public Ellipsoid(){
+		// Parm: latitude, longitude, height
+		this(Angle.EMPTY, Angle.EMPTY, Double.NaN);
+	}
+
 	/**
-	 * Copy Constructor
-	 * @param location in Ellipsoid Coordinates copied
+	 * Constructor Ellipsoid
+	 * @param location Ellipsoid
 	 */
 	public Ellipsoid(Ellipsoid location){
 		_mu = new CodedPhase(location._mu);
@@ -45,91 +79,142 @@ public class Ellipsoid {
 	}
  
 	/**
-	 * Constructor Ellipsoid location
-	 * @param latitude of local geodetic reference ellipsoid
-	 * @param longitude of local geodetic reference ellipsoid 
-	 * @param height (normal) above local geodetic reference ellipsoid
+	 * Constructor Ellipsoid
+	 * @param mu CodedPhase
+	 * @param lambda CodedPhase
+	 * @param ellipsoidHeight meters
 	 */
-	protected Ellipsoid(Angle latitude, Angle longitude, double height){
-		_mu = new Angle(latitude).add(Angle.RIGHT).negate().codedPhase();
-		_lambda = longitude.codedPhase();
-		_height = height;
+	protected Ellipsoid(CodedPhase lambda, CodedPhase mu, double ellipsoidHeight){
+		_lambda = lambda;
+		_mu = mu;
+		_height = ellipsoidHeight;
 	}
+	
+	/**
+	 * Constructor Ellipsoid
+	 * @param northGeodeticLatitude Angle
+	 * @param eastGeodeticLongitude Angle
+	 * @param ellipsoidHeight meters
+	 */
+	public Ellipsoid(Angle northGeodeticLatitude, Angle eastGeodeticLongitude, double ellipsoidHeight){
+		_mu = new Angle(northGeodeticLatitude).add(Angle.RIGHT).negate().codedPhase();
+		_lambda = eastGeodeticLongitude.codedPhase();
+		_height = ellipsoidHeight;
+	}
+	
+	protected Ellipsoid(Vector3 geocentricEFG) {
+//		public void setGeocentric(Vector3 geocentricEFG) {
+			//working variable assignment for computing _lambda, _mu, _height...
+			double x = geocentricEFG.getX();
+			double y = geocentricEFG.getY();
+			double z = geocentricEFG.getZ();
+			double r = StrictMath.hypot(x, y);
+			
+			if (r == 0) { // Pole singularity: cannot determine _pLambda from vector
+				_mu =  z < ZERO ? CodedPhase.ZERO : CodedPhase.STRAIGHT;
+				_lambda = CodedPhase.EMPTY; // Mark that longitude (_pLambda) is undetermined.
+				_height = StrictMath.signum(z) * (z - _a * StrictMath.copySign(DEFLATE, z));
+				return; //return for pole latitudes
+			}
+
+			/* 1.0 Lambda [coded geodetic rotation derived from Longitude] */
+			double cLon = (x / r);
+			_lambda = (CodedPhase.encodes(StrictMath.copySign(StrictMath.sqrt((ONE - cLon) / (ONE + cLon)),y)));
+
+			/* 2.0 intermediate values for normalized latitude rotations */
+			z /= _a;
+			r /= _a;
+			double e = (StrictMath.abs(z) * DEFLATE - FLAT_FN) / r;
+			double f = (StrictMath.abs(z) * DEFLATE + FLAT_FN) / r;
+
+			/* 3.0 Find solution to: t^4 + 2*E*t^3 + 2*F*t - 1 = 0 */
+			double p = FOUR_THIRDS * (e * f + ONE);
+			double q = StrictMath.scalb((e * e - f * f), 1);
+			double d = p * p * p + q * q;
+			double v = (d >= ZERO)
+					? StrictMath.pow((StrictMath.sqrt(d) - q), ONE_THIRD)
+							- StrictMath.pow((StrictMath.sqrt(d) + q), ONE_THIRD)
+					: StrictMath.scalb(StrictMath.sqrt(-p), 1)
+							* StrictMath.cos(StrictMath.acos(q / (p * StrictMath.sqrt(-p))) / THREE);
+			/* Improve v. NOTE: Not too necessary unless point is near pole */
+			double vv = v * v; 
+			if (vv < StrictMath.abs(p)) {
+				v = -(vv * v + StrictMath.scalb(q, 1)) / (THREE * p);
+			}
+			
+			/* 4.0 Mu [derives latitude rotations and height translation] */
+			double g = StrictMath.scalb((StrictMath.sqrt(e * e + v) + e), -1);
+			double t = StrictMath.sqrt(g * g + (f - v * g) / (StrictMath.scalb(g, 1) - e)) - g;
+			double w = t * StrictMath.scalb(DEFLATE, 1);
+			double u = ONE - t * t;
+			double m = (u + StrictMath.hypot(w, u)) / w;
+			double n = StrictMath.scalb(t - r, 1);
+			if (z < ZERO) { 
+				_mu = CodedPhase.encodes(m).addStraight();
+				double t2 = _mu.tanHalf() * _mu.tanHalf();
+				_height = _a * ( (n * _mu.tanHalf() + (z + DEFLATE) * (t2 - ONE)) / (ONE + t2) );
+				return; //returns for South latitudes
+			}		
+			_mu = CodedPhase.encodes(-m); 
+			double t2 = ONE / ( _mu.tanHalf() * _mu.tanHalf() );
+			_height = _a * ( (n / _mu.tanHalf() + (z - DEFLATE) * (ONE - t2)) / (ONE + t2) );
+			return; //returns for North latitudes
+//		}		
+	}
+	
+	
     	
-	/**
-	 * Static Factory Rotator
-	 * @param northGeodeticLatitude of local origin
-	 * @param eastGeodeticLongitude of local origin
-	 * @return Rotator to local geodetic coordinate frame from geocentric frame
-	 */
-	public static Rotator geodetic(Angle northGeodeticLatitude, Angle eastGeodeticLongitude)
-	{
-//		return RotatorMath.eulerRotate_kj(eastGeodeticLongitude.codedPhase(),northGeodeticLatitude.codedPhase().addRight().negate());		
-		Angle mu = new Angle(northGeodeticLatitude).add(Angle.RIGHT).negate();		
-		return RotatorMath.eulerRotate_kj(eastGeodeticLongitude.codedPhase(),mu.codedPhase());		
-	}
-
-	/**
-	 * Static Factory Rotator
-	 * @param location in Ellipsoid Coordinates
-	 * @return Rotator to local geodetic coordinate frame from geocentric frame
-	 */
-	public static Rotator geodetic(Ellipsoid location)
-	{
-		return location.getGeodetic();		
-	}
-
-	/**
-	 * Static Factory of Geocentric location
-	 * @param location in Ellipsoid LLh Coordinates
-	 * @return Geocentric XYZ location
-	 */
-	public static Vector3 geocentric(Ellipsoid location)
-	{
-		return location.getGeocentric();		
-	}
-
-
-	/**
-	 * Static Factory of Ellipsoid location
-	 * @param Geocentric XYZ coordinates
-	 * @return Ellipsoid LLh location
-	 */
-	public static Ellipsoid ellipsoid(Vector3 geocentric)
-	{
-		Ellipsoid e = new Ellipsoid();
-		e.setGeocentric(geocentric);
-		return e;
-	}
-	
-//	public Rotator getGeodeticImage(Rotator operator) {
-//		return new Rotator(operator).preRotate_j(this.getMu()).preRotate_k(this.getLambda());
+//	/**
+//	 * @param northGeodeticLatitude
+//	 * @param eastGeodeticLongitude
+//	 * @return Rotator local geodetic coordinate frame from geocentric frame
+//	 */
+//	public static Rotator geodetic(Angle northGeodeticLatitude, Angle eastGeodeticLongitude)
+//	{
+//		//		return RotatorMath.eulerRotate_kj(eastGeodeticLongitude.codedPhase(),northGeodeticLatitude.codedPhase().addRight().negate());		
+//		Angle mu = new Angle(northGeodeticLatitude).add(Angle.RIGHT).negate();		
+//		return RotatorMath.eulerRotate_kj(eastGeodeticLongitude.codedPhase(),mu.codedPhase());		
 //	}
 
-//	public static Rotator geodetic(CodedPhase northGeodeticLatitude, CodedPhase eastGeodeticLongitude){
-//		CodedPhase theta = new CodedPhase(northGeodeticLatitude).addRight().negate();
-//		return RotatorMath.eulerRotate_kj(eastGeodeticLongitude,theta);		
-//	}
-	
-	
-//	private Ellipsoid(CodedPhase latitude, CodedPhase longitude, double height){
-//		_mu = new CodedPhase(latitude).addRight().negate();
-//		_lambda = new CodedPhase(longitude);
-//		_height = height;
+//	/**
+//	 * @param location in Ellipsoid Coordinates
+//	 * @return Rotator to local geodetic coordinate frame from geocentric frame
+//	 */
+//	public static Rotator geodetic(Ellipsoid location)
+//	{
+//		return location.getGeodetic();		
 //	}
 
-	public Ellipsoid(){
-		// Parm: latitude, longitude, height
-		this(Angle.EMPTY, Angle.EMPTY, Double.NaN);
-	}
-	
-	/**
- * @param get Ellipsoid -- read only.
- */
-public Ellipsoid copy() {
-	return new Ellipsoid(this); //.getNorthLatitude(),this.getEastLongitude(),this.getEllipsoidHeight());
-}
+//	/**
+//	 * @param location geodetic ellipsoid
+//	 * @return Vector3 geocentric XYZ Cartesian coordinates
+//	 */
+//	public static Vector3 geocentric(Ellipsoid location)
+//	{
+//		return location.getGeocentric();		
+//	}
 
+
+//	/**
+//	 * @param geocentric XYZ Cartesian coordinates
+//	 * @return Ellipsoid geodetic location
+//	 */
+//	public static Ellipsoid ellipsoid(Vector3 geocentric)
+//	{
+////		Ellipsoid e = new Ellipsoid();
+////		e.setGeocentric(geocentric);
+////		return e;
+//		return new Ellipsoid(geocentric);
+//	}
+	
+
+//	/**
+//	 * Copy Constructor this Ellipsoid.
+//	 */
+//	public Ellipsoid copy() {
+//		return new Ellipsoid(this); //.getNorthLatitude(),this.getEastLongitude(),this.getEllipsoidHeight());
+//	}
+	
 	/**
 	 * @param set this to Ellipsoid coordinates
 	 */
@@ -139,118 +224,10 @@ public Ellipsoid copy() {
 		_height = p._height;
 	}
 
-	/**
-	 * @param set lambda about K axis
-	 */
-	public void setMu(CodedPhase mu) {
-		this._mu.set(mu);
-	}
-
-	/**
-	 * @param set lambda about K axis
-	 */
-	public void setLambda(CodedPhase lambda) 
-	{
-		this._lambda.set(lambda);
-	}
-
 	public void set(Angle latitude, Angle longitude, double height){
 		_mu = new Angle(latitude).add(Angle.RIGHT).negate().codedPhase();
 		_lambda = longitude.codedPhase();
 		_height = height;
-	}
-           
-	/**
-	 * @param set North latitude.
-	 */
-	public void setNorthLatitude(Angle latitude) {
-		_mu.set(new Angle(latitude).add(Angle.RIGHT).negate().codedPhase());
-	}
-
-	/**
-	 * @param set East longitude
-	 */
-	public void setEastLongitude(Angle longitude) {
-		this._lambda.set(longitude.codedPhase());
-	}
-
-	/** 
-	 * @param geocentricEFG earth-centered, earth-fixed Cartesian position
-	 */
-	public void setGeocentric(Vector3 geocentricEFG){	
-		
-		double x = geocentricEFG.getX();
-		double y = geocentricEFG.getY();
-		double z = geocentricEFG.getZ();
-	    boolean isWest =(y < ZERO);
-	    boolean isSouth =(z < ZERO);
-	    
-		double r = StrictMath.hypot(x, y);
-		if(r==0) 
-		{ //Pole singularity of Vector3 subspace mapping: cannot determine _pLambda
-			_mu.set(isSouth ?  CodedPhase.ZERO  :  CodedPhase.STRAIGHT  );
-			_lambda.set(CodedPhase.EMPTY ); //Mark that longitude (_pLambda) is undetermined.
-			_height = StrictMath.signum(z) * ( z - _a * StrictMath.copySign(DEFLATE,z) );
-			return;
-		}
-			
-		
-		/* 1.0 Lambda [Coded geodetic rotation derived from Longitude] */
-	    double cLon = ( x / r );
-	    _lambda = ( CodedPhase.encodes(  StrictMath.sqrt((ONE - cLon)/(ONE + cLon))  ) ) ;	 
-		if (isWest) 
-		{
-			_lambda.negate();
-		}	    
-
-	    /* 2.0 intermediate values for normalized latitude rotations */
-		z /= _a; 
-	    r /= _a;		
-		double e = (StrictMath.abs(z) * DEFLATE - FLAT_FN) / r;
-		double f = (StrictMath.abs(z) * DEFLATE + FLAT_FN) / r;
-		
-		
-	    /* 3.0 Find solution to: t^4 + 2*E*t^3 + 2*F*t - 1 = 0  */
-		double p = FOUR_THIRDS * (e * f + ONE);
-		double q = StrictMath.scalb((e * e - f * f),1);
-		double d = p * p * p + q * q;
-		double v = (d >= ZERO)
-				? StrictMath.pow((StrictMath.sqrt(d) - q), ONE_THIRD)
-						- StrictMath.pow((StrictMath.sqrt(d) + q), ONE_THIRD)
-				: StrictMath.scalb(StrictMath.sqrt(-p), 1)
-						* StrictMath.cos(StrictMath.acos(q / (p * StrictMath.sqrt(-p))) / THREE);
-		
-	    /* 4.0 Improve v. NOTE: Not too necessary unless point is near pole */
-	    double vv = v * v;
-	    if( vv < StrictMath.abs(p) )
-	    {
-	            v= -(vv * v +  StrictMath.scalb(q,1)) / ( THREE * p);
-	    }
-	    double g = StrictMath.scalb((StrictMath.sqrt( e * e + v ) + e),-1);
-	    double t = StrictMath.sqrt( g * g  + (f - v * g) / ( StrictMath.scalb(g,1) - e) ) - g;
-	    
-	    
-	    /* 5.0 Set to get latitude rotations and height translation correct */
-	    double deflation = isSouth ?-DEFLATE :DEFLATE;	
-	    
-	    /*-- Mu [Coded rotation derived from latitude] */
-		double u = ONE - t * t;
-	    double w = ( StrictMath.scalb(deflation,1) * t);
-	    _mu.set( CodedPhase.encodes(  (u + StrictMath.hypot(w, u)) / w  ).negate() );
-	    if(isSouth) 
-	    {
-	    	_mu.addStraight();	   
-	    }
-	    
-	    /*-- Height as f(_mu,z)*/
-	    double t2 = _mu.tanHalf() * _mu.tanHalf();
-	    _height = _a * ( isSouth
-			?  ( StrictMath.scalb((t - r), 1) * _mu.tanHalf() + (z - deflation) * (t2 - ONE)       ) / (ONE + t2)    
-			:  ( StrictMath.scalb((t - r), 1) / _mu.tanHalf() + (z - deflation) * (ONE - ONE / t2) ) / (ONE + ONE / t2) 
-		);		
-		
-	    
-		return;	
 	}
 
 	/**
@@ -260,44 +237,85 @@ public Ellipsoid copy() {
 		this._height = height;
 	}
 
-	public void setGeodtic(Rotator q) //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
+	/**
+	 * @param set East longitude
+	 */
+	public void setEastLongitude(Angle longitude) {
+		this._lambda.set(longitude.codedPhase());
+	}
+
+	/**
+	 * @param set North latitude.
+	 */
+	public void setNorthLatitude(Angle latitude) {
+		_mu.set(new Angle(latitude).add(Angle.RIGHT).negate().codedPhase());
+	}
+
+	/** 
+	 * @param geocentricEFG earth-centered, earth-fixed Cartesian position
+	 */
+	public void setGeocentric(Vector3 geocentricEFG) {
+		set(new Ellipsoid(geocentricEFG));
+	}
+
+	public void setGeodticRotator(Rotator q) //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
 	{
 		setLambda(q.getEuler_k_kj());		
 		setMu(q.getEuler_j_kj());
 	}
 
-	/** 
-	 * Clears this Geodetic location -- re-initializes as empty.
+	/**
+	 * @param set lambda about K axis
 	 */
-	public void clear(){			
-		_height = Double.NaN;
-		_lambda = CodedPhase.EMPTY;
-		_mu = CodedPhase.EMPTY;
+	protected void setMu(CodedPhase mu) {
+		this._mu.set(mu);
 	}
 
 	/**
 	 * @return the coded geodetic Mu: ((-theta-90) degrees rotation
 	 */
-	public CodedPhase getMu() {
+	protected CodedPhase getMu() {
 		return _mu;
+	}
+
+	/**
+	 * @param set lambda about K axis
+	 */
+	protected void setLambda(CodedPhase lambda) 
+	{
+		this._lambda.set(lambda);
 	}
 
 	/**
 	 * @return the coded geodetic Lambda rotation
 	 */
-	public CodedPhase getLambda() 
+	protected CodedPhase getLambda() 
 	{
 		return _lambda;
 	}
 
 	/**
+	 * @param set North latitude.
+	 */
+	protected void setTheta(CodedPhase theta) {
+		_mu = new CodedPhase(theta).addRight().negate();
+	}
+
+	/**
 	 * @return the coded geodetic latitude rotation
 	 */
-	public CodedPhase getTheta() 
+	protected CodedPhase getTheta() 
 	{
 		//return new CodedPhase(_mu).negate().subtractRight();
 		return new CodedPhase(_mu).addRight().negate(); //equivalent...
 		//return _mu.angle().add(Angle.RIGHT).negate().codedPhase(); 
+	}
+
+	/**
+	 * @return the _height
+	 */
+	public double getHeight() {
+		return _height;
 	}
 
 	/**
@@ -310,41 +328,123 @@ public Ellipsoid copy() {
 		return new CodedPhase(_mu).addRight().negate().angle(); //fast equivalent...less precision?
 		//return new CodedPhase(_mu).negate().subtractRight().angle(); //fast equivalent...less precision?
 	}
-	
+
 	/**
 	 * @return the East longitude
 	 */
 	public Angle getEastLongitude() {
 		return _lambda.angle().unsignedPrinciple();
 	}
-	
+
 	/**
-	 * @return the _height
+	 * Factory: Cartesian position coordinates of this GeodeticLocation, earth-centered and earth-fixed. 
+	 * @return Vector3 geocentric {E,F,G}
 	 */
-	public double getHeight() {
-		return _height;
+	public Vector3 getGeocentric() {
+		return getGeocentric(this.getGeodeticRotator().getImage_k(-this.magnificationGeodeticRotator()), this.getHeight());
 	}
-	
-	public Rotator getGeodetic() //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
-	{
+
+	protected double magnificationGeodeticRotator() {
+		return  this._mu.magnificationRotator() * this._lambda.magnificationRotator();
+	}
+
+	public Rotator getGeodeticRotator() //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
+	{	
 		return RotatorMath.eulerRotate_kj(this.getLambda(),this.getMu());		
 	}
 
-	public Vector3 getGeodeticUp() //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
-	{
-		return this.getGeodetic().getImage_k().unit().negate();		
+	/**
+	 * Undo local geodetic rotation to navigation frame:
+	 * Transformation of global geocentric {XYZ} rotator to local navigation {ned} rotator.
+	 * @return <b>local</b> Rotator in topocentric navigation frame
+	 */
+	public Rotator preGeodeticRotate(Rotator global) //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
+	{	
+		return new Rotator(global).preRotate_j(this.getMu()).preRotate_k(this.getLambda());		
 	}
 	
-	public Vector3 getGeodeticNorth() //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
-	{
-		return this.getGeodetic().getImage_i().unit().negate();		
+	/**
+	 * Do local geodetic (topocentric) rotation:
+	 * Transformation of local navigation {ned} rotator to global geocentric {XYZ} rotator:
+	 * @return <b>global</b> Rotator in geocentric frame
+	 */
+	public Rotator geodeticRotate(Rotator local) //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
+	{	
+		return new Rotator(local).rotate_k(this.getLambda()).rotate_j(this.getMu());		
 	}
 	
-	public Vector3 getGeodeticEast() //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
-	{
-		return this.getGeodetic().getImage_j().unit().negate();		
-	}
+//	/**
+//	 * Transforms input rotator from local navigation {ned} to global geocentric {XYZ} frame:
+//	 * @param local Rotator in navigation frame
+//	 * @return <b>global</b> Rotator in geocentric frame
+//	 */
+//	public Rotator rotate(Quaternion local){
+//		return (Rotator) this._geodeticLocalVersor.rotate(local);
+//	}
 	
+//	/**
+//	 * Transform geocentric rotator to local navigation frame rotator:
+//	 */
+//	public Rotator preRotate(Quaternion global){
+//		return (Rotator) this._geodeticLocalVersor.preRotate(global);
+//	}
+	
+	
+
+//	public Vector3 getUpDir() //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
+//	{
+//		//return this.getGeodetic().getImage_k().unit().negate();		
+//		//return this.getGeodetic().getImage_k().divide(-this.magnificationRotator());		
+//		return this.getGeodetic().getImage_k(-this.magnificationGeodeticRotator());		
+//	}
+	
+//	public Vector3 getNorthDir() //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
+//	{
+//		//return this.getGeodetic().getImage_i().unit();		
+//		//return this.getGeodetic().getImage_i().divide(this.magnificationRotator());		
+//		return this.getGeodetic().getImage_i(this.magnificationGeodeticRotator());		
+//	}
+	
+//	public Vector3 getEastDir() //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
+//	{
+//		//return this.getGeodetic().getImage_j().unit();
+//		//return this.getGeodetic().getImage_j().divide(this.magnificationRotator());
+//		return this.getGeodetic().getImage_j(this.magnificationGeodeticRotator());
+//	}
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		Rotator q = new Rotator(1,0,0,0);
+		System.out.println(new Rotator(q).rotate_i(Angle.inDegrees(60).codedPhase()).unit().toString(10));
+		System.out.println(new Rotator(q).rotate_j(Angle.inDegrees(60).codedPhase()).unit().toString(10));
+		System.out.println(new Rotator(q).rotate_k(Angle.inDegrees(60).codedPhase()).unit().toString(10));
+		System.out.println(new Rotator(q).rotate_i(Angle.inDegrees(-60).codedPhase()).unit().toString(10));
+		System.out.println(new Rotator(q).rotate_j(Angle.inDegrees(-60).codedPhase()).unit().toString(10));
+		System.out.println(new Rotator(q).rotate_k(Angle.inDegrees(-60).codedPhase()).unit().toString(10));
+		System.out.println(" ");
+		System.out.println(new Rotator(q).rotate_i(Angle.inDegrees(120).codedPhase()).unit().toString(10));
+		System.out.println(new Rotator(q).rotate_j(Angle.inDegrees(120).codedPhase()).unit().toString(10));
+		System.out.println(new Rotator(q).rotate_k(Angle.inDegrees(120).codedPhase()).unit().toString(10));
+		System.out.println(new Rotator(q).rotate_i(Angle.inDegrees(-120).codedPhase()).unit().toString(10));
+		System.out.println(new Rotator(q).rotate_j(Angle.inDegrees(-120).codedPhase()).unit().toString(10));
+		System.out.println(new Rotator(q).rotate_k(Angle.inDegrees(-120).codedPhase()).unit().toString(10));
+		
+		System.out.println(" ");
+		
+		System.out.println(" ");
+		System.out.println(new Rotator(q).rotate_k(Angle.inDegrees(60).codedPhase()).unit().toString(10));
+		System.out.println(new Rotator(q).rotate_k(Angle.inDegrees(120).codedPhase()).unit().toString(10));
+//		System.out.println(Angle.inDegrees(180).codedPhase().cot()+" "+new Rotator(q).rotate_k(Angle.inDegrees(180).codedPhase()).unit().toString(10));
+		
+		System.out.println(new Rotator(q).rotate_k(Angle.inDegrees(-60).codedPhase()).unit().toString(10));
+		System.out.println(new Rotator(q).rotate_k(Angle.inDegrees(-120).codedPhase()).unit().toString(10));
+//		System.out.println(Angle.inDegrees(-180).codedPhase().cot()+" "+new Rotator(q).rotate_k(Angle.inDegrees(-180).codedPhase()).unit().toString(10));
+			
+	}
 		
 //	public void setT_EFG_NED(Rotator q, double h) //CodedAngle northGeodeticLatitude, Angle eastGeodeticLongitude)
 //	{
@@ -358,28 +458,6 @@ public Ellipsoid copy() {
 //	}
 	
         
-	/**
-	 * Factory: Cartesian position coordinates of this GeodeticLocation, earth-centered and earth-fixed. 
-	 * @return Vector3 geocentric {E,F,G}
-	 */
-	public Vector3 getGeocentric() {
-		//System.out.println("\n QUP= "+this.getGeodetic().toString(15)); //getGeodetic().getImage_k().unit().negate();
-		Vector3 up = this.getGeodeticUp(); //getGeodetic().getImage_k().unit().negate();
-		//System.out.println(" UP = "+up.toString(18));
-		double radiusInflate = Ellipsoid._a / StrictMath.sqrt(ONE - FLAT_FN * up.getZ() * up.getZ());
-		double re = radiusInflate + this.getHeight();
-		return new Vector3(re * up.getX(), re * up.getY(),
-				(radiusInflate * DEFLATE_SQ + this.getHeight()) * up.getZ());
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
-	}
-
 //    Angle latitude = Angle.inRadians(StrictMath.atan( (_a*( ONE - t*t)) / ( TWO*B*t) ));
 //    Angle longitude = Angle.inRadians(StrictMath.atan2( y, x ));
 //    _height = (r - _a*t)*StrictMath.cos(latitude.getRadians()) + (z - B)*StrictMath.sin(latitude.getRadians());
@@ -425,12 +503,6 @@ public Ellipsoid copy() {
 //	double cotHalfTheta = ONE / ptheta.tanHalf();
 //	_local.set(cotHalfTheta / plon.tanHalf(), NEGATIVE_ONE, ONE / plon.tanHalf(), cotHalfTheta);
 //	//_localHorizontal.unit();
-	
-	
-	
-	
-	
-	
 	
 	
 //	/* Reference ellipsoid coordinates: Defined per Ellipsoid */  
@@ -575,8 +647,20 @@ public Ellipsoid copy() {
 //	
 //	}
 
+//	public Rotator getGeodeticImage(Rotator operator) {
+//	return new Rotator(operator).preRotate_j(this.getMu()).preRotate_k(this.getLambda());
+//}
 
+//public static Rotator geodetic(CodedPhase northGeodeticLatitude, CodedPhase eastGeodeticLongitude){
+//	CodedPhase theta = new CodedPhase(northGeodeticLatitude).addRight().negate();
+//	return RotatorMath.eulerRotate_kj(eastGeodeticLongitude,theta);		
+//}
 
+//private Ellipsoid(CodedPhase latitude, CodedPhase longitude, double height){
+//	_mu = new CodedPhase(latitude).addRight().negate();
+//	_lambda = new CodedPhase(longitude);
+//	_height = height;
+//}
 
 
 }

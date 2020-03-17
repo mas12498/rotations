@@ -40,20 +40,22 @@ package tspi.rotation;
  */
 public class CodedPhase {
 	// representatin bounds...
-	private final static   Double CODE_SMALLEST = StrictMath.scalb(1d, -26); // underflow mark
-	private final static   Double CODE_LARGEST = StrictMath.scalb(1d, 27); // overflow mark
-	private final static  double CODE_EMPTY = Double.NaN;
-	private final static  double CODE_ZERO = 0d;
-	private final static  double CODE_RIGHT = 1d;
-	public final static  double CODE_STRAIGHT = Double.POSITIVE_INFINITY;
+	private final static   Double _SMALLEST = StrictMath.scalb(1d, -26); // underflow mark
+	private final static   Double _LARGEST = StrictMath.scalb(1d, 27); // overflow mark
+	private final static  double _EMPTY = Double.NaN;
+	private final static  double _ZERO = 0d;
+	private final static  double _ONE = 1d;
+	private final static  double _HALF_PI = StrictMath.PI/2;
+	private final static  double _HALF = StrictMath.scalb(_ONE, -1);
+	public final static  double _STRAIGHT = Double.POSITIVE_INFINITY;
 
-	final static public CodedPhase EMPTY = encodes(CODE_EMPTY);
-	final static public CodedPhase ZERO = encodes(CODE_ZERO);
-	final static public CodedPhase RIGHT = encodes(CODE_RIGHT);
-	final static public CodedPhase STRAIGHT = encodes(CODE_STRAIGHT);
-	final static public CodedPhase NEGATIVE_ZERO = encodes(-CODE_ZERO);
-	final static public CodedPhase NEGATIVE_RIGHT = encodes(-CODE_RIGHT);
-	final static public CodedPhase NEGATIVE_STRAIGHT = encodes(-CODE_STRAIGHT);
+	final static public CodedPhase EMPTY = encodes(_EMPTY);
+	final static public CodedPhase ZERO = encodes(_ZERO);
+	final static public CodedPhase RIGHT = encodes(_ONE);
+	final static public CodedPhase STRAIGHT = encodes(_STRAIGHT);
+	final static public CodedPhase NEGATIVE_ZERO = encodes(-_ZERO);
+	final static public CodedPhase NEGATIVE_RIGHT = encodes(-_ONE);
+	final static public CodedPhase NEGATIVE_STRAIGHT = encodes(-_STRAIGHT);
 
 	/**
 	 * Coded Angle Static Factory.
@@ -181,11 +183,36 @@ public class CodedPhase {
 	 *            Principle
 	 */
 	public CodedPhase add(CodedPhase addend) {
-		_ta = (isAcute())
-				? (addend.isAcute()) ? (_ta + addend._ta) / (1d - _ta * addend._ta)
-						: (_ta / addend._ta + 1d) / (1d / addend._ta - _ta)
-				: (addend.isAcute()) ? (1d + addend._ta / _ta) / (1d / _ta - addend._ta)
-						: (1d / addend._ta + 1d / _ta) / (1d / _ta / addend._ta - 1d);			
+		double d = _ONE;
+		if (this.isAcute()) {
+			if (addend.isAcute()) {
+				d -= (_ta * addend._ta);
+				_ta /= d;
+				_ta += (addend._ta / d);
+			} else {
+				d /= addend._ta;
+				d -= _ta;
+				_ta /= (addend._ta * d);
+				_ta += (_ONE / d);
+			};
+		} else { 
+			if (addend.isAcute()) {
+				d /= _ta;
+				d -= addend._ta;
+				_ta = addend._ta / (_ta * d);
+				_ta += _ONE / d;
+			} else {
+				d /= (_ta * addend._ta);
+				d-= _ONE;
+				_ta = _ONE / (_ta * d);
+				_ta += (_ONE / (addend._ta * d));
+			};
+		};
+//		_ta = (test1)
+//				? (test2) ? (_ta + addend._ta) /    (_ONE - _ta * addend._ta)
+//						: (_ta / addend._ta + 1d) / (_ONE / addend._ta - _ta)
+//				: (test2) ? (_ONE + addend._ta / _ta) /      (_ONE / _ta - addend._ta)
+//						: (_ONE / addend._ta + _ONE / _ta) / (_ONE / _ta / addend._ta - _ONE);			
 		return this;
 	}
 
@@ -193,45 +220,21 @@ public class CodedPhase {
 	 * use Mutator -- sum with right angle.
 	 * tan  + sec = _ta + sqrt(1+_ta*ta)
 	 */
-	public CodedPhase addRight() { //improve for case _ta close to +1(+/-epsilon) ???
-		//_ta = (isAcute()) ? (_ta + 1d) / (1d - _ta) : (1d + 1d / _ta) / (1d / _ta - 1d);
-//		_ta = (isAcute()) ? _ta/ (1d - _ta) + 1d/ (1d - _ta)  
-//				: 1d/ (1d / _ta - 1d) + (1d / _ta) / (1d / _ta - 1d);
-
-		final double one = 1d;	
-	
-////		
-//		boolean test = isAcute();
-//		double ta = test ? _ta : one / _ta;
-//		double d = test ?  one - ta : ta - one;
-//		_ta = ta / d + one / d;
-//		return this;
-////
-//		double d;
-//		if(isAcute()) {
-//			d = one - _ta; 	
-//		} else {
-//			_ta = one / _ta;
-//			d = _ta - one;			
-//		}	
-//		_ta /= d;
-//		_ta += (one / d);
-//		return this;
-////
+	public CodedPhase addRight() { //improve ???
+		//_ta = (isAcute()) ? (_ta + 1d) / (1d - _ta) : (1d + 1d / _ta) / (1d / _ta - 1d);		
 		boolean test = !isAcute();
-		if(test) _ta = one / _ta;
-		double d = test ?   _ta - one : one - _ta ;
+		if(test) _ta = _ONE / _ta;
+		double d = test ?   _ta - _ONE : _ONE - _ta ;
 		_ta /= d;
-		_ta += (one / d);
+		_ta += (_ONE / d);
 		return this;
-////
 	}
 
 	/**
 	 * use Mutator -- sum with straight angle.
 	 */
 	public CodedPhase addStraight() {
-		_ta = -1 / _ta;
+		_ta = -_ONE / _ta;
 		return this;
 	}
 
@@ -239,8 +242,7 @@ public class CodedPhase {
 	 * Angle factory: Angle of this CodedPhase.
 	 */
 	public Angle angle() {
-		//if(Double_ta)
-		return Angle.inPiRadians(StrictMath.atan(_ta) / StrictMath.scalb(Angle.RADIANS_STRAIGHT, -1));
+		return Angle.inPiRadians(StrictMath.atan(_ta) / _HALF_PI);
 	}
 
 	/**
@@ -258,10 +260,13 @@ public class CodedPhase {
 	 * @return double
 	 */
 	public double cos() {
-		double m2 =  _ta * _ta ;
-		if(StrictMath.abs(_ta) <= 1d) return (1d - m2) / (1d + m2);
-		m2 = 1/m2;
-		return  (m2 - 1d) / (1d + m2);		
+		boolean test = !isAcute();
+		double c =  _ta * _ta ;
+		if(test) c = _ONE / c;
+		double d = _ONE + c;
+		c /=  d;
+		c -= (_ONE / d) ;
+		return (test) ? c : -c;	
 	}
 
 	/**
@@ -274,7 +279,7 @@ public class CodedPhase {
 	 * @return double
 	 */
 	public double cot() {
-		return 1.0d / tan();
+		return _ONE / tan();
 	}
 
 	/**
@@ -283,7 +288,7 @@ public class CodedPhase {
 	 * @return double
 	 */
 	public double cotHalf() {
-		return 1 / _ta;
+		return _ONE / _ta;
 	}
 
 	/*
@@ -327,7 +332,7 @@ public class CodedPhase {
 
 	/** True if <i>absolute</i> Principle angle is acute. */
 	public boolean isAcute() {
-		return (codedMagnitude() < CODE_RIGHT);
+		return (codedMagnitude() < _ONE);
 	}
 
 	/** True if phase coded is undefined. */
@@ -340,28 +345,29 @@ public class CodedPhase {
 
 	/** True if <i>absolute</i> phase coded is obtuse angle. */
 	public boolean isObtuse() {
-		return (codedMagnitude() > CODE_RIGHT);
+		return (codedMagnitude() > _ONE);
 	}
 
 	/** True if <i>absolute</i> phase coded is exactly right angle. */
 	public boolean isOrthogonal() {
-		return (codedMagnitude() == CODE_RIGHT);
+		return (codedMagnitude() == _ONE);
 	}
 
 	/** True if phase coded is positive or zero. */
 	public boolean isPositive() {
-		return (_ta >= CODE_ZERO);
+		return (_ta >= _ZERO);
 	}
 		
 	/** True if <i>absolute</i> phase coded is straight angle. */
 	public boolean isStraight() {
-		return (codedMagnitude() == CODE_STRAIGHT );
+		//return (codedMagnitude() == _STRAIGHT );
+		return Double.isInfinite(_ta);
 	}
 	
 
 	/** True if phase coded equals zero angle. */
 	public boolean isZero() {
-		return (_ta == CODE_ZERO);
+		return (_ta == _ZERO);
 	}
 
 	/**
@@ -370,8 +376,8 @@ public class CodedPhase {
 	 * @return double Op - Scaling
 	 */
 	public double magnificationRotator() {
-		double t = (StrictMath.abs(_ta) <= 1d) ? _ta : 1d / _ta;
-		return 1d + t*t;
+		double t = (this.isObtuse()) ? _ONE / _ta : _ta;
+		return _ONE + t*t;
 	}
 
 	/**
@@ -394,8 +400,8 @@ public class CodedPhase {
 	 * @return double
 	 */
 	public double sin() {
-		double ma = (StrictMath.abs(_ta) < 1d) ? _ta : 1d / _ta;
-		return ma / (StrictMath.scalb(ma * ma, -1)  + 0.5d);
+		double ma = (this.isAcute()) ? _ta : _ONE / _ta;
+		return ma / (StrictMath.scalb(ma * ma, -1)  + _HALF);
 		//return StrictMath.scalb(ma, 1) / (ma * ma + 1);
 	}
 
@@ -407,19 +413,26 @@ public class CodedPhase {
 	 */
 	public CodedPhase subtract(CodedPhase subtrahend) {
 
-		_ta = (this.isAcute())
-				? (subtrahend.isAcute()) ? (_ta - subtrahend._ta) / (1d + _ta * subtrahend._ta)
-						: (_ta / subtrahend._ta - 1d) / (1d / subtrahend._ta + _ta)
-				: (subtrahend.isAcute()) ? (1d - subtrahend._ta / _ta) / (1d / _ta + subtrahend._ta)
-						: (1d / subtrahend._ta - 1d / _ta) / (1d / _ta / subtrahend._ta + 1d);
-		return this;
+//		_ta = (this.isAcute())
+//				? (subtrahend.isAcute()) ? (_ta - subtrahend._ta) / (_ONE + _ta * subtrahend._ta)
+//						: (_ta / subtrahend._ta - _ONE) / (_ONE / subtrahend._ta + _ta)
+//				: (subtrahend.isAcute()) ? (_ONE - subtrahend._ta / _ta) / (_ONE / _ta + subtrahend._ta)
+//						: (_ONE / subtrahend._ta - _ONE / _ta) / (_ONE / _ta / subtrahend._ta + _ONE);
+	            add(new CodedPhase(subtrahend).negate());	
+				return this;
 	}
 
 	/**
 	 * Mutator -- subtract right angle.
 	 */
 	public CodedPhase subtractRight() {
-		_ta = (this.isAcute()) ? (_ta - 1d) / (1d + _ta) : (1d - 1d / _ta) / (1d / _ta + 1d);
+//		_ta = (this.isAcute()) ? (_ta - 1d) / (1d + _ta) : (1d - 1d / _ta) / (1d / _ta + 1d);
+		boolean test = !isAcute();
+		if(test) _ta = _ONE / _ta;
+		double d = _ONE + _ta;
+		_ta /=d;
+		_ta -= (_ONE / d);
+		if(test) _ta = - _ta;
 		return this;
 	}
 
@@ -427,7 +440,7 @@ public class CodedPhase {
 	 * use Mutator -- sum with straight angle.
 	 */
 	public CodedPhase subtractStraight() {
-		//_ta = -1 / _ta;
+		//_ta = -_ONE / _ta;
 		return this.addStraight();
 	}
 
@@ -437,10 +450,12 @@ public class CodedPhase {
 	 * @return double
 	 */
 	public double tan() {
-		if(Double.isInfinite(_ta)) return StrictMath.copySign(0d, _ta);
-		if (StrictMath.abs(_ta) < 1d) return _ta / (0.5d - StrictMath.scalb(_ta*_ta, -1) );		
-		double ma = 1d / _ta;
-		return ma / ( StrictMath.scalb(ma*ma, -1) - 0.5d );				
+		if(Double.isInfinite(_ta)) return StrictMath.copySign(_ZERO, _ta);
+		if(this.isOrthogonal()) return StrictMath.copySign(_STRAIGHT, _ta);
+		return fastTan((this.isAcute()) ? _ta : -( _ONE / _ta));
+	}	
+	private static double fastTan(double t) {
+		return  t / (_HALF - StrictMath.scalb(t*t, - 1) );	
 	}
 
 	/**
@@ -458,12 +473,12 @@ public class CodedPhase {
 	 * -- reduce to cardinal directions when close to them!
 	 */
 	public CodedPhase trueRound() {		
-		if (CODE_SMALLEST > StrictMath.abs(_ta)) {
-			_ta = StrictMath.copySign(CODE_ZERO, _ta);
-		} else if (CODE_SMALLEST > StrictMath.abs(StrictMath.abs(_ta) - 1d)) {
-			_ta = StrictMath.copySign(CODE_RIGHT, _ta);
-		} else if (CODE_LARGEST < StrictMath.abs(_ta)) {
-			_ta = StrictMath.copySign(CODE_STRAIGHT, _ta);
+		if (_SMALLEST > StrictMath.abs(_ta)) {
+			_ta = StrictMath.copySign(_ZERO, _ta);
+		} else if (_SMALLEST > StrictMath.abs(StrictMath.abs(_ta) - _ONE)) {
+			_ta = StrictMath.copySign(_ONE, _ta);
+		} else if (_LARGEST < StrictMath.abs(_ta)) {
+			_ta = StrictMath.copySign(_STRAIGHT, _ta);
 		}
 		return this;
 	}

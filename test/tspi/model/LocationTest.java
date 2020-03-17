@@ -28,7 +28,7 @@ public class LocationTest extends TestCase {
 		Ellipsoid tNavigation = new Ellipsoid();
 		double qlat;
 		double qlon;
-		for (int i = 1; i <= 3; i++) { //lat seed -- phi	
+		for (int i = -3; i <= 3; i++) { //lat seed -- phi	
 			double phi = i * 30.0d; 
 			
 			for (int j = 0; j <= 12; j++) { //longitude seed -- lambda			
@@ -56,12 +56,12 @@ public class LocationTest extends TestCase {
 					tefg.set(tNavigation.getGeocentric());
 					System.out.println("  geodetic lat"+ geodetic.getNorthLatitude().getDegrees() + "  lon " + geodetic.getEastLongitude().getDegrees() + " hgt " + geodetic.getHeight() );
 					
-					CodedPhase dumperi = tNavigation.getGeodetic().getEuler_i_kji();
-					CodedPhase dumperj = tNavigation.getGeodetic().getEuler_j_kji();
-					CodedPhase dumperk = tNavigation.getGeodetic().getEuler_k_kji();
+					CodedPhase dumperi = tNavigation.getGeodeticRotator().getEuler_i_kji();
+					CodedPhase dumperj = tNavigation.getGeodeticRotator().getEuler_j_kji();
+					CodedPhase dumperk = tNavigation.getGeodeticRotator().getEuler_k_kji();
 					
-					CodedPhase dumperjd = tNavigation.getGeodetic().getEuler_j_kj();
-					CodedPhase dumperkd = tNavigation.getGeodetic().getEuler_k_kj();
+					CodedPhase dumperjd = tNavigation.getGeodeticRotator().getEuler_j_kj();
+					CodedPhase dumperkd = tNavigation.getGeodeticRotator().getEuler_k_kj();
 					
 System.out.println("J = "+ dumperj.angle().toDegreesString(10));					
 System.out.println("K = "+ dumperk.angle().toDegreesString(10));					
@@ -69,13 +69,13 @@ System.out.println("dumper J = "+ dumperjd.angle().toDegreesString(10));
 System.out.println("dumper K = "+ dumperkd.angle().toDegreesString(10));					
 					
 					
-					System.out.println("  navigation lat"+ tNavigation.copy().getNorthLatitude().getDegrees() + "  lon " +  tNavigation.copy().getEastLongitude().getDegrees() + " hgt " +  tNavigation.copy().getHeight() );
+					System.out.println("  navigation lat"+ new Ellipsoid(tNavigation).getNorthLatitude().getDegrees() + "  lon " +  new Ellipsoid(tNavigation).getEastLongitude().getDegrees() + " hgt " +  new Ellipsoid(tNavigation).getHeight() );
 					
 					System.out.println(efg.toString(15)+tefg.toString(15)+"vector difference magnitude: " + new Vector3(efg).subtract(tefg).getAbs());
 					assertTrue(efg.isEquivalent(tefg,1e-7));//to the .01 micrometer!
 					
 					//get rotator and translation components from transform to navigation object
-					q_EFG_NED = tNavigation.getGeodetic(); 	//geodetic-tangent "level"
+					q_EFG_NED = tNavigation.getGeodeticRotator(); 	//geodetic-tangent "level"
                     qHeight = tNavigation.getHeight();		//geodetic-normal "vertical"
                     
 					//output navigation transform's rotator norms and rotator
@@ -86,7 +86,7 @@ System.out.println("dumper K = "+ dumperkd.angle().toDegreesString(10));
 					assertTrue(2>=q_EFG_NED.getAbs());
 					
                     //set Ellipsoid coordinate object with transform to navigation object
-					tgeodetic.set(tNavigation.copy());
+					tgeodetic.set(new Ellipsoid(tNavigation));
 					qlat = tgeodetic.getNorthLatitude().getDegrees();						
 					qlon = tgeodetic.getEastLongitude().getDegrees();												
 					System.out.print(String.format(" Qlat = %.10f", qlat ));

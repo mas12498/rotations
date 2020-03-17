@@ -1018,7 +1018,7 @@ public class Quaternion {
 	public final Quaternion unit() {
 		final double abs = getAbs();
 		return (abs == 0 || Double.isNaN(abs)) ? Quaternion.EMPTY : this
-				.divide(abs);
+				.divide( (getW() < 0) ? -abs : abs );
 	}
 	
 	

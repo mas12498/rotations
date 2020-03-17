@@ -852,7 +852,7 @@ public class CodedPhaseTest {
         
 		p1.subtract(p2).angle().signedPrinciple();	
         //System.out.println(p1.signedAngle().getDegrees() - 180d);
-		assertEquals(p1.angle().signedPrinciple().getDegrees(),180d,1e-13);
+		assertEquals(p1.angle().signedPrinciple().getDegrees(),-180d,1e-13);
 
 		//System.out.println(p1.angle().getDegrees());
 		p1.subtract(p2).angle().signedPrinciple();
@@ -1339,7 +1339,7 @@ public class CodedPhaseTest {
 		assertTrue(zm.equals(c.cotHalf()));
 		
 
-		d = CodedPhase.encodes(CodedPhase.CODE_STRAIGHT);		
+		d = CodedPhase.encodes(CodedPhase._STRAIGHT);		
 		//System.out.println(d.angle().getPiRadians());
 		//System.out.println("d.cotHalf():"+ d.cotHalf());
 		//System.out.println("d.cotHalf():"+ d.cotHalf());

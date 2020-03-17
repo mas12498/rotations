@@ -224,8 +224,9 @@ public class Rotator extends Quaternion {
 	public CodedPhase getEuler_j_kji() {
 		double sj = (getW() * getY() - getZ() * getX()) / StrictMath.scalb(getDeterminant(), -1);
 		// TODO: Define real numerical limit to smallness. ... Euler numerical instability.
-		if (StrictMath.abs(1d - StrictMath.abs(sj)) < 1e-15) {
-			return CodedPhase.encodes(StrictMath.copySign(1d, sj));
+		//if (StrictMath.abs(1d - StrictMath.abs(sj)) < 1e-15) {
+		if (StrictMath.abs(StrictMath.abs(sj)) == 1) {
+						return CodedPhase.encodes(StrictMath.copySign(1d, sj));
 		}
 		return CodedPhase.encodes(sj / (1 + StrictMath.sqrt(1 - sj * sj)));
 	}	
@@ -294,7 +295,7 @@ public class Rotator extends Quaternion {
 		double ck = ((ww + xx) - (yy + zz))/2;
 		Double h = (sk / (StrictMath.hypot(sk, ck) + ck));
 		if(h.isNaN()) {
-			h=CodedPhase.CODE_STRAIGHT;
+			h=CodedPhase._STRAIGHT;
 		}
 		return CodedPhase.encodes(h);
 	}
@@ -322,10 +323,10 @@ public class Rotator extends Quaternion {
 		double p = sj / (1 + StrictMath.sqrt(1 - sj * sj));
 		Double h = (sk / (StrictMath.hypot(sk, ck) + ck));
 		if(r.isNaN()) {
-			r = CodedPhase.CODE_STRAIGHT;
+			r = CodedPhase._STRAIGHT;
 		}		
 		if(h.isNaN()) {
-			h = CodedPhase.CODE_STRAIGHT;
+			h = CodedPhase._STRAIGHT;
 		}
 		if((si==0) && (ci == 0)) { //pole!!!
 			r = 0d;
@@ -358,6 +359,10 @@ public class Rotator extends Quaternion {
 		return new Vector3(getW() * getW() + getX() * getX() - getY() * getY() - getZ() * getZ(),
 				2 * (getX() * getY() + getW() * getZ()), 2 * (getX() * getZ() - getW() * getY()));
 	}
+	public Vector3 getImage_i(double norm) {
+		return new Vector3((getW() * getW() + getX() * getX() - getY() * getY() - getZ() * getZ())/norm,
+				2 * (getX() * getY() + getW() * getZ())/norm, 2 * (getX() * getZ() - getW() * getY())/norm);
+	}
 
 	/**
 	 * Vector3 Projected unit-J (Basis transformed by rotation operator q)
@@ -368,6 +373,11 @@ public class Rotator extends Quaternion {
 				getW() * getW() - getX() * getX() + getY() * getY() - getZ() * getZ(),
 				2 * (getW() * getX() + getY() * getZ()));
 	}
+	public Vector3 getImage_j(double norm) {
+		return new Vector3(2 * (getX() * getY() - getW() * getZ())/norm,
+				(getW() * getW() - getX() * getX() + getY() * getY() - getZ() * getZ())/norm,
+				2 * (getW() * getX() + getY() * getZ())/norm);
+	}
 
 	/**
 	 * Vector3 Projected unit-K (Basis transformed by rotation operator q)
@@ -377,6 +387,11 @@ public class Rotator extends Quaternion {
 		return new Vector3(2 * (getW() * getY() + getX() * getZ()), 2 * (getY() * getZ() - getW() * getX()),
 				getW() * getW() - getX() * getX() - getY() * getY() + getZ() * getZ());
 	}
+	public Vector3 getImage_k(double norm) {
+		return new Vector3(2 * (getW() * getY() + getX() * getZ())/norm, 2 * (getY() * getZ() - getW() * getX())/norm,
+				(getW() * getW() - getX() * getX() - getY() * getY() + getZ() * getZ())/norm);
+	}
+
 
 	public double getImageNormalizationFactor() {
 		return 1d / (getDeterminant());
@@ -551,6 +566,14 @@ public class Rotator extends Quaternion {
 		return (Rotator) this.leftMultiply(new Quaternion(angle.cotHalf(), clone.getX(), clone.getY(), clone.getZ()));
 	}
 
+	/**
+	 * pre- sense of p rotation mutator.
+	 * <p>
+	 * [this.leftMultiply( conjugate(p) ) ] //@MAS:????
+	 * 
+	 * @param p Quaternion (Rotator)
+	 *            
+	 */
 	public final Rotator preRotate(Quaternion p) {
 		this.leftMultiply(p);
 		return this;
@@ -957,6 +980,9 @@ public class Rotator extends Quaternion {
 	/**
 	 * Mutator: Right-hand rotate about <b>UNIT_I</b> axis: exp(iW).
 	 * 
+	 * <p>
+	 * [Right.multiply( exp(i*angle) ) ]
+	 * 
 	 * @param omega_i CodedPrinciple angle of rotation.
 	 */
 	public final Rotator rotate_i(final CodedPhase omega_i) {
@@ -1026,9 +1052,14 @@ public class Rotator extends Quaternion {
 			this.setRightMultiplyK(clone);
 			return this;
 		}
-		// return exp_iObtuse(angle) ;
+		// return exp_iObtuse(angle);
 		return (Rotator) this.multiply(omega_k.cotHalf()).addRightMultiplyK(clone);
 		// return (Operator) this.multiplyAddRightK(thetaK.cotHalf(), clone);
+		
+//		this.multiply(omega_k.cotHalf()).addRightMultiplyK(clone);
+//		if(this.getW()<0) {negate();} 
+//		return this;
+		
 	}
 
 	/**

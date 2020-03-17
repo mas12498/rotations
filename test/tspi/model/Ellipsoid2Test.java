@@ -71,7 +71,7 @@ public class Ellipsoid2Test extends TestCase{
 		assertEquals(q.getHeight(), 1000, 0);
 		Vector3 x = p.getGeocentric();
 		
-		q.setGeocentric(x);
+		q.set(new Ellipsoid(x));
 		assertEquals(q.getNorthLatitude().signedPrinciple().getDegrees(), p.getNorthLatitude().signedPrinciple().getDegrees(), 1e-13);
 		assertEquals(q.getEastLongitude().signedPrinciple().getDegrees(), p.getEastLongitude().signedPrinciple().getDegrees(), 1e-13);
 		// fail("Not yet implemented"); // TODO
@@ -114,7 +114,7 @@ public class Ellipsoid2Test extends TestCase{
 						  qlon = geodetic.getEastLongitude().unsignedPrinciple();
 						  qhgt = geodetic.getHeight();
 						  qefg = geodetic.getGeocentric();
-						  q    = geodetic.getGeodetic();						
+						  q    = geodetic.getGeodeticRotator();						
 							System.out.print(String.format(" Mu= %16.12f", 
 									q.getEuler_j_kj().angle().signedPrinciple().getDegrees()));
 							System.out.print(String.format(" Lambda= %16.12f",
@@ -156,7 +156,7 @@ public class Ellipsoid2Test extends TestCase{
 						  qlon = tgeodetic.getEastLongitude().unsignedPrinciple(); //Not pole!
 						  qhgt = tgeodetic.getHeight();
 						  qefg = tgeodetic.getGeocentric();
-    					  q = tgeodetic.getGeodetic(); //Not pole!
+    					  q = tgeodetic.getGeodeticRotator(); //Not pole!
 
 
 

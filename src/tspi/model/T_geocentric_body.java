@@ -5,7 +5,7 @@ import tspi.rotation.CodedPhase;
 import tspi.rotation.Rotator;
 import tspi.rotation.Vector3;
 
-public class T_EFG_FRD {
+public class T_geocentric_body {
 	
 	protected final Rotator _orientation; // = new Rotator(); //rotater
 	protected double _range; // = Double.NaN;  //translater		
@@ -15,7 +15,7 @@ public class T_EFG_FRD {
 	/**
 	 * Constructor: initialize 'Empty'.
 	 */
-	public T_EFG_FRD(){ //aperture emit {Forward,Right,Downward}
+	public T_geocentric_body(){ //aperture emit {Forward,Right,Downward}
 		_range = Double.NaN;//expand def with axis levers?? parallax offsets???? registration?????
 		_orientation = new Rotator(Rotator.EMPTY);
 	}	
@@ -24,7 +24,7 @@ public class T_EFG_FRD {
 	/**
 	 * Geodetic local copy-constructor:
 	 */
-	public T_EFG_FRD(T_EFG_FRD aperture){
+	public T_geocentric_body(T_geocentric_body aperture){
 		_range = aperture._range;
 		_orientation = new Rotator(aperture._orientation);
 	}
@@ -93,7 +93,7 @@ public class T_EFG_FRD {
 	
 	public void orient(Vector3 offsetEFG, Rotator localHorizon){	
 		RAE localVector = commandLocal(offsetEFG,localHorizon);
-		_orientation.set(T_EFG_FRD.face(localVector.getUnsignedAzimuth().codedPhase()
+		_orientation.set(T_geocentric_body.face(localVector.getUnsignedAzimuth().codedPhase()
 				,localVector.getElevation().codedPhase(),localHorizon));
 	}
 

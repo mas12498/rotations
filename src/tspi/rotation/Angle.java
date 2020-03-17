@@ -27,6 +27,7 @@ public class Angle
 	public final static double PIRADIANS_ZERO        = 0d;		
 	public final static double PIRADIANS_EMPTY       = Double.NaN;		
 	public final static double RADIANS_STRAIGHT      = StrictMath.PI;
+	public final static double RADIANS_RIGHT         = RADIANS_STRAIGHT/2;
 	public final static double DEGREES_STRAIGHT      = 180d;	
 	public final static double ARCMINUTES_STRAIGHT   = DEGREES_STRAIGHT*60;
 	public final static double ARCSECONDS_STRAIGHT   = DEGREES_STRAIGHT*3600;	
